@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Оформление заказа{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .order-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .order-header h1 {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+    
+    .product-summary {
+        background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(254, 202, 87, 0.1));
+        border-radius: 24px;
+        padding: 24px;
+        margin-bottom: 32px;
+        border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+    
+    .product-summary h3 {
+        margin-bottom: 12px;
+    }
+    
+    .product-price {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ff9f43;
+        margin: 12px 0;
+    }
+    
+    .order-form {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 24px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .form-group label i {
+        color: #ff6b6b;
+        margin-right: 8px;
+    }
+    
+    .form-group input, 
+    .form-group textarea {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: #fff;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+    
+    .form-group input:focus, 
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #ff6b6b;
+    }
+    
+    .file-input {
+        position: relative;
+        padding: 40px;
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .file-input:hover {
+        border-color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.05);
+    }
+    
+    .file-input input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+    }
+    
+    .file-label {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .file-label i {
+        font-size: 40px;
+        display: block;
+        margin-bottom: 10px;
+        color: #ff9f43;
+    }
+    
+    .photo-preview {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .photo-preview img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .submit-btn {
+        width: 100%;
+        padding: 16px;
+        font-size: 18px;
+        margin-top: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-container">
+    <div class="order-header">
+        <h1>Оформить заказ</h1>
+        <p>Заполните форму, и мы начнём создавать вашу фигурку</p>
+    </div>
+    
+    <div class="product-summary">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description }}</p>
+        <div class="product-price">{{ product.price }} ₽</div>
+        <div style="font-size: 13px; color: rgba(255,255,255,0.5);">
+            <i class="fas fa-clock"></i> Срок изготовления: 5-7 дней
+        </div>
+    </div>
+    
+    <form method="POST" enctype="multipart/form-data" class="order-form" id="orderForm">
+        <div class="form-group">
+            <label><i class="fas fa-image"></i> Фото 1 (анфас)</label>
+            <div class="file-input" onclick="document.getElementById('photo1').click()">
+                <input type="file" name="photo1" id="photo1" accept="image/*" required onchange="previewPhoto(this, 'preview1')">
+                <div class="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div>Нажмите для загрузки</div>
+                    <div style="font-size: 12px; margin-top: 8px;">JPG, PNG до 10MB</div>
+                </div>
+            </div>
+            <div id="preview1" class="photo-preview"></div>
+        </div>
+        
+        <div class="form-group">
+            <label><i class="fas fa-image"></i> Фото 2 (профиль)</label>
+            <div class="file-input" onclick="document.getElementById('photo2').click()">
+                <input type="file" name="photo2" id="photo2" accept="image/*" required onchange="previewPhoto(this, 'preview2')">
+                <div class="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div>Нажмите для загрузки</div>
+                    <div style="font-size: 12px; margin-top: 8px;">JPG, PNG до 10MB</div>
+                </div>
+            </div>
+            <div id="preview2" class="photo-preview"></div>
+        </div>
+        
+        <div class="form-group">
+            <label><i class="fas fa-comment"></i> Пожелания (причёска, одежда, особенности)</label>
+            <textarea name="comment" rows="4" placeholder="Напишите цвет волос, одежду, особые приметы (очки, родинки, тату)..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary submit-btn">
+            <i class="fas fa-check-circle"></i> Оформить заказ
+        </button>
+    </form>
+</div>
+
+<script>
+    function previewPhoto(input, previewId) {
+        const preview = document.getElementById(previewId);
+        preview.innerHTML = '';
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}
