@@ -1,24 +1,226 @@
 {% extends "base.html" %}
 
-{% block title %}Регистрация{% endblock %}
+{% block title %}Регистрация | 3D Figurki{% endblock %}
 
 {% block content %}
-    <h1>📝 Регистрация</h1>
-    <div class="form-card">
-        <form method="POST">
-            <label>Логин</label>
-            <input type="text" name="username" placeholder="Придумай логин" required>
-
-            <label>Email</label>
-            <input type="email" name="email" placeholder="Твой email" required>
-
-            <label>Пароль</label>
-            <input type="password" name="password" placeholder="Придумай пароль" required>
-
-            <button type="submit" class="btn">Зарегистрироваться</button>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2>Создать аккаунт</h2>
+            <p>Зарегистрируйтесь, чтобы заказывать фигурки</p>
+        </div>
+        
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Логин</label>
+                <input type="text" name="username" placeholder="Придумайте логин" required autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" name="email" placeholder="Ваш email" required autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Пароль</label>
+                <input type="password" name="password" placeholder="Придумайте пароль" required>
+                <span class="password-hint">Минимум 6 символов</span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-check-circle"></i> Повторите пароль</label>
+                <input type="password" name="confirm_password" placeholder="Повторите пароль" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary auth-btn">
+                <i class="fas fa-user-plus"></i> Зарегистрироваться
+            </button>
         </form>
-        <div class="link">
+        
+        <div class="auth-footer">
             Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a>
         </div>
     </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 20px;
+    }
+    
+    .auth-card {
+        background: rgba(20, 15, 45, 0.7);
+        backdrop-filter: blur(20px);
+        border-radius: 32px;
+        padding: 40px;
+        width: 100%;
+        max-width: 480px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s;
+    }
+    
+    .auth-card:hover {
+        border-color: rgba(255, 107, 107, 0.3);
+        box-shadow: 0 25px 50px -12px rgba(255, 107, 107, 0.2);
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+    
+    .auth-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(254, 202, 87, 0.2));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    
+    .auth-icon i {
+        font-size: 32px;
+        color: #ff9f43;
+    }
+    
+    .auth-header h2 {
+        font-size: 28px;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.7));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .auth-header p {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+    }
+    
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-group label {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .form-group label i {
+        color: #ff6b6b;
+        margin-right: 8px;
+        width: 18px;
+    }
+    
+    .form-group input {
+        padding: 14px 18px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        color: #fff;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+    
+    .form-group input:focus {
+        outline: none;
+        border-color: #ff6b6b;
+        background: rgba(0, 0, 0, 0.6);
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    }
+    
+    .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .password-hint {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: 6px;
+        margin-left: 4px;
+    }
+    
+    .auth-btn {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+        padding: 14px !important;
+        font-size: 16px !important;
+    }
+    
+    .auth-footer {
+        text-align: center;
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+    }
+    
+    .auth-footer a {
+        color: #ff9f43;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .auth-footer a:hover {
+        color: #ff6b6b;
+        text-decoration: underline;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 480px) {
+        .auth-card {
+            padding: 28px 20px;
+        }
+        
+        .auth-header h2 {
+            font-size: 24px;
+        }
+        
+        .form-group input {
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+    }
+</style>
+
+<script>
+    // Простая валидация пароля на стороне клиента
+    document.querySelector('.auth-form').addEventListener('submit', function(e) {
+        const password = document.querySelector('input[name="password"]').value;
+        const confirm = document.querySelector('input[name="confirm_password"]').value;
+        
+        if (password !== confirm) {
+            e.preventDefault();
+            alert('Пароли не совпадают!');
+            return false;
+        }
+        
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('Пароль должен содержать минимум 6 символов!');
+            return false;
+        }
+    });
+</script>
 {% endblock %}
