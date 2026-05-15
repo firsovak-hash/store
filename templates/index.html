@@ -3,20 +3,38 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<!-- Hero секция -->
-<section class="hero">
-    <div class="hero-container">
-        <div class="hero-left">
-            <h1 class="hero-title">дари <span class="hero-accent">тому,<br>кому любишь</span></h1>
+<!-- ВЕРХНЯЯ СЕКЦИЯ: крупный призыв -->
+<section class="top-section">
+    <div class="top-container">
+        <div class="top-left">
+            <h1 class="top-title">А ПОКУПАЙ САМОГО СЕБЯ?!</h1>
+            <p class="top-subtitle">красивые фигурки на рабочее место</p>
         </div>
-        <div class="hero-right">
-            <p class="hero-text">
+        <div class="top-right">
+            <div class="top-figure">
+                <i class="fas fa-cube"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- НИЖНЯЯ СЕКЦИЯ: дари тому, кому любишь + кнопка -->
+<section class="bottom-section">
+    <div class="bottom-container">
+        <div class="bottom-left">
+            <h1 class="bottom-title">ДАРИ ТОМУ,<br>КОМУ ЛЮБИШЬ</h1>
+            <p class="bottom-text">
                 открывай канал, уточняй детали, размеры и расцветки — 
                 и оформляй заказ напрямую без лишних шагов
             </p>
             <a href="https://t.me/your_username" target="_blank" class="telegram-btn">
                 <i class="fab fa-telegram"></i> заказать в telegram
             </a>
+        </div>
+        <div class="bottom-right">
+            <div class="bottom-figure">
+                <i class="fas fa-cube"></i>
+            </div>
         </div>
     </div>
 </section>
@@ -84,43 +102,87 @@
 </div>
 
 <style>
-    /* Hero секция */
-    .hero { 
-        padding: 80px 0 100px; 
-        border-bottom: 1px solid rgba(255,255,255,0.15); 
-        margin-bottom: 60px; 
+    /* ВЕРХНЯЯ СЕКЦИЯ */
+    .top-section {
+        padding: 80px 0 60px;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+        margin-bottom: 40px;
     }
-    .hero-container { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        gap: 60px; 
-        flex-wrap: wrap; 
+    .top-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 60px;
+        flex-wrap: wrap;
     }
-    .hero-left { flex: 1; }
-    .hero-title { 
-        font-size: 72px; 
-        font-weight: 800; 
-        color: white; 
-        text-transform: uppercase; 
-        line-height: 1.2; 
-        letter-spacing: -0.02em; 
-    }
-    .hero-accent { color: #d66b7e; border-bottom: 4px solid #d66b7e; }
-    
-    .hero-right { 
-        flex: 1; 
-        max-width: 420px; 
-    }
-    .hero-text { 
-        font-size: 14px; 
-        line-height: 1.5; 
-        color: rgba(255,255,255,0.9); 
+    .top-left { flex: 1; }
+    .top-title {
+        font-size: 72px;
+        font-weight: 800;
+        color: white;
+        text-transform: uppercase;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
         margin-bottom: 20px;
-        text-align: left;
+    }
+    .top-subtitle {
+        font-size: 18px;
+        color: rgba(255,255,255,0.7);
+        letter-spacing: 1px;
+    }
+    .top-right { flex: 1; }
+    .top-figure {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .top-figure i {
+        font-size: 200px;
+        color: #d66b7e;
+        opacity: 0.6;
     }
     
-    /* Кнопка Telegram — без скруглений, чёрный шрифт, с диагональным блеском */
+    /* НИЖНЯЯ СЕКЦИЯ (которая была сверху) */
+    .bottom-section {
+        padding: 60px 0 80px;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+        margin-bottom: 60px;
+    }
+    .bottom-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 60px;
+        flex-wrap: wrap;
+    }
+    .bottom-left { flex: 1; max-width: 420px; }
+    .bottom-title {
+        font-size: 56px;
+        font-weight: 800;
+        color: white;
+        text-transform: uppercase;
+        line-height: 1.2;
+        margin-bottom: 20px;
+    }
+    .bottom-text {
+        font-size: 14px;
+        line-height: 1.5;
+        color: rgba(255,255,255,0.9);
+        margin-bottom: 25px;
+    }
+    .bottom-right { flex: 1; }
+    .bottom-figure {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .bottom-figure i {
+        font-size: 160px;
+        color: #d66b7e;
+        opacity: 0.6;
+    }
+    
+    /* Кнопка Telegram */
     .telegram-btn { 
         display: inline-flex; 
         align-items: center; 
@@ -208,7 +270,7 @@
     .gallery-prev { left: 12px; }
     .gallery-next { right: 12px; }
     
-    /* Нижняя часть */
+    /* Нижняя часть модалки */
     .modal-info-bottom { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #1e1e22; overflow-y: auto; }
     .modal-info-bottom h2 { font-size: 24px; color: white; margin: 0; }
     .modal-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; margin: 0; }
@@ -217,18 +279,25 @@
     
     /* Адаптивность */
     @media (max-width: 768px) {
-        .hero { padding: 50px 0 70px; }
-        .hero-title { font-size: 42px; }
-        .hero-container { flex-direction: column; text-align: center; gap: 30px; }
-        .hero-right { text-align: center; max-width: 100%; }
-        .hero-text { text-align: center; }
+        .top-section { padding: 50px 0 40px; }
+        .top-title { font-size: 42px; }
+        .top-subtitle { font-size: 14px; }
+        .top-figure i { font-size: 120px; }
+        
+        .bottom-section { padding: 40px 0 60px; }
+        .bottom-title { font-size: 36px; }
+        .bottom-figure i { font-size: 100px; }
+        
+        .top-container, .bottom-container {
+            flex-direction: column;
+            text-align: center;
+            gap: 30px;
+        }
+        .bottom-left { max-width: 100%; text-align: center; }
         .process-steps { flex-direction: column; gap: 0; }
         .products-grid { grid-template-columns: 1fr; }
         .product-card-image { height: 300px; }
         .modal-content { width: 95%; height: 80vh; max-width: 95%; }
-        .modal-info-bottom h2 { font-size: 20px; }
-        .modal-price { font-size: 22px; }
-        .gallery-slide i { font-size: 70px; }
     }
 </style>
 
