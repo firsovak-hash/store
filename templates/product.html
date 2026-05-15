@@ -108,23 +108,23 @@
             <div class="product-price">{{ product.price }} ₽</div>
             <div class="product-tabs">
                 <button class="tab-btn active" data-tab="desc">Описание</button>
-                <button class="tab-btn" data-tab="process">Процесс</button>
+                <button class="tab-btn" data-tab="process">Процесс изготовления</button>
                 <button class="tab-btn" data-tab="reviews">Отзывы</button>
             </div>
             <div id="desc" class="tab-content active">
-                {{ product.full_description or product.description }}
+                <p>{{ product.full_description or product.description }}</p>
             </div>
             <div id="process" class="tab-content">
-                📸 1. Вы загружаете 2-3 фото<br>
+                <p>📸 1. Вы загружаете 2-3 фото<br>
                 🎨 2. Создаём 3D-модель, согласовываем с вами<br>
                 🖨️ 3. Печать на фотополимерном принтере (0.05 мм)<br>
                 🎨 4. Ручная покраска акриловыми красками<br>
-                📦 5. Упаковка и доставка по Москве
+                📦 5. Упаковка и доставка по Москве</p>
             </div>
             <div id="reviews" class="tab-content">
-                ⭐ 5.0 — «Фигурка просто восторг! Очень похожа, упаковка шикарная. Спасибо!» — Анна<br><br>
+                <p>⭐ 5.0 — «Фигурка просто восторг! Очень похожа, упаковка шикарная. Спасибо!» — Анна<br><br>
                 ⭐ 5.0 — «Делали фигурку с котом, получилось очень мило. Рекомендую.» — Михаил<br><br>
-                ⭐ 4.9 — «Подарок на годовщину, парень был в шоке. Спасибо за работу!» — Екатерина
+                ⭐ 4.9 — «Подарок на годовщину, парень был в шоке. Спасибо за работу!» — Екатерина</p>
             </div>
             <a href="https://t.me/your_username" target="_blank" class="btn-primary order-btn">
                 <i class="fab fa-telegram"></i> Заказать в Telegram
