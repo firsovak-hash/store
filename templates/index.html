@@ -3,12 +3,25 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
+<!-- НОВАЯ ГЛАВНАЯ СЕКЦИЯ В СТИЛЕ LOM-MERCH -->
 <section class="hero">
-    <h1>3D-фигурки<br>по вашим фото</h1>
-    <p>Персонализированные фигурки из фотополимера. Идеальное портретное сходство.<br>Ручная работа. Доставка по Москве.</p>
-    <a href="https://t.me/your_username" target="_blank" class="btn-primary">Заказать в Telegram →</a>
+    <div class="hero-container">
+        <div class="hero-left">
+            <h1 class="hero-title">дари <span class="hero-accent">тому,<br>кому любишь</span></h1>
+        </div>
+        <div class="hero-right">
+            <p class="hero-text">
+                открывай канал, уточняй детали, размеры и расцветки — 
+                и оформляй заказ напрямую без лишних шагов
+            </p>
+            <a href="https://t.me/your_username" target="_blank" class="telegram-btn">
+                <i class="fab fa-telegram"></i> заказать в telegram
+            </a>
+        </div>
+    </div>
 </section>
 
+<!-- Шаги работы / Преимущества -->
 <section class="gallery-steps">
     <div class="step-item">
         <i class="fas fa-camera"></i>
@@ -32,6 +45,7 @@
     </div>
 </section>
 
+<!-- Секция "О нас" -->
 <section class="about">
     <div class="about-text">
         <h2>О нас</h2>
@@ -42,6 +56,7 @@
     </div>
 </section>
 
+<!-- Популярные фигурки (превью каталога) -->
 <div class="catalog-preview">
     <h2>Популярные фигурки</h2>
     <div class="preview-grid">
@@ -59,20 +74,103 @@
 </div>
 
 <style>
+    /* Новая Hero-секция */
     .hero {
-        text-align: center;
-        padding: 60px 0;
+        padding: 40px 0 60px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        margin-bottom: 40px;
     }
-    .hero h1 {
-        font-size: 52px;
+
+    .hero-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    .hero-left {
+        flex: 1;
+    }
+
+    .hero-title {
+        font-size: 64px;
         font-weight: 800;
-        margin-bottom: 20px;
+        color: white;
+        text-transform: uppercase;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
-    .hero p {
+
+    .hero-accent {
+        color: #d66b7e;
+        border-bottom: 4px solid #d66b7e;
+    }
+
+    .hero-right {
+        flex: 1;
+        background: rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 32px;
+        text-align: left;
+    }
+
+    .hero-text {
         font-size: 18px;
-        color: #2d2d44;
-        margin-bottom: 32px;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 25px;
     }
+
+    /* Анимированная зеленая кнопка Telegram */
+    .telegram-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: #2aab6d;
+        color: white;
+        padding: 14px 32px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 18px;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(42, 171, 109, 0.5);
+        animation: pulse 2s infinite;
+    }
+
+    .telegram-btn i {
+        font-size: 24px;
+    }
+
+    .telegram-btn:hover {
+        background: #1f8c59;
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(42, 171, 109, 0.8);
+        animation: none;
+    }
+
+    /* Ключевые кадры для анимации пульсации */
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(42, 171, 109, 0.5);
+            transform: scale(1);
+        }
+        70% {
+            box-shadow: 0 0 0 15px rgba(42, 171, 109, 0);
+            transform: scale(1.02);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(42, 171, 109, 0);
+            transform: scale(1);
+        }
+    }
+
+    /* Шаги работы / Преимущества */
     .gallery-steps {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -80,17 +178,21 @@
         margin: 60px 0;
         text-align: center;
     }
+
     .step-item {
         background: rgba(255, 255, 255, 0.5);
         backdrop-filter: blur(10px);
         border-radius: 24px;
         padding: 24px;
     }
+
     .step-item i {
         font-size: 40px;
         color: #d66b7e;
         margin-bottom: 16px;
     }
+
+    /* Секция "О нас" */
     .about {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -101,6 +203,7 @@
         padding: 40px;
         margin: 40px 0;
     }
+
     .about-image {
         display: flex;
         align-items: center;
@@ -108,15 +211,19 @@
         font-size: 80px;
         color: #d66b7e;
     }
+
+    /* Популярные фигурки */
     .catalog-preview h2 {
         text-align: center;
         margin-bottom: 30px;
     }
+
     .preview-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 24px;
     }
+
     .preview-card {
         background: rgba(255, 255, 255, 0.6);
         backdrop-filter: blur(10px);
@@ -126,15 +233,40 @@
         cursor: pointer;
         transition: 0.2s;
     }
+
     .preview-card:hover {
         transform: translateY(-5px);
         background: white;
     }
+
     .preview-card i {
         font-size: 48px;
         color: #d66b7e;
         margin-bottom: 16px;
     }
+
+    /* Адаптивность */
+    @media (max-width: 900px) {
+        .hero-container {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero-right {
+            width: 100%;
+            text-align: center;
+        }
+
+        .hero-text {
+            text-align: center;
+        }
+    }
+
     @media (max-width: 768px) {
         .gallery-steps {
             grid-template-columns: repeat(2, 1fr);
@@ -145,8 +277,15 @@
         .preview-grid {
             grid-template-columns: 1fr;
         }
-        .hero h1 {
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
             font-size: 36px;
+        }
+        .telegram-btn {
+            font-size: 14px;
+            padding: 12px 24px;
         }
     }
 </style>
