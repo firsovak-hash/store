@@ -208,7 +208,7 @@ def my_orders():
     user_orders = [o for o in orders if o['user_id'] == current_user.id]
     return render_template('my_orders.html', orders=user_orders)
 
-@app.route('/register', methods=['GET', 'POST'])
+#@app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
@@ -239,7 +239,7 @@ def register():
     
     return render_template('register.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+#@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -256,8 +256,8 @@ def login():
     
     return render_template('login.html')
 
-@app.route('/logout')
-@login_required
+#@app.route('/logout')
+#@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
@@ -277,8 +277,8 @@ def admin():
     orders = load_json(ORDERS_FILE)
     return render_template('admin.html', orders=orders)
 
-@app.route('/admin/update-status/<order_id>/<status>')
-@login_required
+#@app.route('/admin/update-status/<order_id>/<status>')
+#@login_required
 def update_status(order_id, status):
     if current_user.username != 'admin':
         return jsonify({'error': 'No access'}), 403
