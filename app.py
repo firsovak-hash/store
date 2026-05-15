@@ -1,7 +1,7 @@
 import os
 import json
 from flask import Flask, render_template, redirect, url_for, request
-
+from flask import jsonify
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '3d-figurki-secret-key-2024'
 
@@ -63,6 +63,12 @@ PRODUCTS = {
 }
 
 # ==================== МАРШРУТЫ ====================
+@app.route('/api/product/<product_id>')
+def api_product(product_id):
+    product = PRODUCTS.get(product_id)
+    if not product:
+        return jsonify({'error': 'not found'}), 404
+    return jsonify(product)
 @app.route('/')
 def index():
     return render_template('index.html', products=PRODUCTS.values())
