@@ -6,7 +6,7 @@
     <title>3D Figurki | {% block title %}Персонализированные 3D-фигурки{% endblock %}</title>
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
@@ -18,33 +18,9 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            min-height: 100vh;
+            background: #0a0a0a;
             color: #fff;
             overflow-x: hidden;
-        }
-        
-        /* Анимированные частицы */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 20s infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
-            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.8; }
         }
         
         /* Навигация */
@@ -53,10 +29,10 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(15, 12, 41, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 16px 32px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 32px;
             z-index: 1000;
             display: flex;
             justify-content: space-between;
@@ -64,41 +40,38 @@
         }
         
         .logo {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
-            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            letter-spacing: -0.5px;
+            color: #fff;
+            text-decoration: none;
         }
         
         .logo span {
-            background: linear-gradient(135deg, #ff9f43 0%, #ff6b6b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ff9f43;
         }
         
         /* Бургер-меню */
         .burger {
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             transition: all 0.3s;
         }
         
         .burger:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
         }
         
         .burger-line {
-            width: 24px;
+            width: 22px;
             height: 2px;
             background: #fff;
             border-radius: 2px;
@@ -120,17 +93,16 @@
         /* Мобильное меню */
         .mobile-menu {
             position: fixed;
-            top: 72px;
+            top: 84px;
             left: -100%;
             width: 100%;
             max-width: 400px;
-            height: calc(100vh - 72px);
-            background: rgba(15, 12, 41, 0.95);
-            backdrop-filter: blur(30px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            transition: left 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            height: calc(100vh - 84px);
+            background: #0a0a0a;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            transition: left 0.4s ease;
             z-index: 999;
-            padding: 24px;
+            padding: 32px 24px;
             overflow-y: auto;
         }
         
@@ -139,20 +111,18 @@
         }
         
         .menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 32px;
             padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .menu-logo {
             font-size: 20px;
             font-weight: 700;
-            background: linear-gradient(135deg, #ff6b6b, #feca57);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        }
+        
+        .menu-logo span {
+            color: #ff9f43;
         }
         
         .menu-section {
@@ -160,10 +130,10 @@
         }
         
         .menu-title {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.3);
             margin-bottom: 16px;
         }
         
@@ -176,14 +146,14 @@
             text-decoration: none;
             font-size: 18px;
             font-weight: 500;
-            transition: all 0.3s;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
         
         .menu-link i {
-            width: 28px;
-            font-size: 20px;
-            color: #ff6b6b;
+            width: 24px;
+            font-size: 18px;
+            color: #ff9f43;
         }
         
         .menu-link:hover {
@@ -193,14 +163,14 @@
         
         .social-links {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             margin-top: 20px;
         }
         
         .social-link {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.1);
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -208,11 +178,11 @@
             transition: all 0.3s;
             color: #fff;
             text-decoration: none;
-            font-size: 22px;
+            font-size: 20px;
         }
         
         .social-link:hover {
-            background: #ff6b6b;
+            background: #ff9f43;
             transform: translateY(-3px);
         }
         
@@ -223,7 +193,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s;
@@ -237,71 +207,32 @@
         
         /* Основной контент */
         .main-content {
-            padding-top: 88px;
+            padding-top: 100px;
             min-height: 100vh;
-            position: relative;
-            z-index: 1;
         }
         
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 24px;
-        }
-        
-        /* Кнопки */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 32px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: none;
-            font-size: 16px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #ff6b6b, #feca57);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.4);
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-        }
-        
-        .btn-outline:hover {
-            border-color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
+            padding: 0 32px;
         }
         
         /* Flash сообщения */
         .flash-messages {
             position: fixed;
-            top: 90px;
+            top: 100px;
             right: 20px;
             z-index: 1001;
         }
         
         .flash {
             padding: 12px 20px;
-            border-radius: 12px;
+            border-radius: 8px;
             margin-bottom: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-left: 4px solid #ff6b6b;
+            background: #1a1a1a;
+            border-left: 3px solid #ff9f43;
             color: #fff;
+            font-size: 14px;
         }
         
         .flash.success {
@@ -311,15 +242,19 @@
         /* Адаптивность */
         @media (max-width: 768px) {
             .navbar {
-                padding: 12px 20px;
+                padding: 16px 20px;
             }
             
             .logo {
-                font-size: 22px;
+                font-size: 20px;
             }
             
             .container {
-                padding: 0 16px;
+                padding: 0 20px;
+            }
+            
+            .main-content {
+                padding-top: 80px;
             }
         }
     </style>
@@ -327,10 +262,8 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-    
     <nav class="navbar">
-        <div class="logo">3D<span>Figurki</span></div>
+        <a href="{{ url_for('index') }}" class="logo">3D<span>Figurki</span></a>
         <div class="burger" id="burger">
             <div class="burger-line"></div>
             <div class="burger-line"></div>
@@ -340,7 +273,7 @@
     
     <div class="mobile-menu" id="mobileMenu">
         <div class="menu-header">
-            <div class="menu-logo">3D Figurki</div>
+            <div class="menu-logo">3D<span>Figurki</span></div>
         </div>
         
         <div class="menu-section">
@@ -388,9 +321,9 @@
         
         <div class="menu-section">
             <div class="menu-title">КОНТАКТЫ</div>
-            <div style="color: rgba(255,255,255,0.7); font-size: 14px;">
-                <p><i class="fas fa-envelope"></i> info@3dfigurki.ru</p>
-                <p><i class="fas fa-phone"></i> +7 (999) 123-45-67</p>
+            <div style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.8;">
+                <p><i class="fas fa-envelope" style="width: 24px;"></i> info@3dfigurki.ru</p>
+                <p><i class="fas fa-phone" style="width: 24px;"></i> +7 (999) 123-45-67</p>
             </div>
         </div>
     </div>
@@ -412,21 +345,6 @@
     </div>
     
     <script>
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                particle.style.width = Math.random() * 4 + 2 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = 15 + Math.random() * 15 + 's';
-                container.appendChild(particle);
-            }
-        }
-        
         function toggleMenu() {
             const menu = document.getElementById('mobileMenu');
             const overlay = document.getElementById('overlay');
@@ -449,7 +367,12 @@
         
         document.getElementById('burger').addEventListener('click', toggleMenu);
         
-        createParticles();
+        // Закрытие по Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
         
         // Автоскрытие flash-сообщений
         setTimeout(() => {
