@@ -7,7 +7,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Swiper для карусели -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
@@ -20,14 +19,12 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, rgba(245, 224, 232, 0.92) 0%, rgba(197, 213, 232, 0.92) 100%);
+            background: linear-gradient(135deg, #f5e0e8 0%, #c5d5e8 100%);
             color: #1a1a2e;
             line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
             min-height: 100vh;
         }
 
-        /* Навигация */
         .navbar {
             position: fixed;
             top: 0;
@@ -38,7 +35,7 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.5);
         }
@@ -52,25 +49,6 @@
 
         .logo span {
             color: #d66b7e;
-        }
-
-        .nav-order-btn {
-            background: #d66b7e;
-            color: white;
-            padding: 12px 28px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-order-btn:hover {
-            background: #c05a6d;
-            transform: translateY(-2px);
         }
 
         .burger {
@@ -106,7 +84,6 @@
             transition: left 0.3s ease;
             z-index: 999;
             padding: 24px;
-            overflow-y: auto;
             border-right: 1px solid rgba(0, 0, 0, 0.05);
         }
 
@@ -114,7 +91,7 @@
             left: 0;
         }
 
-        .mobile-menu .menu-link {
+        .menu-link {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -125,7 +102,7 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .mobile-menu .menu-link i {
+        .menu-link i {
             width: 24px;
             color: #d66b7e;
         }
@@ -167,7 +144,6 @@
             padding: 14px 32px;
             border-radius: 40px;
             font-weight: 600;
-            font-size: 15px;
             text-decoration: none;
             transition: 0.2s;
             border: none;
@@ -182,12 +158,6 @@
         @media (max-width: 768px) {
             .navbar {
                 padding: 16px 24px;
-            }
-            .nav-order-btn span {
-                display: none;
-            }
-            .nav-order-btn {
-                padding: 10px 16px;
             }
             .burger {
                 display: flex;
@@ -207,9 +177,6 @@
 
 <nav class="navbar">
     <a href="{{ url_for('index') }}" class="logo">3D<span>Figurki</span></a>
-    <a href="https://t.me/your_username" target="_blank" class="nav-order-btn">
-        <i class="fab fa-telegram"></i> <span>Заказать в Telegram</span>
-    </a>
     <div class="burger" id="burger">
         <div class="burger-line"></div>
         <div class="burger-line"></div>
@@ -220,14 +187,8 @@
 <div class="mobile-menu" id="mobileMenu">
     <a href="{{ url_for('index') }}" class="menu-link" onclick="closeMenu()"><i class="fas fa-home"></i> Главная</a>
     <a href="{{ url_for('catalog') }}" class="menu-link" onclick="closeMenu()"><i class="fas fa-store"></i> Каталог</a>
-    <a href="#" class="menu-link" onclick="closeMenu()"><i class="fas fa-heart"></i> О нас</a>
-    <a href="#" class="menu-link" onclick="closeMenu()"><i class="fas fa-star"></i> Отзывы</a>
-    <div class="social-links" style="margin-top: 24px;">
-        <a href="#" style="color: #d66b7e; margin-right: 16px;"><i class="fab fa-telegram"></i></a>
-        <a href="#" style="color: #d66b7e; margin-right: 16px;"><i class="fab fa-tiktok"></i></a>
-        <a href="#" style="color: #d66b7e; margin-right: 16px;"><i class="fab fa-instagram"></i></a>
-        <a href="#" style="color: #d66b7e;"><i class="fab fa-vk"></i></a>
-    </div>
+    <a href="#" class="menu-link" onclick="closeMenu()"><i class="fab fa-telegram"></i> Telegram</a>
+    <a href="#" class="menu-link" onclick="closeMenu()"><i class="fab fa-instagram"></i> Instagram</a>
 </div>
 
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
