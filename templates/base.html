@@ -7,8 +7,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <style>
         * {
@@ -25,7 +23,6 @@
             min-height: 100vh;
         }
 
-        /* Навигация */
         .navbar {
             position: fixed;
             top: 0;
@@ -52,7 +49,6 @@
             color: #d66b7e;
         }
 
-        /* Бургер-кнопка */
         .burger {
             display: none;
             width: 44px;
@@ -64,7 +60,6 @@
             background: rgba(255, 255, 255, 0.5);
             border-radius: 12px;
             cursor: pointer;
-            z-index: 1001;
         }
 
         .burger-line {
@@ -85,7 +80,6 @@
             transform: translateY(-8px) rotate(-45deg);
         }
 
-        /* Мобильное меню */
         .mobile-menu {
             position: fixed;
             top: 80px;
@@ -227,9 +221,7 @@
     <a href="{{ url_for('catalog') }}" class="menu-link" onclick="closeMenu()"><i class="fas fa-store"></i> Каталог</a>
     <div class="social-links">
         <a href="https://t.me/your_username" target="_blank" class="social-link"><i class="fab fa-telegram"></i></a>
-        <a href="https://www.tiktok.com/@your_username" target="_blank" class="social-link"><i class="fab fa-tiktok"></i></a>
         <a href="https://instagram.com/your_username" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
-        <a href="https://vk.com/your_username" target="_blank" class="social-link"><i class="fab fa-vk"></i></a>
     </div>
 </div>
 
