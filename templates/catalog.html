@@ -3,164 +3,79 @@
 {% block title %}Каталог{% endblock %}
 
 {% block content %}
-<div class="catalog-header">
-    <h1>Каталог фигурок</h1>
-    <p>Выберите вариант, который подходит именно вам</p>
-</div>
+<h1 style="text-align: center; margin-bottom: 40px;">Каталог фигурок</h1>
 
 <div class="catalog-grid">
     {% for product in products %}
-    <div class="catalog-card">
-        {% if product.badge %}
-            <div class="catalog-badge">{{ product.badge }}</div>
-        {% endif %}
-        <div class="catalog-image">
+    <div class="catalog-card" onclick="window.location.href='/product/{{ product.id }}'">
+        <div class="card-image">
             <i class="fas fa-cube"></i>
         </div>
-        <div class="catalog-info">
+        <div class="card-info">
             <h3>{{ product.name }}</h3>
-            <p class="catalog-desc">{{ product.description[:100] }}...</p>
-            <div class="catalog-features">
-                {% for feature in product.features[:3] %}
-                    <span class="feature"><i class="fas fa-check"></i> {{ feature }}</span>
-                {% endfor %}
-            </div>
-            <div class="catalog-footer">
-                <div class="catalog-price">{{ product.price }} ₽</div>
-                <a href="{{ url_for('order', product_id=product.id) }}" class="catalog-btn">Заказать</a>
-            </div>
+            <p>{{ product.description[:80] }}...</p>
+            <div class="price">{{ product.price }} ₽</div>
+            <button class="card-btn">Подробнее</button>
         </div>
     </div>
     {% endfor %}
 </div>
 
 <style>
-    .catalog-header {
-        text-align: center;
-        margin-bottom: 48px;
-    }
-    
-    .catalog-header h1 {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-    
-    .catalog-header p {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 18px;
-    }
-    
     .catalog-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 30px;
+        padding: 20px 0;
     }
-    
     .catalog-card {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(10px);
         border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
         overflow: hidden;
-        transition: all 0.3s;
-        position: relative;
+        transition: 0.3s;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.5);
     }
-    
     .catalog-card:hover {
         transform: translateY(-5px);
-        border-color: rgba(255, 107, 107, 0.5);
+        background: white;
     }
-    
-    .catalog-badge {
-        position: absolute;
-        top: 16px;
-        left: 16px;
-        padding: 4px 12px;
-        background: linear-gradient(135deg, #ff6b6b, #feca57);
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        z-index: 1;
-    }
-    
-    .catalog-image {
-        height: 200px;
+    .card-image {
+        height: 220px;
+        background: rgba(216, 107, 126, 0.1);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 70px;
-        background: rgba(255, 255, 255, 0.02);
     }
-    
-    .catalog-info {
+    .card-image i {
+        font-size: 64px;
+        color: #d66b7e;
+    }
+    .card-info {
         padding: 20px;
     }
-    
-    .catalog-info h3 {
-        font-size: 22px;
-        margin-bottom: 12px;
+    .card-info h3 {
+        margin-bottom: 8px;
     }
-    
-    .catalog-desc {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 14px;
-        margin-bottom: 16px;
-    }
-    
-    .catalog-features {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 20px;
-    }
-    
-    .feature {
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.5);
-        background: rgba(255, 255, 255, 0.05);
-        padding: 4px 10px;
-        border-radius: 20px;
-    }
-    
-    .feature i {
-        color: #ff9f43;
-        margin-right: 4px;
-    }
-    
-    .catalog-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .catalog-price {
-        font-size: 28px;
+    .price {
+        font-size: 24px;
         font-weight: 700;
-        color: #ff9f43;
+        color: #d66b7e;
+        margin: 12px 0;
     }
-    
-    .catalog-btn {
-        padding: 10px 24px;
-        background: linear-gradient(135deg, #ff6b6b, #feca57);
+    .card-btn {
+        background: #d66b7e;
+        color: white;
+        border: none;
+        padding: 10px 20px;
         border-radius: 30px;
-        color: #fff;
-        text-decoration: none;
+        cursor: pointer;
         font-weight: 600;
-        transition: all 0.3s;
+        transition: 0.2s;
     }
-    
-    .catalog-btn:hover {
-        transform: scale(1.05);
-    }
-    
-    @media (max-width: 768px) {
-        .catalog-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .catalog-header h1 {
-            font-size: 32px;
-        }
+    .card-btn:hover {
+        background: #c05a6d;
     }
 </style>
 {% endblock %}
