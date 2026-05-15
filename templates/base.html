@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>3D Figurki — {% block title %}персонализированные 3D-фигурки{% endblock %}</title>
     
-    <!-- Шрифт Montserrat (вместо Inter) -->
+    <!-- Шрифт Montserrat -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -28,6 +28,7 @@
             min-height: 100vh;
         }
 
+        /* Навигация — без логотипа и без полоски */
         .navbar {
             position: fixed;
             top: 0;
@@ -35,25 +36,14 @@
             right: 0;
             padding: 20px 40px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             z-index: 1000;
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 800;
-            color: #1a1a2e;
-            text-decoration: none;
-        }
-
-        .logo span {
-            color: #d66b7e;
-        }
-
+        /* Бургер-кнопка */
         .burger {
             display: none;
             width: 44px;
@@ -85,6 +75,7 @@
             transform: translateY(-8px) rotate(-45deg);
         }
 
+        /* Мобильное меню */
         .mobile-menu {
             position: fixed;
             top: 80px;
@@ -213,7 +204,6 @@
 <body>
 
 <nav class="navbar">
-    <a href="{{ url_for('index') }}" class="logo">3D<span>Figurki</span></a>
     <div class="burger" id="burger">
         <div class="burger-line"></div>
         <div class="burger-line"></div>
