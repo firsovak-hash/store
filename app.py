@@ -53,7 +53,6 @@ PRODUCTS = {
     }
 }
 
-# Преобразуем в список для безопасного использования в шаблонах
 PRODUCTS_LIST = list(PRODUCTS.values())
 
 @app.route('/')
@@ -69,7 +68,7 @@ def product_page(product_id):
     product = PRODUCTS.get(product_id)
     if not product:
         return render_template('index.html', products=PRODUCTS_LIST)
-    return render_template('product.html', product=product, product_id=product_id)
+    return render_template('product.html', product=product)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
