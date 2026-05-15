@@ -10,13 +10,15 @@
             <h1 class="hero-title">дари <span class="hero-accent">тому,<br>кого любишь</span></h1>
         </div>
         <div class="hero-right">
-            <p class="hero-text">
-                открывай канал, уточняй детали, размеры и расцветки — 
-                и оформляй заказ напрямую без лишних шагов
-            </p>
-            <a href="https://t.me/your_username" target="_blank" class="telegram-btn">
-                <i class="fab fa-telegram"></i> заказать в telegram
-            </a>
+            <div class="hero-text-wrapper">
+                <p class="hero-text">
+                    открывай канал, уточняй детали, размеры и расцветки — 
+                    и оформляй заказ напрямую без лишних шагов
+                </p>
+                <a href="https://t.me/your_username" target="_blank" class="telegram-btn">
+                    <i class="fab fa-telegram"></i> заказать в telegram
+                </a>
+            </div>
         </div>
     </div>
 </section>
@@ -38,7 +40,7 @@
     <p>Мы создаём персонализированные 3D-фигурки с 2023 года. Каждая работа — это ручной труд и внимание к деталям. Наши фигурки дарят эмоции и становятся особенными подарками для близких.</p>
 </section>
 
-<!-- Карточки товаров (в 2 раза длиннее) -->
+<!-- Карточки товаров -->
 <h2 class="catalog-title">Популярные фигурки</h2>
 <div class="products-grid">
     {% for product in products[:6] %}
@@ -59,7 +61,7 @@
     <a href="{{ url_for('catalog') }}" class="btn-primary">Весь каталог →</a>
 </div>
 
-<!-- Модальное окно (уже и выше, с прокруткой) -->
+<!-- Модальное окно -->
 <div id="productModal" class="modal">
     <div class="modal-content">
         <span class="modal-close" onclick="closeModal()">&times;</span>
@@ -84,16 +86,53 @@
 </div>
 
 <style>
-    /* Hero секция */
-    .hero { padding: 40px 0 60px; border-bottom: 1px solid rgba(255,255,255,0.15); margin-bottom: 40px; }
-    .hero-container { display: flex; justify-content: space-between; align-items: center; gap: 40px; flex-wrap: wrap; }
+    /* Hero секция - выше */
+    .hero { 
+        padding: 80px 0 100px; 
+        border-bottom: 1px solid rgba(255,255,255,0.15); 
+        margin-bottom: 60px; 
+    }
+    .hero-container { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        gap: 60px; 
+        flex-wrap: wrap; 
+    }
     .hero-left { flex: 1; }
-    .hero-title { font-size: 64px; font-weight: 800; color: white; text-transform: uppercase; line-height: 1.2; letter-spacing: -0.02em; }
+    .hero-title { 
+        font-size: 72px; 
+        font-weight: 800; 
+        color: white; 
+        text-transform: uppercase; 
+        line-height: 1.2; 
+        letter-spacing: -0.02em; 
+    }
     .hero-accent { color: #d66b7e; border-bottom: 4px solid #d66b7e; }
-    .hero-right { flex: 1; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); padding: 30px; border-radius: 16px; max-width: 400px; }
-    .hero-text { font-size: 16px; line-height: 1.5; color: rgba(255,255,255,0.9); margin-bottom: 25px; }
     
-    /* Кнопка Telegram — квадратная, с диагональным блеском */
+    .hero-right { 
+        flex: 1; 
+        background: rgba(0,0,0,0.3); 
+        backdrop-filter: blur(8px); 
+        padding: 40px 35px; 
+        border-radius: 20px; 
+        max-width: 450px; 
+    }
+    .hero-text-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        width: 100%;
+    }
+    .hero-text { 
+        font-size: 16px; 
+        line-height: 1.5; 
+        color: rgba(255,255,255,0.9); 
+        margin: 0;
+        text-align: left;
+    }
+    
+    /* Кнопка Telegram — квадратная, с блеском (медленный проход, но частая смена) */
     .telegram-btn { 
         display: inline-flex; 
         align-items: center; 
@@ -117,17 +156,17 @@
         content: '';
         position: absolute;
         top: -50%;
-        left: -60%;
+        left: -100%;
         width: 200%;
         height: 200%;
         background: linear-gradient(115deg, rgba(255,255,255,0) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0) 50%);
-        transform: rotate(25deg);
-        animation: shine 3s infinite;
+        transform: rotate(45deg);
+        animation: shine 4s ease-in-out infinite;
     }
     @keyframes shine {
-        0% { transform: translateX(-100%) rotate(25deg); }
-        20% { transform: translateX(100%) rotate(25deg); }
-        100% { transform: translateX(100%) rotate(25deg); }
+        0% { transform: translateX(-100%) rotate(45deg); }
+        30% { transform: translateX(100%) rotate(45deg); }
+        100% { transform: translateX(100%) rotate(45deg); }
     }
     .telegram-btn i { font-size: 20px; }
     .telegram-btn:hover { background: #1f8c59; transform: scale(1.02); }
@@ -160,7 +199,7 @@
     .card-order-btn:hover { background: #1f8c59; transform: scale(1.02); }
     .catalog-link { text-align: center; margin: 30px 0 60px; }
     
-    /* Модальное окно — уже и выше, с прокруткой */
+    /* Модальное окно */
     .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
     .modal.active { display: flex; }
     .modal-content { background: #1e1e22; border-radius: 20px; width: 90%; max-width: 700px; height: 85vh; display: flex; flex-direction: column; overflow: hidden; animation: modalFadeIn 0.3s; position: relative; }
@@ -179,7 +218,7 @@
     .gallery-prev { left: 12px; }
     .gallery-next { right: 12px; }
     
-    /* Нижняя часть с прокруткой */
+    /* Нижняя часть */
     .modal-info-bottom { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #1e1e22; overflow-y: auto; }
     .modal-info-bottom h2 { font-size: 24px; color: white; margin: 0; }
     .modal-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; margin: 0; }
@@ -188,9 +227,11 @@
     
     /* Адаптивность */
     @media (max-width: 768px) {
-        .hero-title { font-size: 36px; }
-        .hero-container { flex-direction: column; text-align: center; }
-        .hero-right { text-align: center; max-width: 100%; }
+        .hero { padding: 50px 0 70px; }
+        .hero-title { font-size: 42px; }
+        .hero-container { flex-direction: column; text-align: center; gap: 30px; }
+        .hero-right { text-align: center; max-width: 100%; padding: 30px 25px; }
+        .hero-text { text-align: center; }
         .process-steps { flex-direction: column; gap: 0; }
         .products-grid { grid-template-columns: 1fr; }
         .product-card-image { height: 300px; }
