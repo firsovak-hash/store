@@ -21,7 +21,20 @@ ORDERS_FILE = 'data/orders.json'
 PRODUCTS_FILE = 'data/products.json'
 
 os.makedirs('data', exist_ok=True)
-
+@app.route('/product/<product_id>')
+def product_page(product_id):
+    products = {
+        '1': {'name': 'Чиби-фигурка пары', 'price': 3500, 'description': 'Милые чиби-фигурки вас двоих. Высота 8-10 см. Ручная покраска. Идеальный подарок для годовщины или просто так.', 'features': ['Ручная покраска', 'Красивая упаковка', 'Срок 5-7 дней']},
+        '2': {'name': 'Фигурка с питомцем', 'price': 4200, 'description': 'Вы и ваш любимый питомец в одном кадре. Собака, кот или хомячок — любой!', 'features': ['С любым питомцем', 'Ручная покраска', 'Срок 5-7 дней']},
+        '3': {'name': 'Спортивная фигурка', 'price': 4500, 'description': 'Для спортсменов: футбол, бокс, пауэрлифтинг. Любой вид спорта.', 'features': ['Любой вид спорта', 'Детализация экипировки', 'Срок 5-7 дней']},
+        '4': {'name': 'Премиум фигурка', 'price': 6500, 'description': 'Максимальная детализация, полная покраска, особенная упаковка.', 'features': ['Макс. детализация', 'Подарочная коробка', 'Срок 7-10 дней']},
+        '5': {'name': 'Брелок-фигурка', 'price': 1500, 'description': 'Маленькая копия, которую всегда можно носить с собой.', 'features': ['Размер 4-5 см', 'Ручная покраска', 'Срок 3-5 дней']},
+        '6': {'name': 'Фигурка семьи', 'price': 5500, 'description': 'Вся семья в одной композиции. До 5 человек.', 'features': ['До 5 человек', 'Общая подставка', 'Срок 7-10 дней']},
+    }
+    product = products.get(product_id)
+    if not product:
+        return redirect(url_for('index'))
+    return render_template('product.html', product=product, product_id=product_id)
 def load_json(file):
     try:
         with open(file, 'r', encoding='utf-8') as f:
