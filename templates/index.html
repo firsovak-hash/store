@@ -3,7 +3,7 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<!-- ВЕРХНЯЯ СЕКЦИЯ: крупный призыв -->
+<!-- Верхняя секция: А покупай самого себя?! -->
 <section class="top-section">
     <div class="top-container">
         <div class="top-left">
@@ -12,27 +12,6 @@
         </div>
         <div class="top-right">
             <div class="top-figure">
-                <i class="fas fa-cube"></i>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- НИЖНЯЯ СЕКЦИЯ: дари тому, кому любишь + кнопка -->
-<section class="bottom-section">
-    <div class="bottom-container">
-        <div class="bottom-left">
-            <h1 class="bottom-title">ДАРИ ТОМУ,<br>КОМУ ЛЮБИШЬ</h1>
-            <p class="bottom-text">
-                открывай канал, уточняй детали, размеры и расцветки — 
-                и оформляй заказ напрямую без лишних шагов
-            </p>
-            <a href="https://t.me/your_username" target="_blank" class="telegram-btn">
-                <i class="fab fa-telegram"></i> заказать в telegram
-            </a>
-        </div>
-        <div class="bottom-right">
-            <div class="bottom-figure">
                 <i class="fas fa-cube"></i>
             </div>
         </div>
@@ -77,6 +56,24 @@
     <a href="{{ url_for('catalog') }}" class="btn-primary">Весь каталог →</a>
 </div>
 
+<!-- НИЖНИЙ БЛОК: дари тому, кому любишь (без фото, надпись слева + кнопка справа) -->
+<section class="donate-section">
+    <div class="donate-container">
+        <div class="donate-left">
+            <h2 class="donate-title">ДАРИ ТОМУ,<br>КОМУ ЛЮБИШЬ</h2>
+        </div>
+        <div class="donate-right">
+            <p class="donate-text">
+                открывай канал, уточняй детали, размеры и расцветки — 
+                и оформляй заказ напрямую без лишних шагов
+            </p>
+            <a href="https://t.me/your_username" target="_blank" class="telegram-btn">
+                <i class="fab fa-telegram"></i> заказать в telegram
+            </a>
+        </div>
+    </div>
+</section>
+
 <!-- Модальное окно -->
 <div id="productModal" class="modal">
     <div class="modal-content">
@@ -102,7 +99,7 @@
 </div>
 
 <style>
-    /* ВЕРХНЯЯ СЕКЦИЯ */
+    /* Верхняя секция */
     .top-section {
         padding: 80px 0 60px;
         border-bottom: 1px solid rgba(255,255,255,0.15);
@@ -142,44 +139,64 @@
         opacity: 0.6;
     }
     
-    /* НИЖНЯЯ СЕКЦИЯ (которая была сверху) */
-    .bottom-section {
+    /* Процесс работы */
+    .process-text { margin: 60px 0; text-align: center; }
+    .process-text h2 { font-size: 32px; margin-bottom: 30px; color: white; }
+    .process-steps { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .step { flex: 1; text-align: center; padding: 20px; background: transparent; }
+    .step-num { display: block; font-size: 36px; font-weight: 800; color: #d66b7e; margin-bottom: 10px; }
+    .step-name { display: block; font-size: 20px; font-weight: 600; color: white; margin-bottom: 8px; }
+    .step-desc { display: block; font-size: 14px; color: rgba(255,255,255,0.6); }
+    
+    /* О нас */
+    .about-text { margin: 60px auto; text-align: center; max-width: 800px; }
+    .about-text h2 { font-size: 32px; margin-bottom: 20px; color: white; }
+    .about-text p { font-size: 18px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+    
+    /* Карточки товаров */
+    .catalog-title { text-align: center; font-size: 32px; margin: 40px 0 30px; color: white; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    .product-card { background: #2a2a2e; border-radius: 12px; overflow: hidden; transition: transform 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .product-card-image { height: 400px; background: #1e1e22; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .product-card-image i { font-size: 80px; color: #d66b7e; }
+    .product-card-info { padding: 20px; text-align: center; }
+    .product-card-info h3 { font-size: 22px; font-weight: 600; margin-bottom: 10px; color: white; }
+    .product-card-price { font-size: 24px; font-weight: 700; color: #d66b7e; margin-bottom: 15px; }
+    .card-order-btn { background: #2aab6d; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .card-order-btn:hover { background: #1f8c59; transform: scale(1.02); }
+    .catalog-link { text-align: center; margin: 30px 0 60px; }
+    
+    /* НИЖНИЙ БЛОК — дари тому, кому любишь (без фото) */
+    .donate-section {
         padding: 60px 0 80px;
-        border-bottom: 1px solid rgba(255,255,255,0.15);
-        margin-bottom: 60px;
+        border-top: 1px solid rgba(255,255,255,0.15);
+        margin-top: 40px;
     }
-    .bottom-container {
+    .donate-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 60px;
         flex-wrap: wrap;
     }
-    .bottom-left { flex: 1; max-width: 420px; }
-    .bottom-title {
+    .donate-left { flex: 1; }
+    .donate-title {
         font-size: 56px;
         font-weight: 800;
         color: white;
         text-transform: uppercase;
         line-height: 1.2;
-        margin-bottom: 20px;
     }
-    .bottom-text {
+    .donate-right {
+        flex: 1;
+        max-width: 420px;
+    }
+    .donate-text {
         font-size: 14px;
         line-height: 1.5;
         color: rgba(255,255,255,0.9);
-        margin-bottom: 25px;
-    }
-    .bottom-right { flex: 1; }
-    .bottom-figure {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .bottom-figure i {
-        font-size: 160px;
-        color: #d66b7e;
-        opacity: 0.6;
+        margin-bottom: 20px;
     }
     
     /* Кнопка Telegram */
@@ -223,34 +240,6 @@
     .telegram-btn i { font-size: 18px; color: #000000; }
     .telegram-btn:hover { background: #689f38; transform: scale(1.02); }
     
-    /* Процесс работы */
-    .process-text { margin: 60px 0; text-align: center; }
-    .process-text h2 { font-size: 32px; margin-bottom: 30px; color: white; }
-    .process-steps { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-    .step { flex: 1; text-align: center; padding: 20px; background: transparent; }
-    .step-num { display: block; font-size: 36px; font-weight: 800; color: #d66b7e; margin-bottom: 10px; }
-    .step-name { display: block; font-size: 20px; font-weight: 600; color: white; margin-bottom: 8px; }
-    .step-desc { display: block; font-size: 14px; color: rgba(255,255,255,0.6); }
-    
-    /* О нас */
-    .about-text { margin: 60px auto; text-align: center; max-width: 800px; }
-    .about-text h2 { font-size: 32px; margin-bottom: 20px; color: white; }
-    .about-text p { font-size: 18px; color: rgba(255,255,255,0.7); line-height: 1.6; }
-    
-    /* Карточки товаров */
-    .catalog-title { text-align: center; font-size: 32px; margin: 40px 0 30px; color: white; }
-    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
-    .product-card { background: #2a2a2e; border-radius: 12px; overflow: hidden; transition: transform 0.2s; }
-    .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-    .product-card-image { height: 400px; background: #1e1e22; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .product-card-image i { font-size: 80px; color: #d66b7e; }
-    .product-card-info { padding: 20px; text-align: center; }
-    .product-card-info h3 { font-size: 22px; font-weight: 600; margin-bottom: 10px; color: white; }
-    .product-card-price { font-size: 24px; font-weight: 700; color: #d66b7e; margin-bottom: 15px; }
-    .card-order-btn { background: #2aab6d; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .card-order-btn:hover { background: #1f8c59; transform: scale(1.02); }
-    .catalog-link { text-align: center; margin: 30px 0 60px; }
-    
     /* Модальное окно */
     .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
     .modal.active { display: flex; }
@@ -284,16 +273,15 @@
         .top-subtitle { font-size: 14px; }
         .top-figure i { font-size: 120px; }
         
-        .bottom-section { padding: 40px 0 60px; }
-        .bottom-title { font-size: 36px; }
-        .bottom-figure i { font-size: 100px; }
+        .donate-section { padding: 40px 0 60px; }
+        .donate-title { font-size: 36px; }
         
-        .top-container, .bottom-container {
+        .top-container, .donate-container {
             flex-direction: column;
             text-align: center;
             gap: 30px;
         }
-        .bottom-left { max-width: 100%; text-align: center; }
+        .donate-right { max-width: 100%; text-align: center; }
         .process-steps { flex-direction: column; gap: 0; }
         .products-grid { grid-template-columns: 1fr; }
         .product-card-image { height: 300px; }
