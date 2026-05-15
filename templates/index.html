@@ -2,231 +2,147 @@
 
 {% block title %}Главная{% endblock %}
 
-{% block extra_css %}
+{% block content %}
+<section class="hero">
+    <h1>3D-фигурки<br>по вашим фото</h1>
+    <p>Персонализированные фигурки из фотополимера. Идеальное портретное сходство.<br>Ручная работа. Доставка по Москве.</p>
+    <a href="https://t.me/your_username" target="_blank" class="btn-primary">Заказать в Telegram →</a>
+</section>
+
+<section class="gallery-steps">
+    <div class="step-item">
+        <i class="fas fa-camera"></i>
+        <h3>Фото</h3>
+        <p>Вы загружаете 2-3 фото</p>
+    </div>
+    <div class="step-item">
+        <i class="fas fa-cube"></i>
+        <h3>3D-модель</h3>
+        <p>Мы создаём модель с портретным сходством</p>
+    </div>
+    <div class="step-item">
+        <i class="fas fa-palette"></i>
+        <h3>Покраска</h3>
+        <p>Ручная работа акриловыми красками</p>
+    </div>
+    <div class="step-item">
+        <i class="fas fa-box"></i>
+        <h3>Упаковка</h3>
+        <p>Красиво упаковываем и отправляем</p>
+    </div>
+</section>
+
+<section class="about">
+    <div class="about-text">
+        <h2>О нас</h2>
+        <p>Мы создаём персонализированные 3D-фигурки с 2023 года. Каждая работа — это ручной труд и внимание к деталям. Наши фигурки дарят эмоции и становятся особенными подарками для близких.</p>
+    </div>
+    <div class="about-image">
+        <i class="fas fa-cube"></i>
+    </div>
+</section>
+
+<div class="catalog-preview">
+    <h2>Популярные фигурки</h2>
+    <div class="preview-grid">
+        {% for product in products[:3] %}
+        <div class="preview-card" onclick="window.location.href='/product/{{ product.id }}'">
+            <i class="fas fa-cube"></i>
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.price }} ₽</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('catalog') }}" class="btn-primary">Весь каталог →</a>
+    </div>
+</div>
+
 <style>
     .hero {
-        padding: 40px 0 60px;
         text-align: center;
+        padding: 60px 0;
     }
     .hero h1 {
         font-size: 52px;
         font-weight: 800;
-        color: #1a1a2e;
         margin-bottom: 20px;
     }
     .hero p {
         font-size: 18px;
         color: #2d2d44;
-        max-width: 600px;
-        margin: 0 auto 32px;
+        margin-bottom: 32px;
     }
-    
-    /* Секция преимуществ */
-    .features {
+    .gallery-steps {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 24px;
         margin: 60px 0;
         text-align: center;
     }
-    .feature {
+    .step-item {
         background: rgba(255, 255, 255, 0.5);
         backdrop-filter: blur(10px);
         border-radius: 24px;
         padding: 24px;
     }
-    .feature i {
-        font-size: 32px;
+    .step-item i {
+        font-size: 40px;
         color: #d66b7e;
-        margin-bottom: 12px;
-    }
-    .feature h3 {
-        font-size: 18px;
-        margin-bottom: 8px;
-    }
-    .feature p {
-        font-size: 14px;
-        color: #4a4a5a;
-    }
-    
-    /* Каталог */
-    .catalog-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 30px;
-        margin: 40px 0;
-    }
-    .product-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border-radius: 24px;
-        overflow: hidden;
-        transition: 0.3s;
-        cursor: pointer;
-        border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-    .product-card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.85);
-    }
-    .product-image {
-        height: 240px;
-        background: rgba(216, 107, 126, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-    }
-    .product-image i {
-        font-size: 64px;
-        color: #d66b7e;
-    }
-    .product-info {
-        padding: 20px;
-    }
-    .product-info h3 {
-        font-size: 20px;
-        margin-bottom: 8px;
-    }
-    .product-price {
-        font-size: 24px;
-        font-weight: 700;
-        color: #d66b7e;
-        margin: 12px 0;
-    }
-    .product-desc {
-        font-size: 14px;
-        color: #4a4a5a;
         margin-bottom: 16px;
     }
-    
-    /* Модальное окно */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 2000;
-        justify-content: center;
-        align-items: center;
-        padding: 40px;
-    }
-    .modal.active {
-        display: flex;
-    }
-    .modal-content {
-        max-width: 1000px;
-        width: 90%;
-        max-height: 85vh;
-        background: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(20px);
-        border-radius: 32px;
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-    }
-    .modal-close {
-        position: absolute;
-        top: 16px;
-        left: 16px;
-        width: 36px;
-        height: 36px;
-        background: rgba(100, 100, 110, 0.7);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 10;
-        color: white;
-        font-size: 20px;
-        transition: 0.2s;
-    }
-    .modal-close:hover {
-        background: rgba(100, 100, 110, 0.9);
-    }
-    .modal-body {
+    .about {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 30px;
-        padding: 30px;
-        overflow-y: auto;
+        gap: 40px;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(10px);
+        border-radius: 32px;
+        padding: 40px;
+        margin: 40px 0;
     }
-    .modal-gallery {
-        background: #f8f0f2;
-        border-radius: 20px;
-        padding: 20px;
-    }
-    .modal-gallery .swiper {
-        width: 100%;
-        height: 300px;
-    }
-    .modal-gallery .swiper-slide {
+    .about-image {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #f8f0f2;
-        border-radius: 16px;
-    }
-    .modal-gallery .swiper-slide i {
         font-size: 80px;
         color: #d66b7e;
     }
-    .modal-info h2 {
-        font-size: 28px;
-        margin-bottom: 12px;
+    .catalog-preview h2 {
+        text-align: center;
+        margin-bottom: 30px;
     }
-    .modal-price {
-        font-size: 28px;
-        font-weight: 700;
-        color: #d66b7e;
-        margin-bottom: 20px;
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
     }
-    .modal-tabs {
-        display: flex;
-        gap: 20px;
-        border-bottom: 1px solid #ddd;
-        margin-bottom: 20px;
-    }
-    .tab-btn {
-        background: none;
-        border: none;
-        padding: 10px 0;
-        font-size: 14px;
-        font-weight: 500;
-        color: #888;
+    .preview-card {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 30px;
+        text-align: center;
         cursor: pointer;
         transition: 0.2s;
     }
-    .tab-btn.active {
+    .preview-card:hover {
+        transform: translateY(-5px);
+        background: white;
+    }
+    .preview-card i {
+        font-size: 48px;
         color: #d66b7e;
-        border-bottom: 2px solid #d66b7e;
+        margin-bottom: 16px;
     }
-    .tab-content {
-        display: none;
-        padding: 10px 0;
-        color: #4a4a5a;
-        line-height: 1.6;
-        font-size: 14px;
-    }
-    .tab-content.active {
-        display: block;
-    }
-    .modal-order-btn {
-        margin-top: 24px;
-        width: 100%;
-        justify-content: center;
-    }
-    
     @media (max-width: 768px) {
-        .features {
+        .gallery-steps {
             grid-template-columns: repeat(2, 1fr);
         }
-        .modal-body {
+        .about {
+            grid-template-columns: 1fr;
+        }
+        .preview-grid {
             grid-template-columns: 1fr;
         }
         .hero h1 {
@@ -234,115 +150,4 @@
         }
     }
 </style>
-{% endblock %}
-
-{% block content %}
-<section class="hero">
-    <h1>3D-фигурки по вашим фото</h1>
-    <p>Персонализированные фигурки из фотополимера. Идеальное портретное сходство. Ручная работа.</p>
-    <a href="https://t.me/your_username" target="_blank" class="btn-primary">Заказать в Telegram →</a>
-</section>
-
-<div class="features">
-    <div class="feature"><i class="fas fa-cube"></i><h3>Фотополимер</h3><p>Высокая детализация</p></div>
-    <div class="feature"><i class="fas fa-palette"></i><h3>Ручная покраска</h3><p>Каждая фигурка уникальна</p></div>
-    <div class="feature"><i class="fas fa-gift"></i><h3>Подарочная упаковка</h3><p>Красиво и надёжно</p></div>
-    <div class="feature"><i class="fas fa-truck"></i><h3>Доставка по Москве</h3><p>Быстро и аккуратно</p></div>
-</div>
-
-<h2 style="text-align: center; margin: 40px 0 20px;">Наши фигурки</h2>
-<div class="catalog-grid">
-    {% for product in products %}
-    <div class="product-card" onclick="openModal('{{ product.id }}')">
-        <div class="product-image"><i class="fas fa-cube"></i></div>
-        <div class="product-info">
-            <h3>{{ product.name }}</h3>
-            <div class="product-price">{{ product.price }} ₽</div>
-            <div class="product-desc">{{ product.description[:80] }}...</div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
-
-<!-- Модальное окно -->
-<div id="productModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-close" onclick="closeModal()">✕</div>
-        <div class="modal-body">
-            <div class="modal-gallery">
-                <div class="swiper" id="modalSwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide"><i class="fas fa-cube"></i></div>
-                        <div class="swiper-slide"><i class="fas fa-cube"></i></div>
-                        <div class="swiper-slide"><i class="fas fa-cube"></i></div>
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-            </div>
-            <div class="modal-info">
-                <h2 id="modalTitle"></h2>
-                <div id="modalPrice" class="modal-price"></div>
-                <div class="modal-tabs">
-                    <button class="tab-btn active" data-tab="desc">Описание</button>
-                    <button class="tab-btn" data-tab="reviews">Отзывы</button>
-                    <button class="tab-btn" data-tab="process">Процесс производства</button>
-                </div>
-                <div id="modalDesc" class="tab-content active"></div>
-                <div id="modalReviews" class="tab-content">⭐ 5.0 — «Фигурка просто восторг! Очень похожа, упаковка шикарная. Спасибо!»<br><br>⭐ 4.9 — «Делали фигурку с котом, получилось очень мило. Рекомендую.»</div>
-                <div id="modalProcess" class="tab-content">📸 1. Вы загружаете фото<br>🎨 2. Мы создаём 3D-модель и согласовываем с вами<br>🖨️ 3. Печать на фотополимерном принтере (0.05 мм)<br>🎨 4. Ручная покраска акрилом<br>📦 5. Упаковка и доставка по Москве</div>
-                <a href="https://t.me/your_username" target="_blank" class="btn-primary modal-order-btn">Заказать в Telegram →</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let currentProduct = null;
-    let swiperInstance = null;
-    
-    function openModal(productId) {
-        fetch(`/api/product/${productId}`)
-            .then(res => res.json())
-            .then(product => {
-                currentProduct = product;
-                document.getElementById('modalTitle').innerText = product.name;
-                document.getElementById('modalPrice').innerText = product.price + ' ₽';
-                document.getElementById('modalDesc').innerHTML = product.full_description || product.description;
-                
-                document.getElementById('productModal').classList.add('active');
-                document.body.style.overflow = 'hidden';
-                
-                if (swiperInstance) swiperInstance.destroy();
-                setTimeout(() => {
-                    swiperInstance = new Swiper('#modalSwiper', {
-                        slidesPerView: 1,
-                        pagination: { el: '.swiper-pagination', clickable: true },
-                        loop: true
-                    });
-                }, 100);
-            });
-    }
-    
-    function closeModal() {
-        document.getElementById('productModal').classList.remove('active');
-        document.body.style.overflow = '';
-        if (swiperInstance) swiperInstance.destroy();
-    }
-    
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tab = btn.dataset.tab;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            if (tab === 'desc') document.getElementById('modalDesc').classList.add('active');
-            if (tab === 'reviews') document.getElementById('modalReviews').classList.add('active');
-            if (tab === 'process') document.getElementById('modalProcess').classList.add('active');
-        });
-    });
-    
-    document.getElementById('productModal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('productModal')) closeModal();
-    });
-</script>
 {% endblock %}
