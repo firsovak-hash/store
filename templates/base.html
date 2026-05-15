@@ -7,6 +7,9 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Swiper для карусели -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     
     <style>
         * {
@@ -17,7 +20,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5e0e8 0%, #c5d5e8 100%);
+            background: linear-gradient(135deg, rgba(245, 224, 232, 0.92) 0%, rgba(197, 213, 232, 0.92) 100%);
             color: #1a1a2e;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
@@ -35,9 +38,9 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .logo {
@@ -51,7 +54,6 @@
             color: #d66b7e;
         }
 
-        /* Кнопка заказа в навигации */
         .nav-order-btn {
             background: #d66b7e;
             color: white;
@@ -71,7 +73,6 @@
             transform: translateY(-2px);
         }
 
-        /* Бургер */
         .burger {
             display: none;
             width: 44px;
@@ -80,7 +81,7 @@
             justify-content: center;
             align-items: center;
             gap: 6px;
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.5);
             border-radius: 12px;
             cursor: pointer;
         }
@@ -100,12 +101,13 @@
             bottom: 0;
             width: 100%;
             max-width: 320px;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
             transition: left 0.3s ease;
             z-index: 999;
             padding: 24px;
             overflow-y: auto;
-            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .mobile-menu.active {
@@ -120,7 +122,7 @@
             color: #1a1a2e;
             text-decoration: none;
             font-weight: 500;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .mobile-menu .menu-link i {
@@ -134,7 +136,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.3);
             opacity: 0;
             visibility: hidden;
             transition: 0.3s;
@@ -156,7 +158,6 @@
             padding: 0 40px;
         }
 
-        /* Кнопки */
         .btn-primary {
             display: inline-flex;
             align-items: center;
@@ -176,25 +177,6 @@
         .btn-primary:hover {
             background: #c05a6d;
             transform: translateY(-2px);
-        }
-
-        .btn-outline {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: transparent;
-            border: 1px solid #1a1a2e;
-            color: #1a1a2e;
-            padding: 13px 32px;
-            border-radius: 40px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-
-        .btn-outline:hover {
-            border-color: #d66b7e;
-            background: rgba(214, 107, 126, 0.05);
         }
 
         @media (max-width: 768px) {
@@ -238,7 +220,14 @@
 <div class="mobile-menu" id="mobileMenu">
     <a href="{{ url_for('index') }}" class="menu-link" onclick="closeMenu()"><i class="fas fa-home"></i> Главная</a>
     <a href="{{ url_for('catalog') }}" class="menu-link" onclick="closeMenu()"><i class="fas fa-store"></i> Каталог</a>
-    <a href="https://t.me/your_username" target="_blank" class="menu-link" onclick="closeMenu()"><i class="fab fa-telegram"></i> Заказать</a>
+    <a href="#" class="menu-link" onclick="closeMenu()"><i class="fas fa-heart"></i> О нас</a>
+    <a href="#" class="menu-link" onclick="closeMenu()"><i class="fas fa-star"></i> Отзывы</a>
+    <div class="social-links" style="margin-top: 24px;">
+        <a href="#" style="color: #d66b7e; margin-right: 16px;"><i class="fab fa-telegram"></i></a>
+        <a href="#" style="color: #d66b7e; margin-right: 16px;"><i class="fab fa-tiktok"></i></a>
+        <a href="#" style="color: #d66b7e; margin-right: 16px;"><i class="fab fa-instagram"></i></a>
+        <a href="#" style="color: #d66b7e;"><i class="fab fa-vk"></i></a>
+    </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
