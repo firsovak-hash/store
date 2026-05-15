@@ -7,7 +7,7 @@
 <section class="hero">
     <div class="hero-container">
         <div class="hero-left">
-            <h1 class="hero-title">дари <span class="hero-accent">тому,<br>кому любишь</span></h1>
+            <h1 class="hero-title">дари <span class="hero-accent">тому,<br>кого любишь</span></h1>
         </div>
         <div class="hero-right">
             <p class="hero-text">
@@ -21,30 +21,14 @@
     </div>
 </section>
 
-<!-- Процесс работы (без карточек, просто текст) -->
+<!-- Процесс работы (без карточек) -->
 <section class="process-text">
     <h2>Как мы работаем</h2>
     <div class="process-steps">
-        <div class="step">
-            <span class="step-num">01</span>
-            <span class="step-name">Фото</span>
-            <span class="step-desc">Вы загружаете 2-3 фотографии</span>
-        </div>
-        <div class="step">
-            <span class="step-num">02</span>
-            <span class="step-name">3D-модель</span>
-            <span class="step-desc">Создаём модель с портретным сходством</span>
-        </div>
-        <div class="step">
-            <span class="step-num">03</span>
-            <span class="step-name">Покраска</span>
-            <span class="step-desc">Ручная работа акриловыми красками</span>
-        </div>
-        <div class="step">
-            <span class="step-num">04</span>
-            <span class="step-name">Упаковка</span>
-            <span class="step-desc">Красиво упаковываем и отправляем</span>
-        </div>
+        <div class="step"><span class="step-num">01</span><span class="step-name">Фото</span><span class="step-desc">Вы загружаете 2-3 фото</span></div>
+        <div class="step"><span class="step-num">02</span><span class="step-name">3D-модель</span><span class="step-desc">Создаём модель с портретным сходством</span></div>
+        <div class="step"><span class="step-num">03</span><span class="step-name">Покраска</span><span class="step-desc">Ручная работа акриловыми красками</span></div>
+        <div class="step"><span class="step-num">04</span><span class="step-name">Упаковка</span><span class="step-desc">Красиво упаковываем и отправляем</span></div>
     </div>
 </section>
 
@@ -59,9 +43,7 @@
 <div class="products-grid">
     {% for product in products[:6] %}
     <div class="product-card" onclick="openModal('{{ product.id }}')">
-        <div class="product-card-image">
-            <i class="fas fa-cube"></i>
-        </div>
+        <div class="product-card-image"><i class="fas fa-cube"></i></div>
         <div class="product-card-info">
             <h3>{{ product.name }}</h3>
             <p class="product-card-price">{{ product.price }} ₽</p>
@@ -79,349 +61,74 @@
     <div class="modal-content">
         <span class="modal-close" onclick="closeModal()">&times;</span>
         <div class="modal-body">
-            <div class="modal-image">
-                <i class="fas fa-cube"></i>
-            </div>
+            <div class="modal-image"><i class="fas fa-cube"></i></div>
             <div class="modal-info">
                 <h2 id="modalTitle"></h2>
                 <p id="modalDesc" class="modal-desc"></p>
                 <div class="modal-price" id="modalPrice"></div>
-                <a href="#" id="modalTelegramLink" target="_blank" class="btn-primary modal-btn">
-                    <i class="fab fa-telegram"></i> Купить в Telegram
-                </a>
+                <a href="#" id="modalTelegramLink" target="_blank" class="btn-primary modal-btn"><i class="fab fa-telegram"></i> Купить в Telegram</a>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    /* Hero секция */
-    .hero {
-        padding: 40px 0 60px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        margin-bottom: 40px;
-    }
-
-    .hero-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 40px;
-        flex-wrap: wrap;
-    }
-
-    .hero-left {
-        flex: 1;
-    }
-
-    .hero-title {
-        font-size: 64px;
-        font-weight: 800;
-        color: white;
-        text-transform: uppercase;
-        line-height: 1.2;
-        letter-spacing: -0.02em;
-    }
-
-    .hero-accent {
-        color: #d66b7e;
-        border-bottom: 4px solid #d66b7e;
-    }
-
-    .hero-right {
-        flex: 1;
-        background: rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(8px);
-        padding: 30px;
-        border-radius: 16px;
-    }
-
-    .hero-text {
-        font-size: 18px;
-        line-height: 1.5;
-        color: rgba(255, 255, 255, 0.9);
-        margin-bottom: 25px;
-    }
-
-    .telegram-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        background: #2aab6d;
-        color: white;
-        padding: 14px 32px;
-        border-radius: 40px;
-        font-weight: 700;
-        font-size: 16px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        animation: pulse 2s infinite;
-    }
-
-    .telegram-btn i {
-        font-size: 20px;
-    }
-
-    .telegram-btn:hover {
-        background: #1f8c59;
-        transform: scale(1.02);
-        animation: none;
-    }
-
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(42, 171, 109, 0.5); transform: scale(1); }
-        70% { box-shadow: 0 0 0 15px rgba(42, 171, 109, 0); transform: scale(1.02); }
-        100% { box-shadow: 0 0 0 0 rgba(42, 171, 109, 0); transform: scale(1); }
-    }
-
-    /* Процесс работы — без карточек */
-    .process-text {
-        margin: 60px 0;
-        text-align: center;
-    }
-
-    .process-text h2 {
-        font-size: 32px;
-        margin-bottom: 30px;
-        color: white;
-    }
-
-    .process-steps {
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-
-    .step {
-        flex: 1;
-        text-align: center;
-        padding: 20px;
-        background: transparent;
-    }
-
-    .step-num {
-        display: block;
-        font-size: 36px;
-        font-weight: 800;
-        color: #d66b7e;
-        margin-bottom: 10px;
-    }
-
-    .step-name {
-        display: block;
-        font-size: 20px;
-        font-weight: 600;
-        color: white;
-        margin-bottom: 8px;
-    }
-
-    .step-desc {
-        display: block;
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.6);
-    }
-
-    /* О нас — без карточки */
-    .about-text {
-        margin: 60px 0;
-        text-align: center;
-        max-width: 800px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .about-text h2 {
-        font-size: 32px;
-        margin-bottom: 20px;
-        color: white;
-    }
-
-    .about-text p {
-        font-size: 18px;
-        color: rgba(255, 255, 255, 0.7);
-        line-height: 1.6;
-    }
-
-    /* Карточки товаров */
-    .catalog-title {
-        text-align: center;
-        font-size: 32px;
-        margin: 40px 0 30px;
-        color: white;
-    }
-
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 24px;
-        margin-bottom: 40px;
-    }
-
-    .product-card {
-        background: #2a2a2e;
-        border-radius: 12px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .product-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    }
-
-    .product-card-image {
-        height: 220px;
-        background: #1e1e22;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .product-card-image i {
-        font-size: 64px;
-        color: #d66b7e;
-    }
-
-    .product-card-info {
-        padding: 16px;
-        text-align: center;
-    }
-
-    .product-card-info h3 {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: white;
-    }
-
-    .product-card-price {
-        font-size: 20px;
-        font-weight: 700;
-        color: #d66b7e;
-    }
-
-    .catalog-link {
-        text-align: center;
-        margin: 30px 0 60px;
-    }
-
-    /* Модальное окно */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 2000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal.active {
-        display: flex;
-    }
-
-    .modal-content {
-        background: #1e1e22;
-        border-radius: 16px;
-        max-width: 600px;
-        width: 90%;
-        position: relative;
-        animation: modalFadeIn 0.3s;
-    }
-
-    @keyframes modalFadeIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    .modal-close {
-        position: absolute;
-        top: 12px;
-        right: 20px;
-        font-size: 28px;
-        font-weight: bold;
-        color: #888;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .modal-close:hover {
-        color: white;
-    }
-
-    .modal-body {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        padding: 24px;
-    }
-
-    .modal-image {
-        background: #2a2a2e;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 200px;
-    }
-
-    .modal-image i {
-        font-size: 80px;
-        color: #d66b7e;
-    }
-
-    .modal-info h2 {
-        font-size: 24px;
-        margin-bottom: 12px;
-        color: white;
-    }
-
-    .modal-desc {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.7);
-        line-height: 1.5;
-        margin-bottom: 16px;
-    }
-
-    .modal-price {
-        font-size: 24px;
-        font-weight: 700;
-        color: #d66b7e;
-        margin-bottom: 20px;
-    }
-
-    .modal-btn {
-        width: 100%;
-        justify-content: center;
-    }
-
-    /* Адаптивность */
+    .hero { padding: 40px 0 60px; border-bottom: 1px solid rgba(255,255,255,0.15); margin-bottom: 40px; }
+    .hero-container { display: flex; justify-content: space-between; align-items: center; gap: 40px; flex-wrap: wrap; }
+    .hero-left { flex: 1; }
+    .hero-title { font-size: 64px; font-weight: 800; color: white; text-transform: uppercase; line-height: 1.2; letter-spacing: -0.02em; }
+    .hero-accent { color: #d66b7e; border-bottom: 4px solid #d66b7e; }
+    .hero-right { flex: 1; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); padding: 30px; border-radius: 16px; }
+    .hero-text { font-size: 18px; line-height: 1.5; color: rgba(255,255,255,0.9); margin-bottom: 25px; }
+    .telegram-btn { display: inline-flex; align-items: center; gap: 12px; background: #2aab6d; color: white; padding: 14px 32px; border-radius: 40px; font-weight: 700; font-size: 16px; text-decoration: none; transition: 0.3s; animation: pulse 2s infinite; }
+    .telegram-btn i { font-size: 20px; }
+    .telegram-btn:hover { background: #1f8c59; transform: scale(1.02); animation: none; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(42,171,109,0.5); } 70% { box-shadow: 0 0 0 15px rgba(42,171,109,0); } 100% { box-shadow: 0 0 0 0 rgba(42,171,109,0); } }
+    
+    .process-text { margin: 60px 0; text-align: center; }
+    .process-text h2 { font-size: 32px; margin-bottom: 30px; color: white; }
+    .process-steps { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .step { flex: 1; text-align: center; padding: 20px; background: transparent; }
+    .step-num { display: block; font-size: 36px; font-weight: 800; color: #d66b7e; margin-bottom: 10px; }
+    .step-name { display: block; font-size: 20px; font-weight: 600; color: white; margin-bottom: 8px; }
+    .step-desc { display: block; font-size: 14px; color: rgba(255,255,255,0.6); }
+    
+    .about-text { margin: 60px auto; text-align: center; max-width: 800px; }
+    .about-text h2 { font-size: 32px; margin-bottom: 20px; color: white; }
+    .about-text p { font-size: 18px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+    
+    .catalog-title { text-align: center; font-size: 32px; margin: 40px 0 30px; color: white; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    .product-card { background: #2a2a2e; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .product-card-image { height: 220px; background: #1e1e22; display: flex; align-items: center; justify-content: center; }
+    .product-card-image i { font-size: 64px; color: #d66b7e; }
+    .product-card-info { padding: 16px; text-align: center; }
+    .product-card-info h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: white; }
+    .product-card-price { font-size: 20px; font-weight: 700; color: #d66b7e; }
+    .catalog-link { text-align: center; margin: 30px 0 60px; }
+    
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #1e1e22; border-radius: 16px; max-width: 600px; width: 90%; position: relative; animation: modalFadeIn 0.3s; }
+    @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    .modal-close { position: absolute; top: 12px; right: 20px; font-size: 28px; font-weight: bold; color: #888; cursor: pointer; }
+    .modal-close:hover { color: white; }
+    .modal-body { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px; }
+    .modal-image { background: #2a2a2e; border-radius: 12px; display: flex; align-items: center; justify-content: center; min-height: 200px; }
+    .modal-image i { font-size: 80px; color: #d66b7e; }
+    .modal-info h2 { font-size: 24px; margin-bottom: 12px; color: white; }
+    .modal-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; margin-bottom: 16px; }
+    .modal-price { font-size: 24px; font-weight: 700; color: #d66b7e; margin-bottom: 20px; }
+    .modal-btn { width: 100%; justify-content: center; }
+    
     @media (max-width: 768px) {
-        .hero-title {
-            font-size: 36px;
-        }
-        .hero-container {
-            flex-direction: column;
-            text-align: center;
-        }
-        .hero-right {
-            text-align: center;
-        }
-        .process-steps {
-            flex-direction: column;
-            gap: 0;
-        }
-        .modal-body {
-            grid-template-columns: 1fr;
-        }
-        .products-grid {
-            grid-template-columns: 1fr;
-        }
+        .hero-title { font-size: 36px; }
+        .hero-container { flex-direction: column; text-align: center; }
+        .hero-right { text-align: center; }
+        .process-steps { flex-direction: column; gap: 0; }
+        .modal-body { grid-template-columns: 1fr; }
+        .products-grid { grid-template-columns: 1fr; }
     }
 </style>
 
@@ -439,14 +146,10 @@
     function openModal(productId) {
         const product = productsData[productId];
         if (!product) return;
-
         document.getElementById('modalTitle').innerText = product.name;
         document.getElementById('modalDesc').innerText = product.description;
         document.getElementById('modalPrice').innerText = product.price + ' ₽';
-        
-        const tgLink = document.getElementById('modalTelegramLink');
-        tgLink.href = "https://t.me/your_username?text=Здравствуйте! Хочу заказать " + product.name;
-        
+        document.getElementById('modalTelegramLink').href = "https://t.me/your_username?text=Здравствуйте! Хочу заказать " + product.name;
         document.getElementById('productModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
