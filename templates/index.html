@@ -7,12 +7,15 @@
 <section class="top-section">
     <div class="top-container">
         <div class="top-left">
-            <h1 class="top-title">А ПОКУПАЙ САМОГО СЕБЯ?!</h1>
+            <div class="title-row">
+                <h1 class="top-title">А ПОКУПАЙ САМОГО СЕБЯ?!</h1>
+                <img src="/static/images/sticker.jpeg" alt="стикер" class="inline-sticker">
+            </div>
             <p class="top-subtitle">красивые фигурки на рабочее место</p>
         </div>
         <div class="top-right">
             <div class="top-figure">
-                <img src="/static/images/sticker.jpeg" alt="3D фигурка" class="hero-image">
+                <i class="fas fa-cube"></i>
             </div>
         </div>
     </div>
@@ -35,30 +38,55 @@
     <p>Мы создаём персонализированные 3D-фигурки с 2023 года. Каждая работа — это ручной труд и внимание к деталям. Наши фигурки дарят эмоции и становятся особенными подарками для близких.</p>
 </section>
 
-<!-- Карточки товаров -->
+<!-- Карточки товаров — только 3 в ряд -->
 <h2 class="catalog-title">Популярные фигурки</h2>
 <div class="products-grid">
-    {% for product in products[:6] %}
+    <!-- Чиби-фигурка пары (id=1) -->
     <div class="product-card">
-        <div class="product-card-image" onclick="openModal('{{ product.id }}')">
+        <div class="product-card-image" onclick="openModal('1')">
             <i class="fas fa-cube"></i>
         </div>
         <div class="product-card-info">
-            <h3>{{ product.name }}</h3>
-            <p class="product-card-price">{{ product.price }} ₽</p>
-            <button class="card-order-btn" onclick="orderInTelegram('{{ product.name }}')">
+            <h3>Чиби-фигурка пары</h3>
+            <p class="product-card-price">3500 ₽</p>
+            <button class="card-order-btn" onclick="orderInTelegram('Чиби-фигурка пары')">
                 <i class="fab fa-telegram"></i> Заказать
             </button>
         </div>
     </div>
-    {% endfor %}
+    <!-- Премиум (id=4) -->
+    <div class="product-card">
+        <div class="product-card-image" onclick="openModal('4')">
+            <i class="fas fa-cube"></i>
+        </div>
+        <div class="product-card-info">
+            <h3>Премиум фигурка</h3>
+            <p class="product-card-price">6500 ₽</p>
+            <button class="card-order-btn" onclick="orderInTelegram('Премиум фигурка')">
+                <i class="fab fa-telegram"></i> Заказать
+            </button>
+        </div>
+    </div>
+    <!-- Брелок (id=5) -->
+    <div class="product-card">
+        <div class="product-card-image" onclick="openModal('5')">
+            <i class="fas fa-cube"></i>
+        </div>
+        <div class="product-card-info">
+            <h3>Брелок-фигурка</h3>
+            <p class="product-card-price">1500 ₽</p>
+            <button class="card-order-btn" onclick="orderInTelegram('Брелок-фигурка')">
+                <i class="fab fa-telegram"></i> Заказать
+            </button>
+        </div>
+    </div>
 </div>
 
 <div class="catalog-link">
     <a href="{{ url_for('catalog') }}" class="btn-primary">Весь каталог →</a>
 </div>
 
-<!-- НИЖНИЙ БЛОК: дари тому, кому любишь -->
+<!-- НИЖНИЙ БЛОК -->
 <section class="donate-section">
     <div class="donate-container">
         <div class="donate-left">
@@ -115,6 +143,14 @@
         flex-wrap: wrap;
     }
     .top-left { flex: 1; }
+    
+    /* Строка с заголовком и стикером */
+    .title-row {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
     .top-title {
         font-size: 72px;
         font-weight: 800;
@@ -122,12 +158,17 @@
         text-transform: uppercase;
         line-height: 1.2;
         letter-spacing: -0.02em;
-        margin-bottom: 20px;
+        margin: 0;
+    }
+    .inline-sticker {
+        height: 80px;
+        width: auto;
     }
     .top-subtitle {
         font-size: 18px;
         color: rgba(255,255,255,0.7);
         letter-spacing: 1px;
+        margin-top: 15px;
     }
     .top-right { flex: 1; }
     .top-figure {
@@ -135,11 +176,10 @@
         align-items: center;
         justify-content: center;
     }
-    .hero-image {
-        height: 200px;
-        width: auto;
-        max-width: 100%;
-        object-fit: contain;
+    .top-figure i {
+        font-size: 200px;
+        color: #d66b7e;
+        opacity: 0.6;
     }
     
     /* Процесс работы */
@@ -156,15 +196,15 @@
     .about-text h2 { font-size: 32px; margin-bottom: 20px; color: white; }
     .about-text p { font-size: 18px; color: rgba(255,255,255,0.7); line-height: 1.6; }
     
-    /* КАРТОЧКИ ТОВАРОВ — УЖЕ И ДЛИННЕЕ */
+    /* КАРТОЧКИ ТОВАРОВ — 3 в ряд, ширина ×1.7, высота ×2 */
     .catalog-title { text-align: center; font-size: 32px; margin: 40px 0 30px; color: white; }
     
     .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
         margin-bottom: 40px;
-        max-width: 1000px;
+        max-width: 1100px;
         margin-left: auto;
         margin-right: auto;
     }
@@ -184,7 +224,7 @@
     }
     
     .product-card-image {
-        height: 280px;
+        height: 380px;
         background: rgba(0, 0, 0, 0.5);
         display: flex;
         align-items: center;
@@ -193,7 +233,7 @@
     }
     
     .product-card-image i {
-        font-size: 70px;
+        font-size: 80px;
         color: #d66b7e;
     }
     
@@ -203,14 +243,14 @@
     }
     
     .product-card-info h3 {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 600;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         color: white;
     }
     
     .product-card-price {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
         color: #d66b7e;
         margin-bottom: 15px;
@@ -220,7 +260,7 @@
         background: #2aab6d;
         color: white;
         border: none;
-        padding: 10px 16px;
+        padding: 12px 16px;
         border-radius: 8px;
         font-weight: 600;
         font-size: 14px;
@@ -345,9 +385,10 @@
     /* Адаптивность */
     @media (max-width: 768px) {
         .top-section { padding: 50px 0 40px; }
-        .top-title { font-size: 42px; }
+        .top-title { font-size: 36px; }
+        .inline-sticker { height: 50px; }
         .top-subtitle { font-size: 14px; }
-        .hero-image { height: 120px; }
+        .top-figure i { font-size: 120px; }
         
         .donate-section { padding: 40px 0 60px; }
         .donate-title { font-size: 36px; }
@@ -357,28 +398,19 @@
             text-align: center;
             gap: 30px;
         }
+        .title-row {
+            justify-content: center;
+        }
         .donate-right { max-width: 100%; text-align: center; }
         .process-steps { flex-direction: column; gap: 0; }
         
         .products-grid {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 300px;
         }
         .product-card-image {
-            height: 200px;
-        }
-        .product-card-image i {
-            font-size: 50px;
-        }
-        .product-card-info h3 {
-            font-size: 14px;
-        }
-        .product-card-price {
-            font-size: 18px;
-        }
-        .card-order-btn {
-            font-size: 12px;
-            padding: 8px 12px;
+            height: 280px;
         }
         
         .modal-content { width: 95%; height: 80vh; max-width: 95%; }
@@ -405,13 +437,21 @@
     }
     
     const productsData = {
-        {% for product in products %}
-        "{{ product.id }}": {
-            name: "{{ product.name }}",
-            price: "{{ product.price }}",
-            description: "{{ product.full_description or product.description }}"
+        "1": {
+            name: "Чиби-фигурка пары",
+            price: "3500",
+            description: "Милые чиби-фигурки вас двоих. Высота 8-10 см. Ручная покраска. Идеальный подарок для годовщины или просто так."
         },
-        {% endfor %}
+        "4": {
+            name: "Премиум фигурка",
+            price: "6500",
+            description: "Премиум-класс: фигурка большего размера, максимальная проработка лица и одежды, полная ручная покраска всех элементов. Упаковка с магнитным замком и возможность именной гравировки."
+        },
+        "5": {
+            name: "Брелок-фигурка",
+            price: "1500",
+            description: "Маленькая копия с креплением для ключей. Всегда носите частичку ваших любимых с собой. Отличный вариант для первого заказа."
+        }
     };
     
     function orderInTelegram(productName) {
