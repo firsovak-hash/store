@@ -40,7 +40,9 @@
 <div class="products-grid">
     {% for product in products[:6] %}
     <div class="product-card">
-        <div class="product-card-image" onclick="openModal('{{ product.id }}')"><i class="fas fa-cube"></i></div>
+        <div class="product-card-image" onclick="openModal('{{ product.id }}')">
+            <i class="fas fa-cube"></i>
+        </div>
         <div class="product-card-info">
             <h3>{{ product.name }}</h3>
             <p class="product-card-price">{{ product.price }} ₽</p>
@@ -56,7 +58,7 @@
     <a href="{{ url_for('catalog') }}" class="btn-primary">Весь каталог →</a>
 </div>
 
-<!-- НИЖНИЙ БЛОК: дари тому, кому любишь (без фото, надпись слева + кнопка справа) -->
+<!-- НИЖНИЙ БЛОК: дари тому, кому любишь -->
 <section class="donate-section">
     <div class="donate-container">
         <div class="donate-left">
@@ -133,10 +135,11 @@
         align-items: center;
         justify-content: center;
     }
-    .top-figure i {
-        font-size: 200px;
-        color: #d66b7e;
-        opacity: 0.6;
+    .hero-image {
+        height: 200px;
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
     }
     
     /* Процесс работы */
@@ -153,21 +156,94 @@
     .about-text h2 { font-size: 32px; margin-bottom: 20px; color: white; }
     .about-text p { font-size: 18px; color: rgba(255,255,255,0.7); line-height: 1.6; }
     
-    /* Карточки товаров */
+    /* КАРТОЧКИ ТОВАРОВ — УЖЕ И ДЛИННЕЕ */
     .catalog-title { text-align: center; font-size: 32px; margin: 40px 0 30px; color: white; }
-    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
-    .product-card { background: #2a2a2e; border-radius: 12px; overflow: hidden; transition: transform 0.2s; }
-    .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-    .product-card-image { height: 400px; background: #1e1e22; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .product-card-image i { font-size: 80px; color: #d66b7e; }
-    .product-card-info { padding: 20px; text-align: center; }
-    .product-card-info h3 { font-size: 22px; font-weight: 600; margin-bottom: 10px; color: white; }
-    .product-card-price { font-size: 24px; font-weight: 700; color: #d66b7e; margin-bottom: 15px; }
-    .card-order-btn { background: #2aab6d; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .card-order-btn:hover { background: #1f8c59; transform: scale(1.02); }
-    .catalog-link { text-align: center; margin: 30px 0 60px; }
     
-    /* НИЖНИЙ БЛОК — дари тому, кому любишь (без фото) */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .product-card {
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .product-card-image {
+        height: 280px;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .product-card-image i {
+        font-size: 70px;
+        color: #d66b7e;
+    }
+    
+    .product-card-info {
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .product-card-info h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: white;
+    }
+    
+    .product-card-price {
+        font-size: 22px;
+        font-weight: 700;
+        color: #d66b7e;
+        margin-bottom: 15px;
+    }
+    
+    .card-order-btn {
+        background: #2aab6d;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .card-order-btn:hover {
+        background: #1f8c59;
+        transform: scale(1.02);
+    }
+    
+    .catalog-link {
+        text-align: center;
+        margin: 30px 0 60px;
+    }
+    
+    /* НИЖНИЙ БЛОК */
     .donate-section {
         padding: 60px 0 80px;
         border-top: 1px solid rgba(255,255,255,0.15);
@@ -271,7 +347,7 @@
         .top-section { padding: 50px 0 40px; }
         .top-title { font-size: 42px; }
         .top-subtitle { font-size: 14px; }
-        .top-figure i { font-size: 120px; }
+        .hero-image { height: 120px; }
         
         .donate-section { padding: 40px 0 60px; }
         .donate-title { font-size: 36px; }
@@ -283,8 +359,28 @@
         }
         .donate-right { max-width: 100%; text-align: center; }
         .process-steps { flex-direction: column; gap: 0; }
-        .products-grid { grid-template-columns: 1fr; }
-        .product-card-image { height: 300px; }
+        
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        .product-card-image {
+            height: 200px;
+        }
+        .product-card-image i {
+            font-size: 50px;
+        }
+        .product-card-info h3 {
+            font-size: 14px;
+        }
+        .product-card-price {
+            font-size: 18px;
+        }
+        .card-order-btn {
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+        
         .modal-content { width: 95%; height: 80vh; max-width: 95%; }
     }
 </style>
