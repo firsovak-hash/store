@@ -144,7 +144,7 @@
     }
     .top-left { flex: 1; }
     
-    /* Строка с заголовком и стикером */
+    /* Строка с заголовком и стикером - стикер СПРАВА от текста */
     .title-row {
         display: flex;
         align-items: center;
@@ -196,7 +196,7 @@
     .about-text h2 { font-size: 32px; margin-bottom: 20px; color: white; }
     .about-text p { font-size: 18px; color: rgba(255,255,255,0.7); line-height: 1.6; }
     
-    /* КАРТОЧКИ ТОВАРОВ — 3 в ряд, ширина ×1.7, высота ×2 */
+    /* КАРТОЧКИ ТОВАРОВ — 3 в ряд */
     .catalog-title { text-align: center; font-size: 32px; margin: 40px 0 30px; color: white; }
     
     .products-grid {
@@ -386,7 +386,7 @@
     @media (max-width: 768px) {
         .top-section { padding: 50px 0 40px; }
         .top-title { font-size: 36px; }
-        .inline-sticker { height: 50px; }
+        .inline-sticker { height: 45px; }
         .top-subtitle { font-size: 14px; }
         .top-figure i { font-size: 120px; }
         
@@ -407,10 +407,19 @@
         .products-grid {
             grid-template-columns: 1fr;
             gap: 20px;
-            max-width: 300px;
+            max-width: 280px;
         }
         .product-card-image {
             height: 280px;
+        }
+        .product-card-image i {
+            font-size: 60px;
+        }
+        .product-card-info h3 {
+            font-size: 18px;
+        }
+        .product-card-price {
+            font-size: 20px;
         }
         
         .modal-content { width: 95%; height: 80vh; max-width: 95%; }
