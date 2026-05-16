@@ -27,38 +27,18 @@
             min-height: 100vh;
         }
 
-        /* Навигация */
+        /* Навигация — только бургер справа */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            padding: 16px 40px;
+            padding: 20px 40px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             z-index: 1000;
             background: transparent;
-            transition: all 0.3s;
-        }
-
-        /* Логотип-стикер */
-        .logo {
-            display: inline-block;
-            line-height: 0;
-        }
-
-        .logo-image {
-            height: 60px;
-            width: auto;
-            display: block;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        /* Когда бургер-меню открыто — скрываем логотип */
-        .navbar.hide-logo .logo-image {
-            opacity: 0;
-            visibility: hidden;
         }
 
         /* Бургер-кнопка */
@@ -75,7 +55,6 @@
             cursor: pointer;
             backdrop-filter: blur(5px);
             transition: 0.2s;
-            z-index: 1001;
         }
 
         .burger:hover {
@@ -209,16 +188,13 @@
 
         @media (max-width: 768px) {
             .navbar {
-                padding: 12px 20px;
-            }
-            .logo-image {
-                height: 45px;
+                padding: 16px 24px;
             }
             .container {
                 padding: 0 20px;
             }
             .main-content {
-                padding-top: 75px;
+                padding-top: 80px;
             }
         }
     </style>
@@ -227,10 +203,7 @@
 </head>
 <body>
 
-<nav class="navbar" id="navbar">
-    <a href="{{ url_for('index') }}" class="logo">
-        <img src="/static/images/IMG_8756-removebg-preview.png" alt="logo" class="logo-image">
-    </a>
+<nav class="navbar">
     <div class="burger" id="burger">
         <div class="burger-line"></div>
         <div class="burger-line"></div>
@@ -259,26 +232,17 @@
     const burger = document.getElementById('burger');
     const menu = document.getElementById('mobileMenu');
     const overlay = document.getElementById('overlay');
-    const navbar = document.getElementById('navbar');
 
     function toggleMenu() {
-        const isActive = menu.classList.toggle('active');
+        menu.classList.toggle('active');
         overlay.classList.toggle('active');
         burger.classList.toggle('active');
-        
-        // Скрываем логотип, когда меню открыто
-        if (isActive) {
-            navbar.classList.add('hide-logo');
-        } else {
-            navbar.classList.remove('hide-logo');
-        }
     }
 
     function closeMenu() {
         menu.classList.remove('active');
         overlay.classList.remove('active');
         burger.classList.remove('active');
-        navbar.classList.remove('hide-logo');
     }
 
     burger.addEventListener('click', toggleMenu);
