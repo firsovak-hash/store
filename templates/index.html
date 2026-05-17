@@ -7,7 +7,7 @@
 <section class="hero">
     <div class="hero-image">
         <img src="/static/images/8D7B73E7-963C-4990-B3BF-016EAF07F347_1_105_c.jpeg" alt="Одежда">
-        <!-- Затемнение снизу для плавного перехода -->
+        <!-- Затемнение снизу для плавного перехода к ЧЁРНОМУ -->
         <div class="hero-gradient"></div>
         <div class="hero-overlay">
             <h1>НОВАЯ КОЛЛЕКЦИЯ</h1>
@@ -26,7 +26,12 @@
                 <i class="fas fa-tshirt"></i>
             </div>
             <div class="product-info">
-                <h3 class="product-name">Шмотка {{ i }}</h3>
+                <div class="product-header">
+                    <h3 class="product-name">Шмотка {{ i }}</h3>
+                    <button class="like-btn" data-id="{{ i }}">
+                        ❤️
+                    </button>
+                </div>
                 <p class="product-description">Стильная и удобная вещь для вашего гардероба. Отличное качество и современный дизайн.</p>
                 <div class="product-price">{{ 1500 + i * 100 }} ₽</div>
                 <button class="product-btn add-to-cart" 
@@ -42,7 +47,7 @@
 </div>
 
 <style>
-    /* ГЕРОЙ СЕКЦИЯ — большое фото, увеличенная высота */
+    /* ГЕРОЙ СЕКЦИЯ — большое фото */
     .hero {
         width: 100%;
         height: 80vh;
@@ -63,14 +68,14 @@
         object-fit: cover;
     }
     
-    /* Затемнение снизу для плавного перехода */
+    /* Затемнение снизу — плавный переход к ЧЁРНОМУ */
     .hero-gradient {
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 40%;
-        background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+        height: 50%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0), #000000);
         pointer-events: none;
     }
     
@@ -120,7 +125,7 @@
         max-width: 1100px;
         margin: 80px auto;
         padding: 0 20px;
-        background: #0a0a0a;
+        background: #000000;
     }
     
     .product-row {
@@ -173,11 +178,36 @@
         direction: ltr;
     }
     
+    .product-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    
     .product-name {
         font-size: 32px;
         font-weight: 700;
-        margin-bottom: 16px;
         color: white;
+        margin: 0;
+    }
+    
+    .like-btn {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        transition: 0.2s;
+        opacity: 0.7;
+    }
+    
+    .like-btn:hover {
+        transform: scale(1.1);
+    }
+    
+    .like-btn.liked {
+        opacity: 1;
+        filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
     }
     
     .product-description {
@@ -246,8 +276,8 @@
         .product-image i {
             font-size: 100px;
         }
-        .products-section {
-            background: #0a0a0a;
+        .like-btn {
+            font-size: 24px;
         }
     }
     
@@ -294,7 +324,49 @@
     window.addEventListener('scroll', checkVisibility);
     checkVisibility();
     
-    // Корзина
+    // ========== ЛАЙКИ (ИЗБРАННОЕ) ==========
+    let likedProducts = JSON.parse(localStorage.getItem('liked_products') || '[]');
+    
+    function updateLikeButtons() {
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            const id = btn.dataset.id;
+            if (likedProducts.includes(id)) {
+                btn.classList.add('liked');
+                btn.textContent = '❤️';
+            } else {
+                btn.classList.remove('liked');
+                btn.textContent = '♡';
+            }
+        });
+        if (window.updateLikesCount) window.updateLikesCount();
+    }
+    
+    function toggleLike(productId, btnElement) {
+        if (likedProducts.includes(productId)) {
+            likedProducts = likedProducts.filter(id => id !== productId);
+            btnElement.textContent = '♡';
+            btnElement.classList.remove('liked');
+            showToast('💔 Удалено из избранного');
+        } else {
+            likedProducts.push(productId);
+            btnElement.textContent = '❤️';
+            btnElement.classList.add('liked');
+            showToast('❤️ Добавлено в избранное');
+        }
+        localStorage.setItem('liked_products', JSON.stringify(likedProducts));
+        if (window.updateLikesCount) window.updateLikesCount();
+    }
+    
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleLike(btn.dataset.id, btn);
+        });
+    });
+    
+    updateLikeButtons();
+    
+    // ========== КОРЗИНА ==========
     async function addToCart(productId, productName, productPrice) {
         try {
             const response = await fetch('/api/cart/add', {
@@ -337,7 +409,8 @@
     }
     
     document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             addToCart(btn.dataset.id, btn.dataset.name, parseInt(btn.dataset.price));
         });
     });
