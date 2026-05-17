@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
+from flask_cors import CORS
 import json
 import os
 
 app = Flask(__name__)
+app.secret_key = 'секретный-ключ-для-корзины-поменяй-потом'  # ОБЯЗАТЕЛЬНО для session
+CORS(app)  # Разрешаем запросы с Тильды
 
 # Товары
 PRODUCTS = {
@@ -66,6 +69,19 @@ PRODUCTS_LIST = list(PRODUCTS.values())
 
 # Файл для хранения отзывов
 REVIEWS_FILE = 'reviews.json'
+
+def load_reviews():
+    if os.path.exists(REVIEWS_FILE):
+        with open(REVIEWS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+def save_reviews(reviews):
+    with open(REVIEWS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(reviews, f, ensure_ascii=False, indent=2)
+
+# ========== API ДЛЯ КОРЗИНЫ (ТО, ЧЕГО НЕ ХВАТАЛО) ==========
+
 @app.route('/api/cart/count')
 def cart_count():
     """Возвращает количество товаров в корзине"""
@@ -86,15 +102,53 @@ def cart_items():
     cart = session.get('cart', [])
     return jsonify({'items': cart})
 
-def load_reviews():
-    if os.path.exists(REVIEWS_FILE):
-        with open(REVIEWS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
+@app.route('/api/cart/add', methods=['POST'])
+def cart_add():
+    """Добавляет товар в корзину"""
+    data = request.json
+    product_id = data.get('product_id')
+    product_name = data.get('name')
+    product_price = data.get('price')
+    
+    cart = session.get('cart', [])
+    
+    # Проверяем, есть ли уже такой товар
+    for item in cart:
+        if item['id'] == product_id:
+            item['quantity'] = item.get('quantity', 1) + 1
+            session['cart'] = cart
+            return jsonify({'success': True, 'count': len(cart)})
+    
+    # Добавляем новый товар
+    cart.append({
+        'id': product_id,
+        'name': product_name,
+        'price': product_price,
+        'quantity': 1
+    })
+    session['cart'] = cart
+    
+    return jsonify({'success': True, 'count': len(cart)})
 
-def save_reviews(reviews):
-    with open(REVIEWS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(reviews, f, ensure_ascii=False, indent=2)
+@app.route('/api/cart/remove', methods=['POST'])
+def cart_remove():
+    """Удаляет товар из корзины"""
+    data = request.json
+    product_id = data.get('product_id')
+    
+    cart = session.get('cart', [])
+    cart = [item for item in cart if item['id'] != product_id]
+    session['cart'] = cart
+    
+    return jsonify({'success': True, 'count': len(cart)})
+
+@app.route('/api/cart/clear', methods=['POST'])
+def cart_clear():
+    """Очищает корзину"""
+    session['cart'] = []
+    return jsonify({'success': True})
+
+# ========== ОСНОВНЫЕ МАРШРУТЫ ==========
 
 @app.route('/')
 def index():
@@ -103,6 +157,13 @@ def index():
 @app.route('/catalog')
 def catalog():
     return render_template('catalog.html', products=PRODUCTS_LIST)
+
+@app.route('/cart')
+def cart_page():
+    """Страница корзины"""
+    cart = session.get('cart', [])
+    total = sum(item['price'] * item.get('quantity', 1) for item in cart)
+    return render_template('cart.html', cart=cart, total=total)
 
 @app.route('/product/<product_id>', methods=['GET', 'POST'])
 def product_page(product_id):
@@ -114,7 +175,6 @@ def product_page(product_id):
     product_reviews = reviews.get(product_id, [])
     
     if request.method == 'POST':
-        # Добавление отзыва
         name = request.form.get('name', 'Аноним')
         rating = int(request.form.get('rating', 5))
         text = request.form.get('text', '')
