@@ -64,7 +64,9 @@ PRODUCTS = {
         'badge': ''
     }
 }
-
+@app.route('/about')
+def about():
+    return render_template('about.html')
 PRODUCTS_LIST = list(PRODUCTS.values())
 
 # Файл для хранения отзывов
