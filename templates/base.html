@@ -20,40 +20,53 @@
             line-height: 1.5;
         }
         
-        /* ШАПКА — ПРОЗРАЧНАЯ ПЛАШКА */
-        /* СТЕКЛЯННАЯ ЧЁРНАЯ ПЛАШКА */
+        /* ШАПКА — СТЕКЛЯННАЯ ЧЁРНАЯ ПЛАШКА */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            padding: 16px 40px;
+            padding: 14px 40px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             z-index: 100;
-    
-    /* Стеклянный эффект */
-            background: rgba(0, 0, 0, 0.6);     /* чёрный полупрозрачный (60% непрозрачности) */
-            backdrop-filter: blur(10px);         /* размытие фона за плашкой */
-            -webkit-backdrop-filter: blur(10px); /* для Safari */
-    
-    /* Тонкая граница для стеклянного эффекта */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    
-    /* Лёгкая тень */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        /* Левая часть: силуэт + логотип */
+        /* ЛЕВАЯ ЧАСТЬ: логотип + силуэт (силуэт справа от лого) */
         .logo-wrapper {
             display: flex;
             align-items: center;
             gap: 12px;
         }
         
+        .logo {
+            text-decoration: none;
+            line-height: 1.2;
+        }
+        
+        .logo-brand {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 1px;
+            display: block;
+        }
+        
+        .logo-by {
+            font-size: 10px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.5px;
+            display: block;
+        }
+        
         .silhouette {
-            height: 40px;
+            height: 38px;
             width: auto;
         }
         
@@ -63,32 +76,13 @@
             display: block;
         }
         
-        .logo {
-            text-decoration: none;
-            line-height: 1.2;
-        }
-        
-        .logo-brand {
-            font-size: 22px;
-            font-weight: 600;
-            color: white;
-            letter-spacing: 1px;
-            display: block;
-        }
-        
-        .logo-by {
-            font-size: 11px;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.6);
-            letter-spacing: 0.5px;
-            display: block;
-        }
-        
-        /* МЕНЮ — по центру, без лишнего сдвига */
+        /* МЕНЮ — ПО ЦЕНТРУ */
         .nav-links {
             display: flex;
             gap: 32px;
-            margin: 0 auto; /* центрируем меню */
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
         
         .nav-links a {
@@ -97,12 +91,14 @@
             font-weight: 500;
             font-size: 15px;
             transition: 0.2s;
+            white-space: nowrap;
         }
         
         .nav-links a:hover {
             opacity: 0.7;
         }
         
+        /* ПРАВАЯ ЧАСТЬ: иконки */
         .nav-icons {
             display: flex;
             gap: 24px;
@@ -228,7 +224,7 @@
         
         @media (max-width: 768px) {
             .navbar {
-                padding: 12px 20px;
+                padding: 10px 20px;
             }
             .nav-links {
                 display: none;
@@ -237,7 +233,7 @@
                 display: block;
             }
             .silhouette {
-                height: 30px;
+                height: 28px;
             }
             .logo-brand {
                 font-size: 16px;
@@ -264,16 +260,15 @@
 <body>
 
 <nav class="navbar">
+    <!-- ЛЕВАЯ ЧАСТЬ: логотип + силуэт (силуэт СПРАВА от лого) -->
     <div class="logo-wrapper">
-        <!-- СИЛУЭТ СЛЕВА ОТ ЛОГОТИПА -->
-        <div class="silhouette">
-            <img src="/static/images/gemini-2.5-flash-image_сгенерируй_белый_силуэт_этого_парня-0-removebg-preview.png
-" alt="silhouette">
-        </div>
         <a href="/" class="logo">
             <span class="logo-brand">STORE</span>
             <span class="logo-by">by Sasha</span>
         </a>
+        <div class="silhouette">
+            <img src="/static/images/gemini-2.5-flash-image_сгенерируй_белый_силуэт_этого_парня-0-removebg-preview.png" alt="silhouette">
+        </div>
     </div>
     
     <!-- МЕНЮ ПО ЦЕНТРУ -->
@@ -283,6 +278,7 @@
         <a href="/about">О нас</a>
     </div>
     
+    <!-- ПРАВАЯ ЧАСТЬ: иконки -->
     <div class="nav-icons">
         <a href="/likes" class="likes-icon">
             <i class="far fa-heart"></i>
