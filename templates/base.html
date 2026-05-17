@@ -15,12 +15,12 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: #0a0a0a;
+            background: #000000;
             color: #1a1a1a;
             line-height: 1.5;
         }
         
-        /* ШАПКА — белые ссылки */
+        /* ШАПКА — абсолютное позиционирование поверх фото */
         .navbar {
             position: absolute;
             top: 0;
@@ -71,7 +71,8 @@
             position: relative;
         }
         
-        .cart-count {
+        /* СТИЛИ ДЛЯ СЧЁТЧИКОВ (корзина и избранное) */
+        .cart-count, .likes-count {
             position: absolute;
             top: -8px;
             right: -12px;
@@ -216,6 +217,12 @@
         <a href="/about">О нас</a>
     </div>
     <div class="nav-icons">
+        <!-- Иконка избранного (лайки) -->
+        <a href="/likes" class="likes-icon">
+            ❤️
+            <span class="likes-count" id="likes-count">0</span>
+        </a>
+        <!-- Иконка корзины -->
         <a href="/cart" class="cart-icon">
             🛒
             <span class="cart-count" id="cart-count">0</span>
@@ -231,6 +238,7 @@
     <a href="/catalog">Каталог</a>
     <a href="/about">О нас</a>
     <a href="/cart">Корзина</a>
+    <a href="/likes">Избранное</a>
 </div>
 <div class="menu-overlay" id="menuOverlay"></div>
 
@@ -284,8 +292,18 @@
             if (el) el.textContent = data.count || 0;
         } catch(err) {}
     }
+    
+    // Функция для обновления счётчика избранного
+    function updateLikesCount() {
+        let likes = JSON.parse(localStorage.getItem('liked_products') || '[]');
+        const countEl = document.getElementById('likes-count');
+        if (countEl) countEl.textContent = likes.length;
+    }
+    
     updateCartCount();
+    updateLikesCount();
     setInterval(updateCartCount, 3000);
+    window.updateLikesCount = updateLikesCount; // глобальная функция
 </script>
 
 {% block extra_js %}{% endblock %}
