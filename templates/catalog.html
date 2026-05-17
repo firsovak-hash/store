@@ -7,15 +7,22 @@
 
 <div class="catalog-grid">
     {% for product in products %}
-    <div class="catalog-card" onclick="window.location.href='/product/{{ product.id }}'">
-        <div class="card-image">
+    <div class="catalog-card">
+        <div class="card-image" onclick="window.location.href='/product/{{ product.id }}'">
             <i class="fas fa-cube"></i>
         </div>
         <div class="card-info">
             <h3>{{ product.name }}</h3>
             <p>{{ product.description[:80] }}...</p>
             <div class="price">{{ product.price }} ₽</div>
-            <button class="card-btn">Подробнее</button>
+            
+            <!-- КНОПКА ДОБАВЛЕНИЯ В КОРЗИНУ -->
+            <button class="card-btn add-to-cart" 
+                    data-id="{{ product.id }}"
+                    data-name="{{ product.name }}"
+                    data-price="{{ product.price }}">
+                🛒 Добавить в корзину
+            </button>
         </div>
     </div>
     {% endfor %}
@@ -34,7 +41,6 @@
         border-radius: 24px;
         overflow: hidden;
         transition: 0.3s;
-        cursor: pointer;
         border: 1px solid rgba(255, 255, 255, 0.5);
     }
     .catalog-card:hover {
@@ -47,6 +53,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
     }
     .card-image i {
         font-size: 64px;
@@ -73,9 +80,82 @@
         cursor: pointer;
         font-weight: 600;
         transition: 0.2s;
+        width: 100%;
     }
     .card-btn:hover {
         background: #c05a6d;
+        transform: scale(1.02);
+    }
+    .added-toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #4caf50;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 40px;
+        z-index: 1000;
+        font-weight: 500;
+        animation: fadeOut 2s ease forwards;
+    }
+    @keyframes fadeOut {
+        0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        70% { opacity: 1; }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
     }
 </style>
+
+<script>
+// Функция показа уведомления
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'added-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+// Обработчики кнопок "Добавить в корзину"
+document.querySelectorAll('.add-to-cart').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+        e.stopPropagation(); // Чтобы не сработал переход на страницу товара
+        
+        const product = {
+            product_id: this.dataset.id,
+            name: this.dataset.name,
+            price: parseInt(this.dataset.price)
+        };
+        
+        try {
+            const response = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(product)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Меняем текст кнопки временно
+                const originalText = this.innerHTML;
+                this.innerHTML = '✓ Добавлено!';
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                }, 1500);
+                
+                showToast('✅ Товар добавлен в корзину');
+                
+                // Обновляем виджет на Тильде (если открыт в iframe)
+                if (window.parent && window.parent.updateCartWidget) {
+                    window.parent.updateCartWidget();
+                }
+            }
+        } catch (err) {
+            console.error('Ошибка:', err);
+            showToast('❌ Ошибка, попробуйте позже');
+        }
+    });
+});
+</script>
 {% endblock %}
