@@ -18,23 +18,25 @@
             background: #000000;
             color: #1a1a1a;
             line-height: 1.5;
+            padding-top: 80px; /* Чтобы контент не начинался под шапкой */
         }
         
-        /* ШАПКА */
+        /* ШАПКА — ФИКСИРОВАННАЯ (НЕ УЛЕТАЕТ ПРИ СКРОЛЛЕ) */
         .navbar {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            padding: 24px 40px;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: transparent;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
-        /* ЛОГОТИП */
         .logo {
             text-decoration: none;
             line-height: 1.2;
@@ -100,7 +102,6 @@
             text-align: center;
         }
         
-        /* Бургер */
         .burger {
             display: none;
             cursor: pointer;
@@ -155,7 +156,6 @@
             min-height: calc(100vh - 200px);
         }
         
-        /* ФУТЕР */
         .footer {
             background: #111;
             padding: 60px 40px 30px;
@@ -199,7 +199,7 @@
         
         @media (max-width: 768px) {
             .navbar {
-                padding: 16px 20px;
+                padding: 14px 20px;
             }
             .nav-links {
                 display: none;
@@ -215,6 +215,9 @@
             }
             .logo-by {
                 font-size: 9px;
+            }
+            body {
+                padding-top: 65px;
             }
         }
         
