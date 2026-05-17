@@ -66,6 +66,25 @@ PRODUCTS_LIST = list(PRODUCTS.values())
 
 # Файл для хранения отзывов
 REVIEWS_FILE = 'reviews.json'
+@app.route('/api/cart/count')
+def cart_count():
+    """Возвращает количество товаров в корзине"""
+    cart = session.get('cart', [])
+    count = sum(item.get('quantity', 1) for item in cart)
+    return jsonify({'count': count})
+
+@app.route('/api/cart/total')
+def cart_total():
+    """Возвращает общую сумму корзины"""
+    cart = session.get('cart', [])
+    total = sum(item['price'] * item.get('quantity', 1) for item in cart)
+    return jsonify({'total': total})
+
+@app.route('/api/cart/items')
+def cart_items():
+    """Возвращает все товары в корзине"""
+    cart = session.get('cart', [])
+    return jsonify({'items': cart})
 
 def load_reviews():
     if os.path.exists(REVIEWS_FILE):
