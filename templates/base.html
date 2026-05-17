@@ -33,11 +33,14 @@
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-    /* Убираем фон */
-            background: transparent;
-    /* Оставляем только размытие того, что находится за шапкой */
-            backdrop-filter: blur(10px);
-            border-bottom: none; /* убираем границу, если она была */
+    /* НЕТ ФОНА — даже прозрачного */
+            background: none;
+    /* ТОЛЬКО РАЗМЫТИЕ того, что под шапкой */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+    /* Убираем любые границы */
+            border: none;
+            box-shadow: none;
         }
         
         .logo {
