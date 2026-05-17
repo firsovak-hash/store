@@ -20,22 +20,22 @@
             line-height: 1.5;
         }
         
-        /* ШАПКА — ЧЁРНАЯ ПЛАШКА */
+        /* ШАПКА — ПРОЗРАЧНАЯ ПЛАШКА */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            padding: 12px 40px;
+            padding: 16px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: #000000;  /* ЧЁРНЫЙ ФОН */
-            border-bottom: 1px solid #222;
+            background: transparent;
+            backdrop-filter: none;
         }
         
-        /* Левая часть с силуэтом и логотипом */
+        /* Левая часть: силуэт + логотип */
         .logo-wrapper {
             display: flex;
             align-items: center;
@@ -43,7 +43,7 @@
         }
         
         .silhouette {
-            height: 45px;
+            height: 40px;
             width: auto;
         }
         
@@ -74,9 +74,11 @@
             display: block;
         }
         
+        /* МЕНЮ — по центру, без лишнего сдвига */
         .nav-links {
             display: flex;
             gap: 32px;
+            margin: 0 auto; /* центрируем меню */
         }
         
         .nav-links a {
@@ -170,7 +172,7 @@
         
         .main-content {
             min-height: calc(100vh - 200px);
-            padding-top: 70px; /* Чтобы контент не уходил под фиксированную шапку */
+            padding-top: 80px;
         }
         
         .footer {
@@ -216,7 +218,7 @@
         
         @media (max-width: 768px) {
             .navbar {
-                padding: 10px 20px;
+                padding: 12px 20px;
             }
             .nav-links {
                 display: none;
@@ -234,7 +236,7 @@
                 font-size: 8px;
             }
             .main-content {
-                padding-top: 60px;
+                padding-top: 65px;
             }
             .footer {
                 padding: 40px 20px 20px;
@@ -253,7 +255,7 @@
 
 <nav class="navbar">
     <div class="logo-wrapper">
-        <!-- БЕЛЫЙ СИЛУЭТ ПАРНЯ (вставь свой файл) -->
+        <!-- СИЛУЭТ СЛЕВА ОТ ЛОГОТИПА -->
         <div class="silhouette">
             <img src="/static/images/gemini-2.5-flash-image_сгенерируй_белый_силуэт_этого_парня-0.jpg" alt="silhouette">
         </div>
@@ -262,11 +264,14 @@
             <span class="logo-by">by Sasha</span>
         </a>
     </div>
+    
+    <!-- МЕНЮ ПО ЦЕНТРУ -->
     <div class="nav-links">
         <a href="/">Главная</a>
         <a href="/catalog">Каталог</a>
         <a href="/about">О нас</a>
     </div>
+    
     <div class="nav-icons">
         <a href="/likes" class="likes-icon">
             <i class="far fa-heart"></i>
