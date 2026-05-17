@@ -7,6 +7,8 @@
 <section class="hero">
     <div class="hero-image">
         <img src="/static/images/hero-bg.jpg" alt="Одежда">
+        <!-- Затемнение снизу для плавного перехода -->
+        <div class="hero-gradient"></div>
         <div class="hero-overlay">
             <h1>НОВАЯ КОЛЛЕКЦИЯ</h1>
             <p>Стильная одежда для каждого дня</p>
@@ -15,26 +17,22 @@
     </div>
 </section>
 
-<!-- КАРТОЧКИ ТОВАРОВ (шахматный порядок, выезд справа) -->
+<!-- КАРТОЧКИ ТОВАРОВ (10 штук) -->
 <div class="products-section">
     <div class="products-container" id="productsGrid">
-        {% for product in products %}
+        {% for i in range(1, 11) %}
         <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} fade-item">
             <div class="product-image">
-                {% if product.image %}
-                    <img src="{{ product.image }}" alt="{{ product.name }}">
-                {% else %}
-                    <i class="fas fa-tshirt"></i>
-                {% endif %}
+                <i class="fas fa-tshirt"></i>
             </div>
             <div class="product-info">
-                <h3 class="product-name">{{ product.name }}</h3>
-                <p class="product-description">{{ product.description }}</p>
-                <div class="product-price">{{ product.price }} ₽</div>
+                <h3 class="product-name">Шмотка {{ i }}</h3>
+                <p class="product-description">Стильная и удобная вещь для вашего гардероба. Отличное качество и современный дизайн.</p>
+                <div class="product-price">{{ 1500 + i * 100 }} ₽</div>
                 <button class="product-btn add-to-cart" 
-                        data-id="{{ product.id }}"
-                        data-name="{{ product.name }}"
-                        data-price="{{ product.price }}">
+                        data-id="{{ i }}"
+                        data-name="Шмотка {{ i }}"
+                        data-price="{{ 1500 + i * 100 }}">
                     🛒 Добавить в корзину
                 </button>
             </div>
@@ -44,12 +42,13 @@
 </div>
 
 <style>
-    /* ГЕРОЙ СЕКЦИЯ — большое фото */
+    /* ГЕРОЙ СЕКЦИЯ — большое фото, увеличенная высота */
     .hero {
         width: 100%;
-        height: 50vh;
-        min-height: 400px;
+        height: 80vh;
+        min-height: 600px;
         overflow: hidden;
+        position: relative;
     }
     
     .hero-image {
@@ -64,42 +63,51 @@
         object-fit: cover;
     }
     
-    .hero-overlay {
+    /* Затемнение снизу для плавного перехода */
+    .hero-gradient {
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
         right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.4);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        height: 40%;
+        background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+        pointer-events: none;
+    }
+    
+    .hero-overlay {
+        position: absolute;
+        bottom: 15%;
+        left: 0;
+        right: 0;
         text-align: center;
         color: white;
+        z-index: 2;
     }
     
     .hero-overlay h1 {
-        font-size: 48px;
+        font-size: 56px;
         font-weight: 700;
         margin-bottom: 16px;
         letter-spacing: 2px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
     
     .hero-overlay p {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 30px;
-        opacity: 0.9;
+        opacity: 0.95;
+        text-shadow: 0 1px 5px rgba(0,0,0,0.3);
     }
     
     .hero-btn {
         background: white;
         color: black;
         text-decoration: none;
-        padding: 12px 32px;
+        padding: 14px 36px;
         border-radius: 40px;
         font-weight: 600;
         transition: 0.2s;
+        display: inline-block;
     }
     
     .hero-btn:hover {
@@ -110,7 +118,7 @@
     /* СЕКЦИЯ ТОВАРОВ */
     .products-section {
         max-width: 1100px;
-        margin: 60px auto;
+        margin: 80px auto;
         padding: 0 20px;
     }
     
@@ -148,20 +156,15 @@
         align-items: center;
     }
     
-    .product-image img {
-        width: 100%;
-        max-width: 350px;
-        border-radius: 20px;
+    .product-image i {
+        font-size: 140px;
+        color: #ddd;
         transition: 0.3s;
     }
     
-    .product-image i {
-        font-size: 120px;
-        color: #ccc;
-    }
-    
-    .product-row:hover .product-image img {
-        transform: scale(1.02);
+    .product-row:hover .product-image i {
+        transform: scale(1.05);
+        color: #aaa;
     }
     
     /* Информация (без блока, на фоне) */
@@ -210,13 +213,17 @@
     /* Адаптив */
     @media (max-width: 768px) {
         .hero {
-            height: 40vh;
-            min-height: 300px;
+            height: 60vh;
+            min-height: 400px;
         }
         .hero-overlay h1 {
             font-size: 28px;
         }
         .hero-overlay p {
+            font-size: 14px;
+        }
+        .hero-btn {
+            padding: 10px 24px;
             font-size: 14px;
         }
         .product-row {
@@ -234,8 +241,8 @@
         .product-price {
             font-size: 22px;
         }
-        .product-image img {
-            max-width: 250px;
+        .product-image i {
+            font-size: 100px;
         }
     }
     
