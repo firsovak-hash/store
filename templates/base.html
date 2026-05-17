@@ -18,26 +18,20 @@
             background: #000000;
             color: #1a1a1a;
             line-height: 1.5;
-            padding-top: 80px; /* Чтобы контент не начинался под шапкой */
         }
         
-        /* ШАПКА — ФИКСИРОВАННАЯ (НЕ УЛЕТАЕТ ПРИ СКРОЛЛЕ) */
-        /* ШАПКА — ФИКСИРОВАННАЯ, ТОЛЬКО РАЗМЫТИЕ БЕЗ ФОНА */
+        /* ШАПКА — ПРОЗРАЧНАЯ, ПОВЕРХ ФОТО */
         .navbar {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            padding: 20px 40px;
+            padding: 24px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
             background: transparent;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            border: none;
-            box-shadow: none;
         }
         
         .logo {
@@ -202,7 +196,7 @@
         
         @media (max-width: 768px) {
             .navbar {
-                padding: 14px 20px;
+                padding: 16px 20px;
             }
             .nav-links {
                 display: none;
@@ -218,9 +212,6 @@
             }
             .logo-by {
                 font-size: 9px;
-            }
-            body {
-                padding-top: 65px;
             }
         }
         
@@ -296,7 +287,6 @@
 </footer>
 
 <script>
-    // Бургер
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const menuOverlay = document.getElementById('menuOverlay');
@@ -309,7 +299,6 @@
     if (burgerBtn) burgerBtn.addEventListener('click', toggleMenu);
     if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
     
-    // Корзина
     async function updateCartCount() {
         try {
             const response = await fetch('/api/cart/count');
@@ -319,7 +308,6 @@
         } catch(err) {}
     }
     
-    // Избранное
     function updateLikesCount() {
         let likes = JSON.parse(localStorage.getItem('liked_products') || '[]');
         const countEl = document.getElementById('likes-count');
