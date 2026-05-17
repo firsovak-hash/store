@@ -22,6 +22,7 @@
         }
         
         /* ШАПКА — ФИКСИРОВАННАЯ (НЕ УЛЕТАЕТ ПРИ СКРОЛЛЕ) */
+        /* ШАПКА — ФИКСИРОВАННАЯ, ТОЛЬКО РАЗМЫТИЕ БЕЗ ФОНА */
         .navbar {
             position: fixed;
             top: 0;
@@ -32,9 +33,11 @@
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: rgba(0, 0, 0, 0.85);
+    /* Убираем фон */
+            background: transparent;
+    /* Оставляем только размытие того, что находится за шапкой */
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: none; /* убираем границу, если она была */
         }
         
         .logo {
