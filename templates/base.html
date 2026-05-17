@@ -21,6 +21,7 @@
         }
         
         /* ШАПКА — ПРОЗРАЧНАЯ ПЛАШКА */
+        /* СТЕКЛЯННАЯ ЧЁРНАЯ ПЛАШКА */
         .navbar {
             position: fixed;
             top: 0;
@@ -31,8 +32,17 @@
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: transparent;
-            backdrop-filter: none;
+    
+    /* Стеклянный эффект */
+            background: rgba(0, 0, 0, 0.6);     /* чёрный полупрозрачный (60% непрозрачности) */
+            backdrop-filter: blur(10px);         /* размытие фона за плашкой */
+            -webkit-backdrop-filter: blur(10px); /* для Safari */
+    
+    /* Тонкая граница для стеклянного эффекта */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* Лёгкая тень */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
         
         /* Левая часть: силуэт + логотип */
