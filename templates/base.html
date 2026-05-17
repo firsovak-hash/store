@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Магазин одежды{% endblock %}</title>
+    <title>{% block title %}Sasha Store{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -20,7 +20,7 @@
             line-height: 1.5;
         }
         
-        /* ШАПКА — абсолютное позиционирование поверх фото */
+        /* ШАПКА */
         .navbar {
             position: absolute;
             top: 0;
@@ -34,12 +34,26 @@
             background: transparent;
         }
         
+        /* ЛОГОТИП */
         .logo {
-            font-size: 24px;
-            font-weight: 700;
             text-decoration: none;
+            line-height: 1.2;
+        }
+        
+        .logo-brand {
+            font-size: 22px;
+            font-weight: 600;
             color: white;
             letter-spacing: 1px;
+            display: block;
+        }
+        
+        .logo-by {
+            font-size: 11px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.5px;
+            display: block;
         }
         
         .nav-links {
@@ -51,6 +65,7 @@
             color: white;
             text-decoration: none;
             font-weight: 500;
+            font-size: 15px;
             transition: 0.2s;
         }
         
@@ -60,7 +75,7 @@
         
         .nav-icons {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             align-items: center;
         }
         
@@ -71,11 +86,10 @@
             position: relative;
         }
         
-        /* СТИЛИ ДЛЯ СЧЁТЧИКОВ (корзина и избранное) */
         .cart-count, .likes-count {
             position: absolute;
-            top: -8px;
-            right: -12px;
+            top: -10px;
+            right: -14px;
             background: white;
             color: black;
             font-size: 10px;
@@ -86,7 +100,7 @@
             text-align: center;
         }
         
-        /* Бургер для мобилок */
+        /* Бургер */
         .burger {
             display: none;
             cursor: pointer;
@@ -137,7 +151,6 @@
             visibility: visible;
         }
         
-        /* ОСНОВНОЙ КОНТЕНТ */
         .main-content {
             min-height: calc(100vh - 200px);
         }
@@ -197,6 +210,12 @@
             .footer {
                 padding: 40px 20px 20px;
             }
+            .logo-brand {
+                font-size: 18px;
+            }
+            .logo-by {
+                font-size: 9px;
+            }
         }
         
         @media (min-width: 769px) {
@@ -210,21 +229,22 @@
 <body>
 
 <nav class="navbar">
-    <a href="/" class="logo">STORE</a>
+    <a href="/" class="logo">
+        <span class="logo-brand">STORE</span>
+        <span class="logo-by">by Sasha</span>
+    </a>
     <div class="nav-links">
         <a href="/">Главная</a>
         <a href="/catalog">Каталог</a>
         <a href="/about">О нас</a>
     </div>
     <div class="nav-icons">
-        <!-- Иконка избранного (лайки) -->
         <a href="/likes" class="likes-icon">
-            ❤️
+            <i class="far fa-heart"></i>
             <span class="likes-count" id="likes-count">0</span>
         </a>
-        <!-- Иконка корзины -->
         <a href="/cart" class="cart-icon">
-            🛒
+            <i class="fas fa-bag-shopping"></i>
             <span class="cart-count" id="cart-count">0</span>
         </a>
         <div class="burger" id="burgerBtn">
@@ -270,7 +290,7 @@
 </footer>
 
 <script>
-    // Бургер-меню
+    // Бургер
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const menuOverlay = document.getElementById('menuOverlay');
@@ -283,7 +303,7 @@
     if (burgerBtn) burgerBtn.addEventListener('click', toggleMenu);
     if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
     
-    // Обновление счетчика корзины
+    // Корзина
     async function updateCartCount() {
         try {
             const response = await fetch('/api/cart/count');
@@ -293,7 +313,7 @@
         } catch(err) {}
     }
     
-    // Функция для обновления счётчика избранного
+    // Избранное
     function updateLikesCount() {
         let likes = JSON.parse(localStorage.getItem('liked_products') || '[]');
         const countEl = document.getElementById('likes-count');
@@ -303,7 +323,7 @@
     updateCartCount();
     updateLikesCount();
     setInterval(updateCartCount, 3000);
-    window.updateLikesCount = updateLikesCount; // глобальная функция
+    window.updateLikesCount = updateLikesCount;
 </script>
 
 {% block extra_js %}{% endblock %}
