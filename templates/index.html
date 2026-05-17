@@ -3,11 +3,10 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<!-- БОЛЬШАЯ ФОТОГРАФИЯ НА ВСЮ ШИРИНУ -->
+<!-- БОЛЬШАЯ ФОТОГРАФИЯ -->
 <section class="hero">
     <div class="hero-image">
         <img src="/static/images/8D7B73E7-963C-4990-B3BF-016EAF07F347_1_105_c.jpeg" alt="Одежда">
-        <!-- Затемнение снизу для плавного перехода к ЧЁРНОМУ -->
         <div class="hero-gradient"></div>
         <div class="hero-overlay">
             <h1>НОВАЯ КОЛЛЕКЦИЯ</h1>
@@ -21,24 +20,25 @@
 <div class="products-section">
     <div class="products-container" id="productsGrid">
         {% for i in range(1, 11) %}
-        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} fade-item">
-            <div class="product-image">
-                <i class="fas fa-tshirt"></i>
-            </div>
-            <div class="product-info">
-                <div class="product-header">
-                    <h3 class="product-name">Шмотка {{ i }}</h3>
-                    <button class="like-btn" data-id="{{ i }}">
-                        ❤️
+        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} fade-item" data-product-id="{{ i }}">
+            <div class="product-image-wrapper">
+                <div class="product-image" data-id="{{ i }}">
+                    <img src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="Фото 1" class="product-img front-img">
+                    <img src="/static/images/photo_2026-05-17_22.34.46.jpeg" alt="Фото 2" class="product-img back-img">
+                    <button class="like-icon" data-id="{{ i }}">
+                        ♡
                     </button>
                 </div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">Шмотка {{ i }}</h3>
                 <p class="product-description">Стильная и удобная вещь для вашего гардероба. Отличное качество и современный дизайн.</p>
                 <div class="product-price">{{ 1500 + i * 100 }} ₽</div>
                 <button class="product-btn add-to-cart" 
                         data-id="{{ i }}"
                         data-name="Шмотка {{ i }}"
                         data-price="{{ 1500 + i * 100 }}">
-                    🛒 Добавить в корзину
+                    Добавить в корзину
                 </button>
             </div>
         </div>
@@ -47,7 +47,7 @@
 </div>
 
 <style>
-    /* ГЕРОЙ СЕКЦИЯ — большое фото */
+    /* ГЕРОЙ СЕКЦИЯ */
     .hero {
         width: 100%;
         height: 80vh;
@@ -68,7 +68,6 @@
         object-fit: cover;
     }
     
-    /* Затемнение снизу — плавный переход к ЧЁРНОМУ */
     .hero-gradient {
         position: absolute;
         bottom: 0;
@@ -94,14 +93,12 @@
         font-weight: 700;
         margin-bottom: 16px;
         letter-spacing: 2px;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
     
     .hero-overlay p {
         font-size: 20px;
         margin-bottom: 30px;
-        opacity: 0.95;
-        text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+        opacity: 0.9;
     }
     
     .hero-btn {
@@ -134,8 +131,6 @@
         gap: 60px;
         align-items: center;
         margin-bottom: 80px;
-        
-        /* Анимация появления справа */
         opacity: 0;
         transform: translateX(80px);
         transition: opacity 0.6s ease-out, transform 0.6s ease-out;
@@ -146,7 +141,6 @@
         transform: translateX(0);
     }
     
-    /* Шахматный порядок */
     .product-row-reverse {
         direction: rtl;
     }
@@ -155,59 +149,91 @@
         direction: ltr;
     }
     
-    /* Картинка */
-    .product-image {
+    /* КОНТЕЙНЕР ДЛЯ ФОТО */
+    .product-image-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
     }
     
-    .product-image i {
-        font-size: 140px;
-        color: #444;
-        transition: 0.3s;
+    .product-image {
+        position: relative;
+        width: 100%;
+        max-width: 350px;
+        height: 350px;
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: 20px;
     }
     
-    .product-row:hover .product-image i {
-        transform: scale(1.05);
-        color: #888;
+    .product-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
     }
     
-    /* Информация о товаре — БЕЛЫЙ ТЕКСТ */
+    .front-img {
+        opacity: 1;
+        z-index: 1;
+    }
+    
+    .back-img {
+        opacity: 0;
+        z-index: 0;
+    }
+    
+    .product-image:hover .front-img {
+        opacity: 0;
+    }
+    
+    .product-image:hover .back-img {
+        opacity: 1;
+    }
+    
+    /* ИКОНКА ИЗБРАННОГО НА ФОТО */
+    .like-icon {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        border: none;
+        font-size: 26px;
+        cursor: pointer;
+        z-index: 10;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s;
+    }
+    
+    .like-icon:hover {
+        transform: scale(1.1);
+        background: rgba(0, 0, 0, 0.8);
+    }
+    
+    .like-icon.liked {
+        color: white;
+    }
+    
+    /* Информация о товаре */
     .product-info {
         direction: ltr;
-    }
-    
-    .product-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
     }
     
     .product-name {
         font-size: 32px;
         font-weight: 700;
+        margin-bottom: 16px;
         color: white;
-        margin: 0;
-    }
-    
-    .like-btn {
-        background: none;
-        border: none;
-        font-size: 28px;
-        cursor: pointer;
-        transition: 0.2s;
-        opacity: 0.7;
-    }
-    
-    .like-btn:hover {
-        transform: scale(1.1);
-    }
-    
-    .like-btn.liked {
-        opacity: 1;
-        filter: drop-shadow(0 0 4px rgba(255,255,255,0.5));
     }
     
     .product-description {
@@ -224,7 +250,6 @@
         margin-bottom: 25px;
     }
     
-    /* КНОПКА КАК В КАТАЛОГЕ (белая, чёрный текст) */
     .product-btn {
         background: white;
         color: black;
@@ -242,6 +267,74 @@
         background: #f0f0f0;
     }
     
+    /* МОДАЛЬНОЕ ОКНО ДЛЯ ПРОСМОТРА ФОТО */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: relative;
+    }
+    
+    .modal-img {
+        width: 100%;
+        height: auto;
+        max-height: 80vh;
+        object-fit: contain;
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        color: white;
+        font-size: 32px;
+        cursor: pointer;
+        background: none;
+        border: none;
+    }
+    
+    .modal-prev, .modal-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: none;
+        font-size: 32px;
+        padding: 16px 24px;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: 0.2s;
+    }
+    
+    .modal-prev:hover, .modal-next:hover {
+        background: rgba(255,255,255,0.4);
+    }
+    
+    .modal-prev {
+        left: 20px;
+    }
+    
+    .modal-next {
+        right: 20px;
+    }
+    
     /* Адаптив */
     @media (max-width: 768px) {
         .hero {
@@ -252,10 +345,6 @@
             font-size: 28px;
         }
         .hero-overlay p {
-            font-size: 14px;
-        }
-        .hero-btn, .product-btn {
-            padding: 10px 24px;
             font-size: 14px;
         }
         .product-row {
@@ -273,11 +362,10 @@
         .product-price {
             font-size: 22px;
         }
-        .product-image i {
-            font-size: 100px;
-        }
-        .like-btn {
-            font-size: 24px;
+        .product-image {
+            max-width: 280px;
+            height: 280px;
+            margin: 0 auto;
         }
     }
     
@@ -328,7 +416,7 @@
     let likedProducts = JSON.parse(localStorage.getItem('liked_products') || '[]');
     
     function updateLikeButtons() {
-        document.querySelectorAll('.like-btn').forEach(btn => {
+        document.querySelectorAll('.like-icon').forEach(btn => {
             const id = btn.dataset.id;
             if (likedProducts.includes(id)) {
                 btn.classList.add('liked');
@@ -357,7 +445,7 @@
         if (window.updateLikesCount) window.updateLikesCount();
     }
     
-    document.querySelectorAll('.like-btn').forEach(btn => {
+    document.querySelectorAll('.like-icon').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleLike(btn.dataset.id, btn);
@@ -365,6 +453,68 @@
     });
     
     updateLikeButtons();
+    
+    // ========== ФОТО (МОДАЛЬНОЕ ОКНО) ==========
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <img class="modal-img" src="" alt="Просмотр">
+            <button class="modal-prev">❮</button>
+            <button class="modal-next">❯</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    const modalImg = modal.querySelector('.modal-img');
+    const closeModalBtn = modal.querySelector('.modal-close');
+    const prevBtn = modal.querySelector('.modal-prev');
+    const nextBtn = modal.querySelector('.modal-next');
+    
+    let currentImages = [];
+    let currentImageIndex = 0;
+    
+    function openModal(images, index) {
+        currentImages = images;
+        currentImageIndex = index;
+        modalImg.src = currentImages[currentImageIndex];
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    function changeImage(direction) {
+        currentImageIndex += direction;
+        if (currentImageIndex < 0) currentImageIndex = currentImages.length - 1;
+        if (currentImageIndex >= currentImages.length) currentImageIndex = 0;
+        modalImg.src = currentImages[currentImageIndex];
+    }
+    
+    closeModalBtn.addEventListener('click', closeModal);
+    prevBtn.addEventListener('click', () => changeImage(-1));
+    nextBtn.addEventListener('click', () => changeImage(1));
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    
+    // Навешиваем открытие на картинки
+    document.querySelectorAll('.product-image').forEach(container => {
+        const frontImg = container.querySelector('.front-img');
+        const backImg = container.querySelector('.back-img');
+        const images = [];
+        if (frontImg) images.push(frontImg.src);
+        if (backImg) images.push(backImg.src);
+        
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('like-icon')) return;
+            openModal(images, 0);
+        });
+    });
     
     // ========== КОРЗИНА ==========
     async function addToCart(productId, productName, productPrice) {
