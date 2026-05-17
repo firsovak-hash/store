@@ -3,147 +3,136 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<!-- ================= ТВОЯ ВЕРХНЯЯ СЕКЦИЯ (без изменений) ================= -->
-<section class="top-section">
-    <div class="top-container">
-        <div class="top-left">
-            <h1 class="top-title">А ПОКУПАЙ САМОГО СЕБЯ?!</h1>
-            <p class="top-subtitle">красивые фигурки на рабочее место</p>
-        </div>
-        <div class="top-right">
-            <img src="/static/images/sticker.jpeg" alt="стикер" class="top-sticker">
+<!-- БОЛЬШАЯ ФОТОГРАФИЯ НА ВСЮ ШИРИНУ -->
+<section class="hero">
+    <div class="hero-image">
+        <img src="/static/images/hero-bg.jpg" alt="Одежда">
+        <div class="hero-overlay">
+            <h1>НОВАЯ КОЛЛЕКЦИЯ</h1>
+            <p>Стильная одежда для каждого дня</p>
+            <a href="/catalog" class="hero-btn">Смотреть каталог</a>
         </div>
     </div>
 </section>
 
-<!-- ================= ТВОЙ ПРОЦЕСС РАБОТЫ (без изменений) ================= -->
-<section class="process-text">
-    <h2>Как мы работаем</h2>
-    <div class="process-steps">
-        <div class="step"><span class="step-num">01</span><span class="step-name">Фото</span><span class="step-desc">Вы загружаете 2-3 фото</span></div>
-        <div class="step"><span class="step-num">02</span><span class="step-name">3D-модель</span><span class="step-desc">Создаём модель с портретным сходством</span></div>
-        <div class="step"><span class="step-num">03</span><span class="step-name">Покраска</span><span class="step-desc">Ручная работа акриловыми красками</span></div>
-        <div class="step"><span class="step-num">04</span><span class="step-name">Упаковка</span><span class="step-desc">Красиво упаковываем и отправляем</span></div>
-    </div>
-</section>
-
-<!-- ================= ТВОЙ БЛОК О НАС (без изменений) ================= -->
-<section class="about-text">
-    <h2>О нас</h2>
-    <p>Мы создаём персонализированные 3D-фигурки. Каждая работа — это ручной труд и внимание к деталям. Наши фигурки дарят эмоции и становятся особенными подарками для близких.</p>
-</section>
-
-<!-- ================= НОВЫЙ ШАХМАТНЫЙ КАТАЛОГ (БЕЗ БЛОКОВ) ================= -->
-<h2 class="catalog-title">Популярные фигурки</h2>
-
-<div class="products-grid-shakhmat" id="productsGrid">
-    <!-- Карточка 1: Чиби-фигурка пары (текст справа, картинка слева) -->
-    <div class="product-row fade-item">
-        <div class="product-image">
-            <img src="/static/images/seedream-4.0_сгенерируй_рядом_с_человеком_девочку_в_тако-0-removebg-preview.png" alt="Чиби-фигурка пары">
+<!-- КАРТОЧКИ ТОВАРОВ (шахматный порядок, выезд справа) -->
+<div class="products-section">
+    <div class="products-container" id="productsGrid">
+        {% for product in products %}
+        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} fade-item">
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
+                {% else %}
+                    <i class="fas fa-tshirt"></i>
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-description">{{ product.description }}</p>
+                <div class="product-price">{{ product.price }} ₽</div>
+                <button class="product-btn add-to-cart" 
+                        data-id="{{ product.id }}"
+                        data-name="{{ product.name }}"
+                        data-price="{{ product.price }}">
+                    🛒 Добавить в корзину
+                </button>
+            </div>
         </div>
-        <div class="product-info">
-            <h3 class="product-name">Чиби-фигурка пары</h3>
-            <p class="product-description">Милые чиби-фигурки вас двоих. Высота 8-10 см. Ручная покраска. Идеальный подарок для годовщины.</p>
-            <div class="product-price">3 500 ₽</div>
-            <button class="product-btn add-to-cart" data-id="1" data-name="Чиби-фигурка пары" data-price="3500">
-                🛒 Добавить в корзину
-            </button>
-        </div>
-    </div>
-
-    <!-- Карточка 2: Премиум фигурка (текст слева, картинка справа) -->
-    <div class="product-row product-row-reverse fade-item">
-        <div class="product-image">
-            <i class="fas fa-cube"></i>
-        </div>
-        <div class="product-info">
-            <h3 class="product-name">Премиум фигурка</h3>
-            <p class="product-description">Премиум-класс: фигурка большего размера, максимальная проработка лица и одежды, полная ручная покраска.</p>
-            <div class="product-price">6 500 ₽</div>
-            <button class="product-btn add-to-cart" data-id="4" data-name="Премиум фигурка" data-price="6500">
-                🛒 Добавить в корзину
-            </button>
-        </div>
-    </div>
-
-    <!-- Карточка 3: Брелок-фигурка (текст справа, картинка слева) -->
-    <div class="product-row fade-item">
-        <div class="product-image">
-            <i class="fas fa-cube"></i>
-        </div>
-        <div class="product-info">
-            <h3 class="product-name">Брелок-фигурка</h3>
-            <p class="product-description">Маленькая копия с креплением для ключей. Всегда носите частичку ваших любимых с собой.</p>
-            <div class="product-price">1 500 ₽</div>
-            <button class="product-btn add-to-cart" data-id="5" data-name="Брелок-фигурка" data-price="1500">
-                🛒 Добавить в корзину
-            </button>
-        </div>
+        {% endfor %}
     </div>
 </div>
-
-<div class="catalog-link">
-    <a href="{{ url_for('catalog') }}" class="btn-primary">Весь каталог →</a>
-</div>
-
-<!-- ================= ТВОЙ НИЖНИЙ БЛОК (без изменений) ================= -->
-<section class="donate-section">
-    <div class="donate-container">
-        <div class="donate-left">
-            <h2 class="donate-title">ДАРИ ТОМУ,<br>КОГО ЛЮБИШЬ</h2>
-        </div>
-        <div class="donate-right">
-            <p class="donate-text">
-                открывай канал, уточняй детали, размеры и расцветки — 
-                и оформляй заказ напрямую без лишних шагов
-            </p>
-            <a href="https://t.me/your_username" target="_blank" class="telegram-btn">
-                <i class="fab fa-telegram"></i> заказать в telegram
-            </a>
-        </div>
-    </div>
-</section>
 
 <style>
-    /* ===== ВСЕ ТВОИ СТАРЫЕ СТИЛИ (оставь как есть, я их не трогаю) ===== */
-    /* ... твои стили для top-section, process-text, about-text, donate-section ... */
-    /* ... я их не меняю, просто добавлю новые ниже ... */
-
-    /* ===== НОВЫЕ СТИЛИ ДЛЯ ШАХМАТНОЙ СЕТКИ (без блоков) ===== */
-    .catalog-title {
+    /* ГЕРОЙ СЕКЦИЯ — большое фото */
+    .hero {
+        width: 100%;
+        height: 50vh;
+        min-height: 400px;
+        overflow: hidden;
+    }
+    
+    .hero-image {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .hero-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         text-align: center;
-        font-size: 32px;
-        margin: 60px 0 40px;
         color: white;
     }
-
-    .products-grid-shakhmat {
+    
+    .hero-overlay h1 {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        letter-spacing: 2px;
+    }
+    
+    .hero-overlay p {
+        font-size: 18px;
+        margin-bottom: 30px;
+        opacity: 0.9;
+    }
+    
+    .hero-btn {
+        background: white;
+        color: black;
+        text-decoration: none;
+        padding: 12px 32px;
+        border-radius: 40px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    
+    .hero-btn:hover {
+        transform: scale(1.05);
+        background: #f0f0f0;
+    }
+    
+    /* СЕКЦИЯ ТОВАРОВ */
+    .products-section {
         max-width: 1100px;
-        margin: 0 auto;
+        margin: 60px auto;
         padding: 0 20px;
     }
-
+    
     .product-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 50px;
+        gap: 60px;
         align-items: center;
         margin-bottom: 80px;
         
-        /* Анимация появления */
+        /* Анимация появления справа */
         opacity: 0;
         transform: translateX(80px);
-        transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
     }
-
+    
     .product-row.visible {
         opacity: 1;
         transform: translateX(0);
     }
-
-    /* Шахматный порядок: чётные строки — картинка справа */
+    
+    /* Шахматный порядок */
     .product-row-reverse {
         direction: rtl;
     }
@@ -151,63 +140,58 @@
     .product-row-reverse .product-info {
         direction: ltr;
     }
-
-    /* Картинка — БЕЗ БЛОКА, просто картинка на фоне */
+    
+    /* Картинка */
     .product-image {
         display: flex;
         justify-content: center;
         align-items: center;
     }
-
+    
     .product-image img {
         width: 100%;
         max-width: 350px;
         border-radius: 20px;
         transition: 0.3s;
     }
-
+    
     .product-image i {
         font-size: 120px;
-        color: #d66b7e;
-        opacity: 0.7;
+        color: #ccc;
     }
-
+    
     .product-row:hover .product-image img {
         transform: scale(1.02);
     }
-
-    .product-row:hover .product-image i {
-        transform: scale(1.02);
-    }
-
-    /* Информация о товаре — БЕЗ БЛОКА, прямо на фоне */
+    
+    /* Информация (без блока, на фоне) */
     .product-info {
         direction: ltr;
     }
-
+    
     .product-name {
         font-size: 32px;
         font-weight: 700;
         margin-bottom: 16px;
-        color: white;
+        color: #111;
     }
-
+    
     .product-description {
         font-size: 16px;
-        color: rgba(255, 255, 255, 0.7);
+        color: #555;
         line-height: 1.5;
         margin-bottom: 20px;
     }
-
+    
     .product-price {
         font-size: 28px;
         font-weight: 800;
-        color: #d66b7e;
+        color: #111;
         margin-bottom: 25px;
     }
-
+    
     .product-btn {
-        background: #d66b7e;
+        background: #111;
         color: white;
         border: none;
         padding: 14px 28px;
@@ -217,62 +201,88 @@
         cursor: pointer;
         transition: 0.2s;
     }
-
+    
     .product-btn:hover {
-        background: #c05a6d;
+        background: #333;
         transform: translateY(-2px);
     }
-
-    /* Мобильная версия */
+    
+    /* Адаптив */
     @media (max-width: 768px) {
+        .hero {
+            height: 40vh;
+            min-height: 300px;
+        }
+        .hero-overlay h1 {
+            font-size: 28px;
+        }
+        .hero-overlay p {
+            font-size: 14px;
+        }
         .product-row {
             grid-template-columns: 1fr;
             gap: 30px;
             text-align: center;
             margin-bottom: 50px;
         }
-        
         .product-row-reverse {
             direction: ltr;
         }
-        
         .product-name {
             font-size: 24px;
         }
-        
         .product-price {
             font-size: 22px;
         }
-        
         .product-image img {
             max-width: 250px;
         }
-        
-        .product-image i {
-            font-size: 80px;
-        }
+    }
+    
+    /* Уведомление */
+    .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2ecc71;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 40px;
+        z-index: 1000;
+        font-weight: 500;
+        animation: fadeOut 2s forwards;
+    }
+    
+    .toast.error {
+        background: #e74c3c;
+    }
+    
+    @keyframes fadeOut {
+        0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        70% { opacity: 1; }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
     }
 </style>
 
 <script>
-    // ========== ПЛАВНОЕ ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ ==========
+    // Плавное появление карточек
     const fadeItems = document.querySelectorAll('.fade-item');
-
+    
     function checkVisibility() {
         fadeItems.forEach(item => {
             const rect = item.getBoundingClientRect();
-            const isVisible = rect.top < window.innerHeight - 100;
-            if (isVisible) {
+            if (rect.top < window.innerHeight - 100) {
                 item.classList.add('visible');
             }
         });
     }
-
+    
     window.addEventListener('load', checkVisibility);
     window.addEventListener('scroll', checkVisibility);
     checkVisibility();
-
-    // ========== КОРЗИНА ==========
+    
+    // Корзина
     async function addToCart(productId, productName, productPrice) {
         try {
             const response = await fetch('/api/cart/add', {
@@ -286,7 +296,7 @@
             });
             const data = await response.json();
             if (data.success) {
-                showToast('✅ ' + productName + ' добавлен в корзину');
+                showToast('✅ ' + productName + ' добавлен');
                 updateCartCount();
             } else {
                 showToast('❌ Ошибка', true);
@@ -295,56 +305,32 @@
             showToast('❌ Ошибка соединения', true);
         }
     }
-
+    
     function showToast(message, isError = false) {
         const toast = document.createElement('div');
         toast.className = 'toast';
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: ${isError ? '#e74c3c' : '#2ecc71'};
-            color: white;
-            padding: 12px 24px;
-            border-radius: 40px;
-            z-index: 1000;
-            font-weight: 500;
-            animation: fadeOut 2s forwards;
-        `;
+        if (isError) toast.classList.add('error');
         toast.textContent = message;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2000);
     }
-
+    
     async function updateCartCount() {
         try {
             const response = await fetch('/api/cart/count');
             const data = await response.json();
-            const countElements = document.querySelectorAll('.cart-count, #cart-count-nav');
-            countElements.forEach(el => {
-                if (el) el.textContent = data.count || 0;
-            });
-        } catch (err) {}
+            const el = document.getElementById('cart-count');
+            if (el) el.textContent = data.count || 0;
+        } catch(err) {}
     }
-
+    
     document.querySelectorAll('.add-to-cart').forEach(btn => {
         btn.addEventListener('click', () => {
             addToCart(btn.dataset.id, btn.dataset.name, parseInt(btn.dataset.price));
         });
     });
-
+    
     updateCartCount();
     setInterval(updateCartCount, 5000);
 </script>
-
-<style>
-    /* Анимация для уведомления */
-    @keyframes fadeOut {
-        0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-        70% { opacity: 1; }
-        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
-    }
-</style>
-
 {% endblock %}
