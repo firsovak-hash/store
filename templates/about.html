@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}О нас{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="about-content">
+        <h1 class="about-title">О НАС</h1>
+        <p class="about-text">
+            Меня зовут <strong>Саша</strong>. 
+        </p>
+        <p class="about-text">
+            Мы создаём одежду, потому что <strong>мы этим горим</strong>. 
+            Каждая футболка, каждая деталь — это частичка нашей энергии и любви к своему делу.
+        </p>
+        <p class="about-text">
+            Наша цель — чтобы вы чувствовали себя уверенно, стильно и комфортно. 
+            Мы не просто продаём вещи — мы делимся своим вдохновением.
+        </p>
+        <div class="about-divider"></div>
+        <p class="about-signature">
+            С уважением, Саша и команда
+        </p>
+    </div>
+</div>
+
+<style>
+    .about-container {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        background: #0a0a0a;
+    }
+    
+    .about-content {
+        max-width: 700px;
+        text-align: center;
+        background: transparent;
+        padding: 40px;
+    }
+    
+    .about-title {
+        font-size: 48px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 40px;
+        letter-spacing: 2px;
+    }
+    
+    .about-text {
+        font-size: 20px;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 24px;
+    }
+    
+    .about-text strong {
+        color: white;
+        font-weight: 600;
+    }
+    
+    .about-divider {
+        width: 60px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.3);
+        margin: 40px auto;
+    }
+    
+    .about-signature {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.6);
+        font-style: italic;
+    }
+    
+    @media (max-width: 768px) {
+        .about-title {
+            font-size: 32px;
+        }
+        .about-text {
+            font-size: 18px;
+        }
+        .about-content {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
