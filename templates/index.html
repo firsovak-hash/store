@@ -3,504 +3,370 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<!-- Верхняя секция: А покупай самого себя?! -->
-<!-- Верхняя секция: А покупай самого себя?! -->
-<section class="top-section">
-    <div class="top-container">
-        <div class="top-left">
-            <h1 class="top-title">А ПОКУПАЙ САМОГО СЕБЯ?!</h1>
-            <p class="top-subtitle">красивые фигурки на рабочее место</p>
+<!-- Верхняя секция -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-left">
+            <h1 class="hero-title">3D ФИГУРКИ<br>НА ЗАКАЗ</h1>
+            <p class="hero-subtitle">Персонализированные фигурки вас и ваших близких. Ручная работа, высокая детализация.</p>
+            <a href="/catalog" class="hero-btn">Смотреть каталог →</a>
         </div>
-        <div class="top-right">
-            <img src="/static/images/sticker.jpeg" alt="стикер" class="top-sticker">
-        </div>
-    </div>
-</section>
-
-<!-- Процесс работы -->
-<section class="process-text">
-    <h2>Как мы работаем</h2>
-    <div class="process-steps">
-        <div class="step"><span class="step-num">01</span><span class="step-name">Фото</span><span class="step-desc">Вы загружаете 2-3 фото</span></div>
-        <div class="step"><span class="step-num">02</span><span class="step-name">3D-модель</span><span class="step-desc">Создаём модель с портретным сходством</span></div>
-        <div class="step"><span class="step-num">03</span><span class="step-name">Покраска</span><span class="step-desc">Ручная работа акриловыми красками</span></div>
-        <div class="step"><span class="step-num">04</span><span class="step-name">Упаковка</span><span class="step-desc">Красиво упаковываем и отправляем</span></div>
-    </div>
-</section>
-
-<!-- О нас -->
-<section class="about-text">
-    <h2>О нас</h2>
-    <p>Мы создаём персонализированные 3D-фигурки. Каждая работа — это ручной труд и внимание к деталям. Наши фигурки дарят эмоции и становятся особенными подарками для близких.</p>
-</section>
-
-<!-- Карточки товаров — только 3 в ряд -->
-<h2 class="catalog-title">Популярные фигурки</h2>
-<div class="products-grid">
-    <!-- Чиби-фигурка пары (id=1) -->
-    <div class="product-card">
-        <div class="product-card-image" onclick="openModal('1')">
-            <i class="fas fa-cube"></i>
-        </div>
-        <div class="product-card-info">
-            <h3>Чиби-фигурка пары</h3>
-            <p class="product-card-price">3500 ₽</p>
-            <button class="card-order-btn" onclick="orderInTelegram('Чиби-фигурка пары')">
-                <i class="fab fa-telegram"></i> Заказать
-            </button>
-        </div>
-    </div>
-    <!-- Премиум (id=4) -->
-    <!-- Чиби-фигурка пары (id=1) -->
-    <div class="product-card">
-        <div class="product-card-image" onclick="openModal('1')">
-            <img src="/static/images/seedream-4.0_сгенерируй_рядом_с_человеком_девочку_в_тако-0-removebg-preview.png" alt="Чиби-фигурка пары" class="product-img">
-         </div>
-        <div class="product-card-info">
-            <h3>Чиби-фигурка пары</h3>
-            <p class="product-card-price">3500 ₽</p>
-            <button class="card-order-btn" onclick="orderInTelegram('Чиби-фигурка пары')">
-                <i class="fab fa-telegram"></i> Заказать
-            </button>
-        </div>
-    </div>
-    <!-- Брелок (id=5) -->
-    <div class="product-card">
-        <div class="product-card-image" onclick="openModal('5')">
-            <i class="fas fa-cube"></i>
-        </div>
-        <div class="product-card-info">
-            <h3>Брелок-фигурка</h3>
-            <p class="product-card-price">1500 ₽</p>
-            <button class="card-order-btn" onclick="orderInTelegram('Брелок-фигурка')">
-                <i class="fab fa-telegram"></i> Заказать
-            </button>
-        </div>
-    </div>
-</div>
-
-<div class="catalog-link">
-    <a href="{{ url_for('catalog') }}" class="btn-primary">Весь каталог →</a>
-</div>
-
-<!-- НИЖНИЙ БЛОК -->
-<section class="donate-section">
-    <div class="donate-container">
-        <div class="donate-left">
-            <h2 class="donate-title">ДАРИ ТОМУ,<br>КОГО ЛЮБИШЬ</h2>
-        </div>
-        <div class="donate-right">
-            <p class="donate-text">
-                открывай канал, уточняй детали, размеры и расцветки — 
-                и оформляй заказ напрямую без лишних шагов
-            </p>
-            <a href="https://t.me/your_username" target="_blank" class="telegram-btn">
-                <i class="fab fa-telegram"></i> заказать в telegram
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Модальное окно -->
-<div id="productModal" class="modal">
-    <div class="modal-content">
-        <span class="modal-close" onclick="closeModal()">&times;</span>
-        <div class="modal-gallery">
-            <div class="gallery-container" id="modalGallery">
-                <div class="gallery-slide active"><i class="fas fa-cube"></i></div>
-                <div class="gallery-slide"><i class="fas fa-cube"></i></div>
-                <div class="gallery-slide"><i class="fas fa-cube"></i></div>
-                <button class="gallery-prev" onclick="changeSlide(-1)">❮</button>
-                <button class="gallery-next" onclick="changeSlide(1)">❯</button>
+        <div class="hero-right">
+            <div class="hero-icon">
+                <i class="fas fa-cube"></i>
             </div>
         </div>
-        <div class="modal-info-bottom">
-            <h2 id="modalTitle"></h2>
-            <p id="modalDesc" class="modal-desc"></p>
-            <div class="modal-price" id="modalPrice"></div>
-            <button class="btn-primary modal-btn" onclick="orderCurrentProduct()">
-                <i class="fab fa-telegram"></i> Купить в Telegram
-            </button>
+    </div>
+</section>
+
+<!-- Сетка товаров в шахматном порядке -->
+<div class="products-section">
+    <div class="products-container" id="productsGrid">
+        {% for product in products %}
+        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} fade-item">
+            <div class="product-image">
+                <div class="image-placeholder">
+                    <i class="fas fa-cube"></i>
+                </div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-description">{{ product.description }}</p>
+                <div class="product-price">{{ product.price }} ₽</div>
+                <button class="product-btn add-to-cart" 
+                        data-id="{{ product.id }}"
+                        data-name="{{ product.name }}"
+                        data-price="{{ product.price }}">
+                    🛒 Добавить в корзину
+                </button>
+            </div>
         </div>
+        {% endfor %}
     </div>
 </div>
 
 <style>
-    /* Верхняя секция */
-    .top-section {
-        padding: 80px 0 60px;
-        border-bottom: 1px solid rgba(255,255,255,0.15);
+    /* ========== ГЛАВНАЯ СЕКЦИЯ ========== */
+    .hero-section {
+        padding: 60px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 40px;
     }
-    .top-container {
+    
+    .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
         gap: 60px;
         flex-wrap: wrap;
     }
-    .top-left { flex: 1; }
     
-    /* Строка с заголовком и стикером - стикер СПРАВА от текста */
-    .title-row {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        flex-wrap: wrap;
+    .hero-left {
+        flex: 1;
     }
-    .top-title {
-        font-size: 72px;
+    
+    .hero-title {
+        font-size: 48px;
         font-weight: 800;
-        color: white;
-        text-transform: uppercase;
         line-height: 1.2;
-        letter-spacing: -0.02em;
-        margin: 0;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #fff, #d66b7e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
-    .inline-sticker {
-        height: 80px;
-        width: auto;
-    }
-    .top-subtitle {
+    
+    .hero-subtitle {
         font-size: 18px;
-        color: rgba(255,255,255,0.7);
-        letter-spacing: 1px;
-        margin-top: 15px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 30px;
+        line-height: 1.5;
     }
-    .top-right { flex: 1; }
-    .top-figure {
+    
+    .hero-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #d66b7e;
+        color: white;
+        padding: 12px 28px;
+        border-radius: 40px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    
+    .hero-btn:hover {
+        background: #c05a6d;
+        transform: translateY(-2px);
+    }
+    
+    .hero-right {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .hero-icon {
+        width: 200px;
+        height: 200px;
+        background: rgba(214, 107, 126, 0.1);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-    }
-    .top-figure i {
-        font-size: 200px;
-        color: #d66b7e;
-        opacity: 0.6;
-    }
-    
-    /* Процесс работы */
-    .process-text { margin: 60px 0; text-align: center; }
-    .process-text h2 { font-size: 32px; margin-bottom: 30px; color: white; }
-    .process-steps { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-    .step { flex: 1; text-align: center; padding: 20px; background: transparent; }
-    .step-num { display: block; font-size: 36px; font-weight: 800; color: #d66b7e; margin-bottom: 10px; }
-    .step-name { display: block; font-size: 20px; font-weight: 600; color: white; margin-bottom: 8px; }
-    .step-desc { display: block; font-size: 14px; color: rgba(255,255,255,0.6); }
-    
-    /* О нас */
-    .about-text { margin: 60px auto; text-align: center; max-width: 800px; }
-    .about-text h2 { font-size: 32px; margin-bottom: 20px; color: white; }
-    .about-text p { font-size: 18px; color: rgba(255,255,255,0.7); line-height: 1.6; }
-    
-    /* КАРТОЧКИ ТОВАРОВ — 3 в ряд */
-    .catalog-title { text-align: center; font-size: 32px; margin: 40px 0 30px; color: white; }
-    
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-        margin-bottom: 40px;
-        max-width: 1100px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .product-card {
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(5px);
-        border-radius: 16px;
-        overflow: hidden;
-        transition: transform 0.2s;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    
-    .product-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    }
-    
-    .product-card-image {
-        height: 380px;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-    
-    .product-card-image i {
         font-size: 80px;
         color: #d66b7e;
     }
     
-    .product-card-info {
-        padding: 20px;
-        text-align: center;
+    /* ========== ШАХМАТНАЯ СЕТКА ========== */
+    .products-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
     }
     
-    .product-card-info h3 {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: white;
-    }
-    
-    .product-card-price {
-        font-size: 24px;
-        font-weight: 700;
-        color: #d66b7e;
-        margin-bottom: 15px;
-    }
-    
-    .card-order-btn {
-        background: #2aab6d;
-        color: white;
-        border: none;
-        padding: 12px 16px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        width: 100%;
-        transition: 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-    
-    .card-order-btn:hover {
-        background: #1f8c59;
-        transform: scale(1.02);
-    }
-    
-    .catalog-link {
-        text-align: center;
-        margin: 30px 0 60px;
-    }
-    
-    /* НИЖНИЙ БЛОК */
-    .donate-section {
-        padding: 60px 0 80px;
-        border-top: 1px solid rgba(255,255,255,0.15);
-        margin-top: 40px;
-    }
-    .donate-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .product-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 60px;
-        flex-wrap: wrap;
-    }
-    .donate-left { flex: 1; }
-    .donate-title {
-        font-size: 56px;
-        font-weight: 800;
-        color: white;
-        text-transform: uppercase;
-        line-height: 1.2;
-    }
-    .donate-right {
-        flex: 1;
-        max-width: 420px;
-    }
-    .donate-text {
-        font-size: 14px;
-        line-height: 1.5;
-        color: rgba(255,255,255,0.9);
-        margin-bottom: 20px;
+        align-items: center;
+        margin-bottom: 80px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 24px;
+        padding: 40px;
+        transition: all 0.4s ease;
     }
     
-    /* Кнопка Telegram */
-    .telegram-btn { 
-        display: inline-flex; 
-        align-items: center; 
+    /* Шахматный порядок: чётные строки — картинка справа */
+    .product-row-reverse {
+        direction: rtl;
+    }
+    
+    .product-row-reverse .product-info {
+        direction: ltr;
+    }
+    
+    /* Плавное появление */
+    .fade-item {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .fade-item.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* Картинка */
+    .product-image {
+        display: flex;
         justify-content: center;
-        gap: 10px; 
-        background: #7cb342; 
-        color: #000000; 
-        padding: 14px 24px; 
-        border-radius: 0px; 
-        font-weight: 700; 
-        font-size: 16px; 
-        text-decoration: none; 
-        transition: 0.3s; 
-        position: relative;
-        overflow: hidden;
+        align-items: center;
+    }
+    
+    .image-placeholder {
         width: 100%;
+        max-width: 300px;
+        height: 300px;
+        background: rgba(214, 107, 126, 0.1);
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        color: #d66b7e;
+        transition: 0.3s;
+    }
+    
+    .product-row:hover .image-placeholder {
+        transform: scale(1.02);
+        background: rgba(214, 107, 126, 0.15);
+    }
+    
+    /* Информация о товаре */
+    .product-info {
+        direction: ltr;
+    }
+    
+    .product-name {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: #fff;
+    }
+    
+    .product-description {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.5;
+        margin-bottom: 24px;
+    }
+    
+    .product-price {
+        font-size: 32px;
+        font-weight: 800;
+        color: #d66b7e;
+        margin-bottom: 24px;
+    }
+    
+    .product-btn {
+        background: #d66b7e;
+        color: white;
         border: none;
+        padding: 14px 28px;
+        border-radius: 40px;
+        font-size: 16px;
+        font-weight: 600;
         cursor: pointer;
+        transition: 0.2s;
     }
-    .telegram-btn::after {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -100%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(115deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0.8) 45%, rgba(255,255,255,0.8) 55%, rgba(255,255,255,0) 65%, rgba(255,255,255,0) 100%);
-        transform: rotate(25deg);
-        animation: shine 5s ease-in-out infinite;
+    
+    .product-btn:hover {
+        background: #c05a6d;
+        transform: translateY(-2px);
     }
-    @keyframes shine {
-        0% { transform: translateX(-100%) rotate(25deg); opacity: 0; }
-        10% { transform: translateX(-100%) rotate(25deg); opacity: 0; }
-        30% { transform: translateX(100%) rotate(25deg); opacity: 1; }
-        50% { transform: translateX(100%) rotate(25deg); opacity: 0; }
-        100% { transform: translateX(100%) rotate(25deg); opacity: 0; }
-    }
-    .telegram-btn i { font-size: 18px; color: #000000; }
-    .telegram-btn:hover { background: #689f38; transform: scale(1.02); }
     
-    /* Модальное окно */
-    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-    .modal.active { display: flex; }
-    .modal-content { background: #1e1e22; border-radius: 20px; width: 90%; max-width: 700px; height: 85vh; display: flex; flex-direction: column; overflow: hidden; animation: modalFadeIn 0.3s; position: relative; }
-    @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    .modal-close { position: absolute; top: 16px; right: 20px; font-size: 28px; font-weight: bold; color: white; cursor: pointer; z-index: 10; background: rgba(0,0,0,0.5); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-    .modal-close:hover { background: #d66b7e; }
-    
-    /* Галерея */
-    .modal-gallery { flex: 2; position: relative; background: #0a0a0a; min-height: 0; }
-    .gallery-container { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .gallery-slide { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; }
-    .gallery-slide.active { display: flex; }
-    .gallery-slide i { font-size: 100px; color: #d66b7e; opacity: 0.7; }
-    .gallery-prev, .gallery-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; font-size: 24px; padding: 10px 14px; cursor: pointer; border-radius: 50%; transition: 0.2s; z-index: 10; }
-    .gallery-prev:hover, .gallery-next:hover { background: #d66b7e; }
-    .gallery-prev { left: 12px; }
-    .gallery-next { right: 12px; }
-    
-    /* Нижняя часть модалки */
-    .modal-info-bottom { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #1e1e22; overflow-y: auto; }
-    .modal-info-bottom h2 { font-size: 24px; color: white; margin: 0; }
-    .modal-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; margin: 0; }
-    .modal-price { font-size: 24px; font-weight: 700; color: #d66b7e; margin: 0; }
-    .modal-btn { width: 100%; justify-content: center; padding: 12px; margin-top: 8px; border: none; cursor: pointer; border-radius: 12px; }
-    
-    /* Адаптивность */
+    /* Адаптив для мобильных */
     @media (max-width: 768px) {
-        .top-section { padding: 50px 0 40px; }
-        .top-title { font-size: 36px; }
-        .inline-sticker { height: 45px; }
-        .top-subtitle { font-size: 14px; }
-        .top-figure i { font-size: 120px; }
+        .hero-title {
+            font-size: 32px;
+        }
         
-        .donate-section { padding: 40px 0 60px; }
-        .donate-title { font-size: 36px; }
-        
-        .top-container, .donate-container {
+        .hero-container {
             flex-direction: column;
             text-align: center;
-            gap: 30px;
         }
-        .title-row {
-            justify-content: center;
-        }
-        .donate-right { max-width: 100%; text-align: center; }
-        .process-steps { flex-direction: column; gap: 0; }
         
-        .products-grid {
+        .product-row {
             grid-template-columns: 1fr;
-            gap: 20px;
-            max-width: 280px;
+            gap: 30px;
+            padding: 30px 20px;
+            text-align: center;
         }
-        .product-card-image {
-            height: 280px;
+        
+        .product-row-reverse {
+            direction: ltr;
         }
-        .product-card-image i {
+        
+        .product-name {
+            font-size: 24px;
+        }
+        
+        .product-price {
+            font-size: 28px;
+        }
+        
+        .image-placeholder {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
             font-size: 60px;
         }
-        .product-card-info h3 {
-            font-size: 18px;
-        }
-        .product-card-price {
-            font-size: 20px;
-        }
-        
-        .modal-content { width: 95%; height: 80vh; max-width: 95%; }
+    }
+    
+    /* Уведомление */
+    .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2ecc71;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 40px;
+        z-index: 1000;
+        font-weight: 500;
+        animation: fadeOut 2s forwards;
+    }
+    
+    .toast.error {
+        background: #e74c3c;
+    }
+    
+    @keyframes fadeOut {
+        0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        70% { opacity: 1; }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
     }
 </style>
 
 <script>
-    let currentSlide = 0;
-    let currentProductId = null;
-    
-    function showSlide(index) {
-        const slides = document.querySelectorAll('.gallery-slide');
-        if (!slides.length) return;
-        if (index >= slides.length) currentSlide = 0;
-        if (index < 0) currentSlide = slides.length - 1;
-        slides.forEach((slide, i) => {
-            slide.classList.toggle('active', i === currentSlide);
+// ========== ПЛАВНОЕ ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ ==========
+const fadeItems = document.querySelectorAll('.fade-item');
+
+function checkVisibility() {
+    fadeItems.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight - 100;
+        if (isVisible) {
+            item.classList.add('visible');
+        }
+    });
+}
+
+// Запускаем при загрузке и при скролле
+window.addEventListener('load', checkVisibility);
+window.addEventListener('scroll', checkVisibility);
+checkVisibility();
+
+// ========== КОРЗИНА ==========
+async function addToCart(productId, productName, productPrice) {
+    try {
+        const response = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_id: productId,
+                name: productName,
+                price: productPrice
+            })
         });
-    }
-    
-    function changeSlide(direction) {
-        currentSlide += direction;
-        showSlide(currentSlide);
-    }
-    
-    const productsData = {
-        "1": {
-            name: "Чиби-фигурка пары",
-            price: "3500",
-            description: "Милые чиби-фигурки вас двоих. Высота 8-10 см. Ручная покраска. Идеальный подарок для годовщины или просто так."
-        },
-        "4": {
-            name: "Премиум фигурка",
-            price: "6500",
-            description: "Премиум-класс: фигурка большего размера, максимальная проработка лица и одежды, полная ручная покраска всех элементов. Упаковка с магнитным замком и возможность именной гравировки."
-        },
-        "5": {
-            name: "Брелок-фигурка",
-            price: "1500",
-            description: "Маленькая копия с креплением для ключей. Всегда носите частичку ваших любимых с собой. Отличный вариант для первого заказа."
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('✅ ' + productName + ' добавлен в корзину');
+            updateCartCount();
+        } else {
+            showToast('❌ Ошибка', true);
         }
-    };
-    
-    function orderInTelegram(productName) {
-        window.open("https://t.me/your_username?text=Здравствуйте! Хочу заказать " + productName, "_blank");
+    } catch (err) {
+        showToast('❌ Ошибка соединения', true);
     }
-    
-    function openModal(productId) {
-        currentProductId = productId;
-        const product = productsData[productId];
-        if (!product) return;
-        
-        document.getElementById('modalTitle').innerText = product.name;
-        document.getElementById('modalDesc').innerText = product.description;
-        document.getElementById('modalPrice').innerText = product.price + ' ₽';
-        
-        currentSlide = 0;
-        showSlide(currentSlide);
-        
-        document.getElementById('productModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closeModal() {
-        document.getElementById('productModal').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    
-    function orderCurrentProduct() {
-        if (currentProductId) {
-            const product = productsData[currentProductId];
-            if (product) {
-                window.open("https://t.me/your_username?text=Здравствуйте! Хочу заказать " + product.name, "_blank");
-            }
-        }
-    }
-    
-    document.getElementById('productModal').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('productModal')) closeModal();
+}
+
+function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    if (isError) toast.classList.add('error');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+async function updateCartCount() {
+    try {
+        const response = await fetch('/api/cart/count');
+        const data = await response.json();
+        const countElements = document.querySelectorAll('.cart-count, #cart-count-nav');
+        countElements.forEach(el => {
+            if (el) el.textContent = data.count || 0;
+        });
+    } catch (err) {}
+}
+
+// Навешиваем обработчики на кнопки
+document.querySelectorAll('.add-to-cart').forEach(btn => {
+    btn.addEventListener('click', () => {
+        addToCart(btn.dataset.id, btn.dataset.name, parseInt(btn.dataset.price));
     });
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        window.changeSlide = changeSlide;
-        showSlide(0);
-    });
+});
+
+// Обновляем счетчик при загрузке
+updateCartCount();
+setInterval(updateCartCount, 5000);
 </script>
 {% endblock %}
