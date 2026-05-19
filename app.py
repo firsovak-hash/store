@@ -67,6 +67,10 @@ PRODUCTS = {
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/likes')
+def likes():
+    return render_template('likes.html', products=PRODUCTS_LIST)
 PRODUCTS_LIST = list(PRODUCTS.values())
 
 # Файл для хранения отзывов
