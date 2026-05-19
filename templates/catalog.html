@@ -52,14 +52,104 @@
         margin-bottom: 0;
     }
 
-    .t754__bgimg {
+    .t754__img {
         position: absolute;
-        inset: 0;
-        background-size: cover;
-        background-position: center;
-        transition: transform 0.4s ease;
+        inset: 0; width: 100%; height: 100%;
+        object-fit: cover;
+        transition: opacity 0.35s ease;
     }
-    .t754__imgwrapper:hover .t754__bgimg { transform: scale(1.04); }
+    .t754__img--front { opacity: 1; z-index: 1; }
+    .t754__img--back  { opacity: 0; z-index: 0; }
+    .t754__imgwrapper:hover .t754__img--front { opacity: 0; }
+    .t754__imgwrapper:hover .t754__img--back  { opacity: 1; }
+
+    .t754__like {
+        position: absolute;
+        top: 10px; right: 10px;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        border: none; cursor: pointer; z-index: 10;
+        width: 36px; height: 36px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        transition: transform 0.2s, background 0.2s;
+    }
+    .t754__like:hover { transform: scale(1.1); background: rgba(0,0,0,0.75); }
+    .heart-svg { width: 18px; height: 18px; }
+    .heart-svg path {
+        fill: none; stroke: #fff; stroke-width: 1.5;
+        transition: fill 0.3s ease, stroke 0.3s ease;
+    }
+    .t754__like.liked .heart-svg path { fill: #ff3b5c; stroke: #ff3b5c; }
+
+    /* Product popup */
+    .prod-popup {
+        display: none; position: fixed; inset: 0; z-index: 5000;
+        background: rgba(0,0,0,0.65);
+        align-items: center; justify-content: center; padding: 20px;
+    }
+    .prod-popup.active { display: flex; }
+    .prod-popup-inner {
+        background: #fff; max-width: 880px; width: 100%;
+        max-height: 90vh; border-radius: 8px;
+        display: flex; overflow: hidden; position: relative;
+    }
+    .prod-popup-close {
+        position: absolute; top: 14px; right: 14px;
+        background: none; border: none; font-size: 28px; cursor: pointer;
+        z-index: 10; color: #000; width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .prod-popup-close:hover { opacity: 0.5; }
+    .prod-popup-left {
+        width: 50%; flex-shrink: 0; background: #f5f5f5;
+        display: flex; flex-direction: column;
+    }
+    .prod-popup-main-img { flex: 1; overflow: hidden; }
+    .prod-popup-main-img img { width: 100%; height: 100%; object-fit: cover; }
+    .prod-popup-thumbs {
+        display: flex; gap: 8px; padding: 12px;
+        background: #fff; overflow-x: auto;
+    }
+    .prod-popup-thumb {
+        width: 60px; height: 60px; border-radius: 4px; overflow: hidden;
+        cursor: pointer; flex-shrink: 0; border: 2px solid transparent;
+        transition: border-color 0.2s;
+    }
+    .prod-popup-thumb.active { border-color: #000; }
+    .prod-popup-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .prod-popup-right {
+        flex: 1; padding: 44px 32px 32px; overflow-y: auto;
+        display: flex; flex-direction: column; gap: 20px;
+    }
+    .prod-popup-name { font-size: 22px; font-weight: 400; color: #000; font-family: 'Inter', sans-serif; }
+    .prod-popup-price { font-size: 22px; font-weight: 500; color: #000; font-family: 'Inter', sans-serif; }
+    .prod-popup-label {
+        font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+        text-transform: uppercase; color: #9e9e9e; margin-bottom: 10px;
+        font-family: 'Inter', sans-serif;
+    }
+    .prod-popup-sizes { display: flex; gap: 8px; flex-wrap: wrap; }
+    .size-btn {
+        min-width: 44px; height: 40px; background: #f5f5f5;
+        border: 1px solid #e0e0e0; border-radius: 4px;
+        font-size: 13px; font-weight: 500; cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+        font-family: 'Inter', sans-serif; padding: 0 12px;
+    }
+    .size-btn:hover, .size-btn.active { background: #000; color: #fff; border-color: #000; }
+    .prod-popup-cart-btn {
+        background: #000; color: #fff; border: none;
+        padding: 14px 28px; font-size: 14px; letter-spacing: 0.5px;
+        border-radius: 5px; cursor: pointer; font-family: 'Inter', sans-serif;
+        transition: opacity 0.2s; width: 100%;
+    }
+    .prod-popup-cart-btn:hover { opacity: 0.75; }
+    .prod-popup-descr { font-size: 14px; color: #555; line-height: 1.7; font-family: 'Inter', sans-serif; }
+    @media (max-width: 640px) {
+        .prod-popup-inner { flex-direction: column; max-height: 95vh; }
+        .prod-popup-left { width: 100%; max-height: 45vw; }
+        .prod-popup-right { padding: 20px 18px 18px; }
+    }
 
     .t754__markwrapper {
         position: absolute;
@@ -328,9 +418,15 @@
         <div class="t754__parent">
             {% for i in range(1, 11) %}
             <div class="t754__col js-catalog-item">
-                <div class="t754__imgwrapper">
+                <div class="t754__imgwrapper" style="cursor:pointer"
+                     onclick="openProdPopup('{{ i }}','Шмотка {{ i }}',{{ 1500 + i * 100 }})">
                     {% if i == 1 %}<div class="t754__markwrapper"><div class="t754__mark">NEW!</div></div>{% endif %}
-                    <div class="t754__bgimg" style="background-image: url('/static/images/photo_2026-05-17_22.34.33.jpeg');"></div>
+                    <img class="t754__img t754__img--front" src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="">
+                    <img class="t754__img t754__img--back" src="/static/images/photo_2026-05-17_22.34.46.jpeg" alt="">
+                    <button class="t754__like" data-id="{{ i }}"
+                            onclick="event.stopPropagation(); catalogToggleLike(this, '{{ i }}')">
+                        <svg viewBox="0 0 24 24" class="heart-svg" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                 </div>
                 <div class="t754__textwrapper">
                     <div class="t754__title">Шмотка {{ i }}</div>
@@ -515,5 +611,119 @@
 
     updateAllCounters();
     setInterval(updateAllCounters, 5000);
+
+    // Likes
+    let likedProducts = JSON.parse(localStorage.getItem('liked_products') || '[]');
+
+    function catalogToggleLike(btn, id) {
+        if (likedProducts.includes(id)) {
+            likedProducts = likedProducts.filter(x => x !== id);
+            btn.classList.remove('liked');
+            showToast('Удалено из избранного');
+        } else {
+            likedProducts.push(id);
+            btn.classList.add('liked');
+            showToast('Добавлено в избранное');
+        }
+        localStorage.setItem('liked_products', JSON.stringify(likedProducts));
+        if (window.updateLikesCount) window.updateLikesCount();
+    }
+
+    function initLikeButtons() {
+        document.querySelectorAll('.t754__like').forEach(btn => {
+            btn.classList.toggle('liked', likedProducts.includes(btn.dataset.id));
+        });
+    }
+    initLikeButtons();
+
+    // Product popup
+    const POPUP_IMGS = [
+        '/static/images/photo_2026-05-17_22.34.33.jpeg',
+        '/static/images/photo_2026-05-17_22.34.46.jpeg'
+    ];
+
+    function openProdPopup(id, name, price) {
+        const popup = document.getElementById('prodPopup');
+        document.getElementById('popupName').textContent = name;
+        document.getElementById('popupPrice').textContent = Number(price).toLocaleString('ru') + ' р.';
+        document.getElementById('popupMainImg').src = POPUP_IMGS[0];
+        document.getElementById('popupThumbs').innerHTML = POPUP_IMGS.map((src, i) =>
+            `<div class="prod-popup-thumb ${i===0?'active':''}" onclick="setPopupImg(this,'${src}')"><img src="${src}" alt=""></div>`
+        ).join('');
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('popupCartBtn').onclick = () => {
+            const size = document.querySelector('.size-btn.active')?.dataset.size || '';
+            addFromPopup(id, name, price, size);
+        };
+        popup.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function setPopupImg(thumb, src) {
+        document.getElementById('popupMainImg').src = src;
+        document.querySelectorAll('.prod-popup-thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+    }
+
+    function closeProdPopup() {
+        document.getElementById('prodPopup').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    async function addFromPopup(id, name, price, size) {
+        const fullName = size ? `${name} (${size})` : name;
+        try {
+            const res = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: id + (size ? '_' + size : ''), name: fullName, price: Number(price) })
+            });
+            const data = await res.json();
+            if (data.success) {
+                closeProdPopup();
+                showToast('Добавлено в корзину');
+                updateAllCounters();
+            }
+        } catch {}
+    }
+
+    document.getElementById('prodPopup').addEventListener('click', e => {
+        if (e.target === document.getElementById('prodPopup')) closeProdPopup();
+    });
+    document.getElementById('prodPopupClose').addEventListener('click', closeProdPopup);
+    document.querySelectorAll('.size-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProdPopup(); });
 </script>
+
+<!-- Product popup -->
+<div class="prod-popup" id="prodPopup">
+    <div class="prod-popup-inner">
+        <button class="prod-popup-close" id="prodPopupClose">&times;</button>
+        <div class="prod-popup-left">
+            <div class="prod-popup-main-img"><img id="popupMainImg" src="" alt=""></div>
+            <div class="prod-popup-thumbs" id="popupThumbs"></div>
+        </div>
+        <div class="prod-popup-right">
+            <div class="prod-popup-name" id="popupName"></div>
+            <div class="prod-popup-price" id="popupPrice"></div>
+            <div>
+                <div class="prod-popup-label">Размер</div>
+                <div class="prod-popup-sizes">
+                    <button class="size-btn" data-size="XS">XS</button>
+                    <button class="size-btn" data-size="S">S</button>
+                    <button class="size-btn" data-size="M">M</button>
+                    <button class="size-btn" data-size="L">L</button>
+                    <button class="size-btn" data-size="XL">XL</button>
+                </div>
+            </div>
+            <button class="prod-popup-cart-btn" id="popupCartBtn">Добавить в корзину</button>
+            <div class="prod-popup-descr">Стильная и удобная вещь для вашего гардероба. Отличное качество и современный дизайн. Состав: 100% хлопок.</div>
+        </div>
+    </div>
+</div>
 {% endblock %}
