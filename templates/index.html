@@ -520,8 +520,9 @@
             const data = await res.json();
             if (data.success) {
                 closeProdPopup();
-                showToast('Добавлено в корзину');
                 updateCartCount();
+                if (window.renderT706Cart) renderT706Cart();
+                if (window.openCart) openCart();
             }
         } catch {}
     }
@@ -560,8 +561,9 @@
             });
             const data = await response.json();
             if (data.success) {
-                showToast('✅ ' + productName + ' добавлен');
                 updateCartCount();
+                if (window.renderT706Cart) renderT706Cart();
+                if (window.openCart) openCart();
             } else {
                 showToast('❌ Ошибка', true);
             }

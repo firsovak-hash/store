@@ -28,17 +28,44 @@
     .hp-mosaic__item {
         position: relative; overflow: hidden; border-radius: 3px;
         opacity: 0; transform: translateY(24px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
+        transition: opacity 1.8s ease, transform 1.8s ease;
     }
     .hp-mosaic__item.visible { opacity: 1; transform: translateY(0); }
     .hp-mosaic__item:hover { z-index: 2; }
 
-    .hp-mosaic__item:nth-child(1) { grid-column: 1 / 9;  grid-row: 1 / 4; }
-    .hp-mosaic__item:nth-child(2) { grid-column: 9 / 13; grid-row: 1 / 3; }
-    .hp-mosaic__item:nth-child(3) { grid-column: 9 / 13; grid-row: 3 / 4; }
-    .hp-mosaic__item:nth-child(4) { grid-column: 4 / 13; grid-row: 4 / 5; }
-    .hp-mosaic__item:nth-child(5) { grid-column: 1 / 7;  grid-row: 5 / 6; }
-    .hp-mosaic__item:nth-child(6) { grid-column: 7 / 13; grid-row: 5 / 7; }
+    .hp-mosaic__item:nth-child(1) { grid-column: 1 / 5;  grid-row: 1 / 4; }
+    .hp-mosaic__item:nth-child(2) { grid-column: 5 / 9;  grid-row: 1 / 4; }
+    .hp-mosaic__item:nth-child(3) { grid-column: 9 / 13; grid-row: 1 / 4; }
+    .hp-mosaic__item:nth-child(4) { grid-column: 1 / 13; grid-row: 4 / 6; }
+
+    .hp-mosaic__cat-label {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        padding: 60px 20px 22px;
+        background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.72) 100%);
+        display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+        pointer-events: none;
+    }
+    .hp-mosaic__cat-label > * { pointer-events: auto; }
+    .hp-mosaic__cat-name {
+        font-size: 17px; font-weight: 600; letter-spacing: 2.5px;
+        text-transform: uppercase; color: #fff; font-family: 'Inter', sans-serif;
+    }
+    .hp-mosaic__cat-btn {
+        background: transparent; border: 1px solid rgba(255,255,255,0.5);
+        color: #fff; padding: 7px 16px; font-size: 10px;
+        letter-spacing: 1.5px; text-transform: uppercase;
+        cursor: pointer; border-radius: 2px; font-family: 'Inter', sans-serif;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    .hp-mosaic__cat-btn:hover { background: rgba(255,255,255,0.18); border-color: #fff; }
+
+    .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-label {
+        top: 0; right: auto; width: 40%; flex-direction: column;
+        align-items: flex-start; justify-content: center;
+        padding: 0 0 0 48px;
+        background: linear-gradient(90deg, rgba(0,0,0,0.62) 0%, transparent 100%);
+    }
+    .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-name { font-size: 26px; }
 
     .hp-mosaic__image {
         width: 100%; height: 100%; object-fit: cover; display: block;
@@ -47,16 +74,33 @@
     }
     .hp-mosaic__item:hover .hp-mosaic__image { transform: scale(1.04); filter: brightness(1); }
 
-    @media (max-width: 900px) {
-        .hp-mosaic { padding: 0 20px 40px; }
-        .hp-mosaic__grid { grid-auto-rows: 140px; gap: 6px; }
-        .hp-mosaic__item:nth-child(n) { grid-column: span 6; grid-row: span 1; }
+    @media (max-width: 860px) {
+        .hp-mosaic { padding: 0 16px 32px; }
+        .hp-mosaic__grid { grid-auto-rows: 160px; gap: 6px; }
         .hp-mosaic__item:nth-child(1),
-        .hp-mosaic__item:nth-child(4) { grid-column: 1 / -1; }
+        .hp-mosaic__item:nth-child(2),
+        .hp-mosaic__item:nth-child(3) { grid-column: span 4; grid-row: 1 / 3; }
+        .hp-mosaic__item:nth-child(4) { grid-column: 1 / -1; grid-row: 3 / 5; }
+        .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-label { width: 55%; padding-left: 32px; }
+        .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-name { font-size: 20px; }
     }
-    @media (max-width: 560px) {
-        .hp-mosaic__grid { grid-auto-rows: 180px; gap: 4px; }
-        .hp-mosaic__item:nth-child(n) { grid-column: 1 / -1; grid-row: span 1; }
+    @media (max-width: 600px) {
+        .hp-mosaic { padding: 0 10px 24px; }
+        .hp-mosaic__grid { grid-auto-rows: 200px; gap: 5px; }
+        .hp-mosaic__item:nth-child(1),
+        .hp-mosaic__item:nth-child(2),
+        .hp-mosaic__item:nth-child(3) { grid-column: span 4; grid-row: span 1; }
+        .hp-mosaic__item:nth-child(4) { grid-column: 1 / -1; grid-row: span 1; }
+        .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-label { width: 100%; padding: 60px 16px 20px; background: linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.72) 100%); flex-direction: column; align-items: flex-start; justify-content: flex-end; top: auto; }
+        .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-name { font-size: 16px; }
+        .hp-mosaic__cat-name { font-size: 13px; letter-spacing: 1.5px; }
+        .hp-mosaic__cat-btn { padding: 5px 12px; font-size: 9px; }
+    }
+    @media (max-width: 420px) {
+        .hp-mosaic__item:nth-child(1),
+        .hp-mosaic__item:nth-child(2),
+        .hp-mosaic__item:nth-child(3) { grid-column: 1 / -1; grid-row: span 1; }
+        .hp-mosaic__grid { grid-auto-rows: 180px; }
     }
 
     /* ── CATEGORY TABS ── */
@@ -82,7 +126,7 @@
     }
     .t754__col {
         text-align: center; opacity: 0; transform: translateY(20px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
+        transition: opacity 1.5s ease, transform 1.5s ease;
     }
     .t754__col.visible { opacity: 1; transform: translateY(0); }
 
@@ -217,19 +261,31 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
-        .t754__parent { grid-template-columns: repeat(2, 1fr); gap: 40px 20px; }
+        .t754__parent { grid-template-columns: repeat(2, 1fr); gap: 36px 18px; }
         .t754 { padding: 0 20px 80px; }
+        .cat-tabs { padding: 32px 16px 36px; }
     }
     @media (max-width: 560px) {
-        .t754__parent { grid-template-columns: 1fr; }
+        .t754__parent { grid-template-columns: repeat(2, 1fr); gap: 24px 12px; }
+        .t754 { padding: 0 12px 60px; }
         .t706__cartpage { width: 100vw; }
-        .t706__carticon { bottom: 20px; right: 20px; }
-        .hp-mosaic { padding: 0 12px 30px; }
+        .t706__carticon { bottom: 20px; right: 16px; width: 50px; height: 50px; }
+        .cat-tabs { padding: 24px 12px 28px; gap: 5px; }
+        .cat-tab { padding: 8px 14px; font-size: 10px; letter-spacing: 1px; }
+        .catalog-section-title { padding: 40px 16px 30px; font-size: 11px; }
+    }
+    @media (max-width: 380px) {
+        .t754__parent { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
-        .prod-popup-inner { flex-direction: column; max-height: 95vh; }
-        .prod-popup-left { width: 100%; max-height: 45vw; }
-        .prod-popup-right { padding: 20px 18px 18px; }
+        .prod-popup { padding: 0; }
+        .prod-popup-inner { flex-direction: column; max-height: 100vh; border-radius: 0; }
+        .prod-popup-left { width: 100%; height: 52vw; min-height: 180px; flex-shrink: 0; }
+        .prod-popup-main-img { height: 100%; }
+        .prod-popup-right { padding: 16px 16px 24px; gap: 14px; overflow-y: auto; }
+        .prod-popup-name { font-size: 18px; }
+        .prod-popup-price { font-size: 18px; }
+        .prod-popup-close { top: 10px; right: 10px; font-size: 32px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); color: #fff; border-radius: 50%; }
     }
 </style>
 {% endblock %}
@@ -243,16 +299,18 @@
         <div class="hp-mosaic__wrapper">
             <div class="hp-mosaic__grid">
                 {% set collage = [
-                    'images/F5E7DA07-C765-4964-AB7B-839DDB607723_1_105_c.jpeg',
-                    'images/_ (1).jpeg',
-                    'images/horizontal.jpeg',
-                    'images/★.jpeg',
-                    'images/_.jpeg',
-                    'images/olá esse sou eu_desculpes_portrait, man, retrato masculino, retrato.jpeg'
+                    ('images/F5E7DA07-C765-4964-AB7B-839DDB607723_1_105_c.jpeg', 'Футболки', 'tshirts'),
+                    ('images/_ (1).jpeg',      'Кофты',    'hoodies'),
+                    ('images/horizontal.jpeg', 'Шорты',    'shorts'),
+                    ('images/★.jpeg',          'Поло',     'polo'),
                 ] %}
-                {% for img in collage %}
+                {% for img, label, cat in collage %}
                 <div class="hp-mosaic__item">
-                    <img src="{{ url_for('static', filename=img) }}" alt="" class="hp-mosaic__image">
+                    <img src="{{ url_for('static', filename=img) }}" alt="{{ label }}" class="hp-mosaic__image">
+                    <div class="hp-mosaic__cat-label">
+                        <span class="hp-mosaic__cat-name">{{ label }}</span>
+                        <button class="hp-mosaic__cat-btn" onclick="selectCategory('{{ cat }}')">Смотреть →</button>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -384,7 +442,7 @@
     const mosaicObs = new IntersectionObserver((entries) => {
         entries.forEach((e, i) => {
             if (e.isIntersecting) {
-                setTimeout(() => e.target.classList.add('visible'), i * 70);
+                setTimeout(() => e.target.classList.add('visible'), i * 210);
                 mosaicObs.unobserve(e.target);
             }
         });
@@ -395,7 +453,7 @@
     const itemObs = new IntersectionObserver((entries) => {
         entries.forEach((e, i) => {
             if (e.isIntersecting) {
-                setTimeout(() => e.target.classList.add('visible'), i * 60);
+                setTimeout(() => e.target.classList.add('visible'), i * 180);
                 itemObs.unobserve(e.target);
             }
         });
@@ -435,7 +493,7 @@
                     body: JSON.stringify({ product_id: id, name, price: parseInt(price) })
                 });
                 const data = await res.json();
-                if (data.success) { showToast(name + ' добавлен'); updateAllCounters(); renderCart(); }
+                if (data.success) { updateAllCounters(); renderCart(); openCart(); }
             } catch {}
         });
     });
@@ -496,6 +554,14 @@
                 if (el) el.textContent = count || 0;
             });
         } catch {}
+    }
+
+    function selectCategory(cat) {
+        document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+        const tab = document.querySelector(`.cat-tab[data-cat="${cat}"]`);
+        if (tab) { tab.classList.add('active'); tab.click(); }
+        const tabs = document.querySelector('.cat-tabs');
+        if (tabs) tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function showToast(msg) {
@@ -566,7 +632,7 @@
                 body: JSON.stringify({ product_id: String(id)+(size?'_'+size:''), name: fullName, price: Number(price) })
             });
             const data = await res.json();
-            if (data.success) { closeProdPopup(); showToast('Добавлено в корзину'); updateAllCounters(); }
+            if (data.success) { closeProdPopup(); updateAllCounters(); renderCart(); openCart(); }
         } catch {}
     }
 

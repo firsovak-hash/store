@@ -164,6 +164,12 @@ def index():
 def catalog():
     return render_template('catalog.html', products=PRODUCTS_LIST)
 
+@app.route('/order')
+def order_page():
+    cart = session.get('cart', [])
+    total = sum(item['price'] * item.get('quantity', 1) for item in cart)
+    return render_template('order.html', cart=cart, total=total)
+
 @app.route('/cart')
 def cart_page():
     """Страница корзины"""
