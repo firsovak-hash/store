@@ -4,207 +4,300 @@
 
 {% block extra_css %}
 <style>
-    .order-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    
+    body { background: #000; }
+    .order-page { background: #000; min-height: 100vh; padding: 60px 0 120px; }
+
     .order-header {
         text-align: center;
-        margin-bottom: 40px;
+        padding: 60px 20px 50px;
+        font-size: 12px; font-weight: 500;
+        letter-spacing: 4px; text-transform: uppercase;
+        color: #fff; font-family: 'Inter', sans-serif;
     }
-    
-    .order-header h1 {
-        font-size: 40px;
-        margin-bottom: 12px;
+
+    .order-wrap {
+        max-width: 960px; margin: 0 auto;
+        padding: 0 40px 80px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        align-items: start;
     }
-    
-    .product-summary {
-        background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(254, 202, 87, 0.1));
-        border-radius: 24px;
-        padding: 24px;
-        margin-bottom: 32px;
-        border: 1px solid rgba(255, 107, 107, 0.3);
-    }
-    
-    .product-summary h3 {
-        margin-bottom: 12px;
-    }
-    
-    .product-price {
-        font-size: 28px;
-        font-weight: 700;
-        color: #ff9f43;
-        margin: 12px 0;
-    }
-    
-    .order-form {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 24px;
-        padding: 32px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .form-group {
+
+    /* — CART SUMMARY — */
+    .order-summary-title {
+        font-size: 10px; font-weight: 600;
+        letter-spacing: 2.5px; text-transform: uppercase;
+        color: #444; font-family: 'Inter', sans-serif;
         margin-bottom: 24px;
     }
-    
+
+    .order-item {
+        display: flex; gap: 14px; align-items: center;
+        padding: 16px 0; border-bottom: 1px solid #1a1a1a;
+    }
+    .order-item-img {
+        width: 64px; height: 64px;
+        background: #1a1a1a; flex-shrink: 0;
+    }
+    .order-item-name {
+        font-size: 14px; color: #fff;
+        font-family: 'Inter', sans-serif; flex: 1;
+    }
+    .order-item-qty {
+        font-size: 12px; color: #555;
+        font-family: 'Inter', sans-serif;
+        margin-top: 4px;
+    }
+    .order-item-price {
+        font-size: 14px; color: #fff;
+        font-family: 'Inter', sans-serif;
+        white-space: nowrap;
+    }
+
+    .order-total-row {
+        display: flex; justify-content: space-between;
+        padding: 24px 0 0;
+        font-size: 16px; font-weight: 500;
+        color: #fff; font-family: 'Inter', sans-serif;
+    }
+
+    .order-empty {
+        color: #444; font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        padding: 40px 0;
+    }
+
+    /* — FORM — */
+    .order-form-title {
+        font-size: 10px; font-weight: 600;
+        letter-spacing: 2.5px; text-transform: uppercase;
+        color: #444; font-family: 'Inter', sans-serif;
+        margin-bottom: 24px;
+    }
+
+    .form-group { margin-bottom: 18px; }
+
     .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
+        display: block; margin-bottom: 7px;
+        font-size: 10px; font-weight: 600;
+        letter-spacing: 1.5px; text-transform: uppercase;
+        color: #555; font-family: 'Inter', sans-serif;
     }
-    
-    .form-group label i {
-        color: #ff6b6b;
-        margin-right: 8px;
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%; padding: 13px 16px;
+        background: #111; border: 1px solid #222;
+        color: #fff; font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+        border-radius: 0;
+        -webkit-appearance: none;
     }
-    
-    .form-group input, 
-    .form-group textarea {
-        width: 100%;
-        padding: 14px 18px;
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        color: #fff;
-        font-size: 16px;
-        transition: all 0.3s;
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none; border-color: #555;
     }
-    
-    .form-group input:focus, 
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #ff6b6b;
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #333; }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+
+    .order-submit-btn {
+        width: 100%; background: #fff; color: #000;
+        border: none; padding: 16px;
+        font-size: 12px; font-weight: 700;
+        letter-spacing: 2px; text-transform: uppercase;
+        cursor: pointer; font-family: 'Inter', sans-serif;
+        transition: background 0.2s; margin-top: 8px;
     }
-    
-    .file-input {
-        position: relative;
-        padding: 40px;
-        border: 2px dashed rgba(255, 255, 255, 0.2);
-        border-radius: 16px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
+    .order-submit-btn:hover { background: #e0e0e0; }
+    .order-submit-btn:disabled { background: #333; color: #666; cursor: default; }
+
+    .order-divider {
+        height: 1px; background: #1a1a1a;
+        margin: 20px 0;
     }
-    
-    .file-input:hover {
-        border-color: #ff6b6b;
-        background: rgba(255, 107, 107, 0.05);
+
+    .pay-methods {
+        display: flex; gap: 10px; margin-bottom: 20px;
     }
-    
-    .file-input input {
-        position: absolute;
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        cursor: pointer;
+    .pay-method {
+        flex: 1; padding: 12px 8px;
+        background: #111; border: 1px solid #222;
+        color: #555; font-size: 11px;
+        font-family: 'Inter', sans-serif;
+        text-align: center; cursor: pointer;
+        transition: all 0.2s; letter-spacing: 0.5px;
     }
-    
-    .file-label {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.6);
+    .pay-method.active { border-color: #fff; color: #fff; }
+    .pay-method:hover { border-color: #444; color: #ccc; }
+
+    .order-note {
+        font-size: 11px; color: #333;
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6; margin-top: 14px;
     }
-    
-    .file-label i {
-        font-size: 40px;
-        display: block;
-        margin-bottom: 10px;
-        color: #ff9f43;
+
+    .order-success {
+        display: none; text-align: center;
+        padding: 60px 20px;
     }
-    
-    .photo-preview {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
+    .order-success.show { display: block; }
+    .order-success h2 {
+        font-size: 22px; font-weight: 400;
+        color: #fff; font-family: 'Inter', sans-serif;
+        margin-bottom: 16px;
     }
-    
-    .photo-preview img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 8px;
+    .order-success p {
+        font-size: 14px; color: #555;
+        font-family: 'Inter', sans-serif;
     }
-    
-    .submit-btn {
-        width: 100%;
-        padding: 16px;
-        font-size: 18px;
-        margin-top: 16px;
+
+    @media (max-width: 760px) {
+        .order-wrap { grid-template-columns: 1fr; gap: 40px; padding: 0 16px 60px; }
+        .order-header { padding: 40px 16px 30px; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="order-container">
-    <div class="order-header">
-        <h1>Оформить заказ</h1>
-        <p>Заполните форму, и мы начнём создавать вашу фигурку</p>
-    </div>
-    
-    <div class="product-summary">
-        <h3>{{ product.name }}</h3>
-        <p>{{ product.description }}</p>
-        <div class="product-price">{{ product.price }} ₽</div>
-        <div style="font-size: 13px; color: rgba(255,255,255,0.5);">
-            <i class="fas fa-clock"></i> Срок изготовления: 5-7 дней
-        </div>
-    </div>
-    
-    <form method="POST" enctype="multipart/form-data" class="order-form" id="orderForm">
-        <div class="form-group">
-            <label><i class="fas fa-image"></i> Фото 1 (анфас)</label>
-            <div class="file-input" onclick="document.getElementById('photo1').click()">
-                <input type="file" name="photo1" id="photo1" accept="image/*" required onchange="previewPhoto(this, 'preview1')">
-                <div class="file-label">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <div>Нажмите для загрузки</div>
-                    <div style="font-size: 12px; margin-top: 8px;">JPG, PNG до 10MB</div>
-                </div>
-            </div>
-            <div id="preview1" class="photo-preview"></div>
-        </div>
-        
-        <div class="form-group">
-            <label><i class="fas fa-image"></i> Фото 2 (профиль)</label>
-            <div class="file-input" onclick="document.getElementById('photo2').click()">
-                <input type="file" name="photo2" id="photo2" accept="image/*" required onchange="previewPhoto(this, 'preview2')">
-                <div class="file-label">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <div>Нажмите для загрузки</div>
-                    <div style="font-size: 12px; margin-top: 8px;">JPG, PNG до 10MB</div>
-                </div>
-            </div>
-            <div id="preview2" class="photo-preview"></div>
-        </div>
-        
-        <div class="form-group">
-            <label><i class="fas fa-comment"></i> Пожелания (причёска, одежда, особенности)</label>
-            <textarea name="comment" rows="4" placeholder="Напишите цвет волос, одежду, особые приметы (очки, родинки, тату)..."></textarea>
-        </div>
-        
-        <button type="submit" class="btn btn-primary submit-btn">
-            <i class="fas fa-check-circle"></i> Оформить заказ
-        </button>
-    </form>
-</div>
+<div class="order-page">
+    <div class="order-header">Оформление заказа</div>
 
+    <div class="order-wrap" id="orderWrap">
+        <!-- LEFT: Cart summary -->
+        <div>
+            <div class="order-summary-title">Ваш заказ</div>
+            <div id="orderItems">
+                {% if cart %}
+                    {% for item in cart %}
+                    <div class="order-item">
+                        <div class="order-item-img"></div>
+                        <div style="flex:1">
+                            <div class="order-item-name">{{ item.name }}</div>
+                            <div class="order-item-qty">{{ item.quantity or 1 }} шт.</div>
+                        </div>
+                        <div class="order-item-price">{{ (item.price * (item.quantity or 1)) | int }} р.</div>
+                    </div>
+                    {% endfor %}
+                    <div class="order-total-row">
+                        <span>Итого</span>
+                        <span>{{ total | int }} р.</span>
+                    </div>
+                {% else %}
+                    <div class="order-empty">Корзина пуста</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- RIGHT: Order form -->
+        <div>
+            <div class="order-form-title">Данные получателя</div>
+
+            <div id="orderFormBlock">
+                <div class="form-group">
+                    <label>Имя</label>
+                    <input type="text" id="orderName" placeholder="Ваше имя">
+                </div>
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" id="orderPhone" placeholder="+7 (___) ___-__-__">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="orderEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Адрес доставки</label>
+                    <input type="text" id="orderAddress" placeholder="Город, улица, дом, квартира">
+                </div>
+                <div class="form-group">
+                    <label>Комментарий к заказу</label>
+                    <textarea id="orderComment" placeholder="Пожелания, уточнения..."></textarea>
+                </div>
+
+                <div class="order-divider"></div>
+
+                <div class="order-form-title">Способ оплаты</div>
+                <div class="pay-methods">
+                    <div class="pay-method active" onclick="selectPay(this)">Карта</div>
+                    <div class="pay-method" onclick="selectPay(this)">СБП</div>
+                    <div class="pay-method" onclick="selectPay(this)">Наличные</div>
+                </div>
+
+                <button class="order-submit-btn" id="submitOrderBtn" onclick="submitOrder()">
+                    Подтвердить заказ
+                </button>
+                <div class="order-note">
+                    Нажимая кнопку, вы соглашаетесь с условиями обработки персональных данных. Менеджер свяжется с вами для подтверждения заказа.
+                </div>
+            </div>
+
+            <div class="order-success" id="orderSuccess">
+                <h2>Заказ оформлен ✓</h2>
+                <p>Мы свяжемся с вами в ближайшее время.<br>Спасибо за покупку!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
 <script>
-    function previewPhoto(input, previewId) {
-        const preview = document.getElementById(previewId);
-        preview.innerHTML = '';
-        
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(input.files[0]);
+    function selectPay(el) {
+        document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    async function submitOrder() {
+        const name    = document.getElementById('orderName').value.trim();
+        const phone   = document.getElementById('orderPhone').value.trim();
+        const email   = document.getElementById('orderEmail').value.trim();
+        const address = document.getElementById('orderAddress').value.trim();
+
+        if (!name || !phone) {
+            alert('Укажите имя и телефон');
+            return;
+        }
+
+        const btn = document.getElementById('submitOrderBtn');
+        btn.disabled = true;
+        btn.textContent = 'Отправляем...';
+
+        try {
+            const cartRes = await fetch('/api/cart/items');
+            const { items } = await cartRes.json();
+            const totalRes = await fetch('/api/cart/total');
+            const { total } = await totalRes.json();
+
+            const res = await fetch('/api/order/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name, phone, email, address,
+                    comment: document.getElementById('orderComment').value,
+                    pay_method: document.querySelector('.pay-method.active')?.textContent,
+                    items, total
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                await fetch('/api/cart/clear', { method: 'POST' });
+                document.getElementById('orderFormBlock').style.display = 'none';
+                document.getElementById('orderSuccess').classList.add('show');
+                if (window.updateCartCount) updateCartCount();
+            } else {
+                throw new Error();
+            }
+        } catch {
+            btn.disabled = false;
+            btn.textContent = 'Подтвердить заказ';
+            alert('Ошибка при оформлении. Попробуйте ещё раз.');
         }
     }
 </script>

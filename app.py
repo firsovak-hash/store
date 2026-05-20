@@ -154,6 +154,31 @@ def cart_clear():
     session['cart'] = []
     return jsonify({'success': True})
 
+@app.route('/api/order/create', methods=['POST'])
+def order_create():
+    """Создаёт заказ"""
+    data = request.json
+    orders = []
+    if os.path.exists('orders.json'):
+        with open('orders.json', 'r', encoding='utf-8') as f:
+            orders = json.load(f)
+    order = {
+        'id': len(orders) + 1,
+        'name': data.get('name'),
+        'phone': data.get('phone'),
+        'email': data.get('email'),
+        'address': data.get('address'),
+        'comment': data.get('comment'),
+        'pay_method': data.get('pay_method'),
+        'items': data.get('items', []),
+        'total': data.get('total', 0),
+        'status': 'new'
+    }
+    orders.append(order)
+    with open('orders.json', 'w', encoding='utf-8') as f:
+        json.dump(orders, f, ensure_ascii=False, indent=2)
+    return jsonify({'success': True, 'order_id': order['id']})
+
 # ========== ОСНОВНЫЕ МАРШРУТЫ ==========
 
 @app.route('/')
