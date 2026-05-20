@@ -64,6 +64,18 @@ PRODUCTS = {
         'badge': ''
     }
 }
+DEPLOY_TOKEN = '3cbde1eedf6de1b7f800a9f92f506452b6ff7113'
+
+@app.route('/deploy', methods=['POST'])
+def deploy():
+    token = request.headers.get('X-Deploy-Token') or request.args.get('token')
+    if token != DEPLOY_TOKEN:
+        return jsonify({'error': 'unauthorized'}), 403
+    import subprocess
+    result = subprocess.run(['bash', '/home/DODGE/deploy.sh'],
+                           capture_output=True, text=True)
+    return jsonify({'ok': True, 'out': result.stdout, 'err': result.stderr})
+
 @app.route('/about')
 def about():
     return render_template('about.html')
