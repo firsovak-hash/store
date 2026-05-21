@@ -221,10 +221,47 @@ body { background: #000; }
     position: relative; cursor: pointer;
     background: #050505;
 }
-.pcard3d-canvas {
+/* image slideshow wrapper */
+.pcard-imgs {
+    position: relative;
     width: 100%; aspect-ratio: 3/4;
-    display: block; background: #050505;
+    overflow: hidden; background: #111;
 }
+.pcard-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.28s ease;
+    pointer-events: none;
+    will-change: opacity;
+}
+.pcard-img.active { opacity: 1; }
+
+/* progress strips */
+.pcard-strips {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    display: flex; gap: 2px; padding: 0 8px 8px;
+    opacity: 0; transition: opacity 0.2s;
+    pointer-events: none; z-index: 3;
+}
+.pcard3d:hover .pcard-strips { opacity: 1; }
+.pcard-strip {
+    flex: 1; height: 1px;
+    background: rgba(255,255,255,0.22);
+    position: relative; overflow: hidden;
+}
+.pcard-strip.active { background: rgba(255,255,255,0.85); }
+.pcard-strip-fill {
+    position: absolute; top: 0; left: 0; bottom: 0;
+    width: 0%; background: rgba(255,255,255,0.9);
+    transition: none;
+}
+.pcard-strip.filling .pcard-strip-fill {
+    width: 100%;
+    transition: width var(--fill-dur, 700ms) linear;
+}
+
 .pcard3d-foot {
     padding: 14px 8px 22px;
     display: flex; justify-content: space-between; align-items: baseline;
@@ -392,7 +429,18 @@ body { background: #000; }
              data-id="{{ product.id }}"
              data-name="{{ product.name }}"
              data-price="{{ product.price }}">
-            <canvas class="pcard3d-canvas" id="pcard-canvas-{{ product.id }}"></canvas>
+            <div class="pcard-imgs">
+                <img class="pcard-img active"
+                     src="/static/images/photo_2026-05-17_22.34.33.jpeg"
+                     alt="{{ product.name }}" loading="lazy">
+                <img class="pcard-img"
+                     src="/static/images/photo_2026-05-17_22.34.46.jpeg"
+                     alt="{{ product.name }}" loading="lazy">
+                <div class="pcard-strips">
+                    <div class="pcard-strip active"><div class="pcard-strip-fill"></div></div>
+                    <div class="pcard-strip"><div class="pcard-strip-fill"></div></div>
+                </div>
+            </div>
             <div class="pcard3d-foot">
                 <span class="pcard3d-name">{{ product.name }}</span>
                 <span class="pcard3d-price">{{ product.price | int }} ₽</span>
@@ -559,6 +607,63 @@ document.querySelectorAll('.pcard3d').forEach(function(card, i) {
 // Section header
 gsap.from('.section-title', { scrollTrigger: { trigger: '.products-section', start: 'top 80%' }, opacity: 0, y: 30, duration: 1.0, ease: 'power3.out' });
 gsap.from('.section-link',  { scrollTrigger: { trigger: '.products-section', start: 'top 80%' }, opacity: 0, y: 20, duration: 0.9, ease: 'power3.out', delay: 0.1 });
+
+/* ────────────────────────────────────────
+   HOVER SLIDESHOW
+──────────────────────────────────────── */
+(function() {
+    var INTERVAL = 700; // ms between slides
+
+    document.querySelectorAll('.pcard3d').forEach(function(card) {
+        var imgs   = card.querySelectorAll('.pcard-img');
+        var strips = card.querySelectorAll('.pcard-strip');
+        if (imgs.length < 2) return;
+
+        var cur    = 0;
+        var timer  = null;
+
+        function show(idx) {
+            imgs[cur].classList.remove('active');
+            strips[cur].classList.remove('active', 'filling');
+            strips[cur].querySelector('.pcard-strip-fill').style.transition = 'none';
+            strips[cur].querySelector('.pcard-strip-fill').style.width = '0%';
+
+            cur = (idx + imgs.length) % imgs.length;
+            imgs[cur].classList.add('active');
+
+            // Animate fill for current strip
+            var strip = strips[cur];
+            strip.classList.add('active', 'filling');
+            strip.style.setProperty('--fill-dur', INTERVAL + 'ms');
+            // Force reflow so transition starts fresh
+            void strip.querySelector('.pcard-strip-fill').offsetWidth;
+        }
+
+        function startCycle() {
+            show(0); // reset to first
+            timer = setInterval(function() {
+                show(cur + 1);
+            }, INTERVAL);
+        }
+
+        function stopCycle() {
+            clearInterval(timer);
+            timer = null;
+            // Reset all strips, show first image
+            imgs.forEach(function(img) { img.classList.remove('active'); });
+            strips.forEach(function(s) {
+                s.classList.remove('active', 'filling');
+                s.querySelector('.pcard-strip-fill').style.transition = 'none';
+                s.querySelector('.pcard-strip-fill').style.width = '0%';
+            });
+            cur = 0;
+            imgs[0].classList.add('active');
+        }
+
+        card.addEventListener('mouseenter', startCycle);
+        card.addEventListener('mouseleave', stopCycle);
+    });
+})();
 
 /* ────────────────────────────────────────
    LIKES  (legacy — no like icons on 3D cards)
@@ -854,94 +959,12 @@ new GLTFLoader().load(
     });
 
     gsap.from(mainCanvas, { opacity: 0, duration: 1.2, ease: 'power2.out' });
-
-    // ── Product card models ──
-    initCards(gltf);
   },
   xhr => { if (xhr.total) { const b = document.getElementById('mlBar'); if(b) b.style.width = (xhr.loaded/xhr.total*100)+'%'; } },
   e  => { console.warn('GLB load error', e); loadEl.remove(); }
 );
 
-/* ═══════════════════════════════════════════
-   PRODUCT CARD 3D RENDERERS
-═══════════════════════════════════════════ */
-function initCards(gltf) {
-  document.querySelectorAll('.pcard3d-canvas').forEach((canvas, idx) => {
-    let renderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-    } catch(e) { return; }
 
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-    renderer.setClearColor(0x050505, 1);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping      = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
-
-    const scene  = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, 0.75, 0.1, 100);
-    camera.position.set(0, 0, 5.5);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-    const kl = new THREE.DirectionalLight(0xffffff, 4.8); kl.position.set(2, 4, 4);  scene.add(kl);
-    const fl = new THREE.DirectionalLight(0x8899ff, 1.3); fl.position.set(-3,-1, 2); scene.add(fl);
-    const rl = new THREE.DirectionalLight(0xffffff, 0.9); rl.position.set( 0, 3,-4); scene.add(rl);
-
-    const cloned = gltf.scene.clone(true);
-    const sz = centerGroup(cloned);
-
-    function calcCardScale(aspect) {
-      const vH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-      const vW = vH * aspect;
-      return Math.min(vH * 0.78 / sz.y, vW * 0.72 / sz.x);
-    }
-
-    let cardScale = calcCardScale(0.75);
-    cloned.scale.setScalar(cardScale);
-    scene.add(cloned);
-
-    function resize() {
-      const cw = canvas.clientWidth, ch = canvas.clientHeight;
-      if (cw > 0 && ch > 0) {
-        renderer.setSize(cw, ch);
-        camera.aspect = cw / ch;
-        camera.updateProjectionMatrix();
-        cardScale = calcCardScale(camera.aspect);
-      }
-    }
-    new ResizeObserver(resize).observe(canvas);
-    resize();
-
-    // Each card has slight unique start rotation
-    const baseRot = ((idx * 1.1) % (Math.PI * 2)) * 0.12 - 0.25;
-    let lt = idx * 1.3;
-    let hov = false, hovStr = 0, hMX = 0, hMY = 0;
-
-    const card = canvas.closest('.pcard3d');
-    if (card) {
-      card.addEventListener('mouseenter', () => hov = true);
-      card.addEventListener('mouseleave', () => { hov = false; hMX = 0; hMY = 0; });
-      card.addEventListener('mousemove',  e => {
-        const r = card.getBoundingClientRect();
-        hMX = ((e.clientX - r.left)  / r.width  - 0.5) * 2;
-        hMY = ((e.clientY - r.top)   / r.height - 0.5) * 2;
-      });
-    }
-
-    (function cardTick() {
-      requestAnimationFrame(cardTick);
-      lt += 0.011;
-      hovStr += ((hov ? 1 : 0) - hovStr) * 0.08;
-
-      cloned.rotation.y = baseRot + lt * 0.20 + hovStr * hMX * 0.55;
-      cloned.rotation.x = -0.12 + Math.sin(lt * 0.27) * 0.06 + hovStr * hMY * -0.28;
-      cloned.position.y = Math.sin(lt * 0.36 + idx * 0.9) * 0.06;
-      cloned.scale.setScalar(cardScale * (1 + Math.sin(lt * 0.44) * 0.020 + hovStr * 0.065));
-
-      renderer.render(scene, camera);
-    })();
-  });
-}
 
 </script>
 {% endblock %}
