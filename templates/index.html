@@ -40,10 +40,10 @@ body { background: #000; }
     transform: translateY(20px);
 }
 .hero-title {
-    font-size: clamp(60px, 13vw, 160px);
-    font-weight: 700; letter-spacing: -6px;
-    color: #fff; font-family: 'Inter', sans-serif;
-    line-height: 0.88; text-align: center;
+    font-size: clamp(72px, 14vw, 180px);
+    font-weight: 600; letter-spacing: -4px;
+    color: #fff; font-family: 'Cormorant', serif;
+    line-height: 0.86; text-align: center;
 }
 .hero-title .line { display: block; overflow: hidden; padding-bottom: 8px; }
 .hero-title .word {
@@ -126,13 +126,13 @@ body { background: #000; }
     margin-bottom: 44px; display: block;
 }
 .manifest-title {
-    font-size: clamp(38px, 5.5vw, 72px);
+    font-size: clamp(44px, 6vw, 84px);
     font-weight: 400; color: #fff;
-    font-family: 'Inter', sans-serif;
-    line-height: 1.1; letter-spacing: -2px;
+    font-family: 'Cormorant', serif;
+    line-height: 1.05; letter-spacing: -1px;
     margin-bottom: 32px;
 }
-.manifest-title em { font-style: normal; color: #666; }
+.manifest-title em { font-style: italic; color: #CA8A04; }
 .manifest-body {
     font-size: 14px; color: #666;
     font-family: 'Inter', sans-serif;
@@ -140,13 +140,13 @@ body { background: #000; }
 }
 .manifest-cta {
     display: inline-flex; align-items: center; gap: 16px;
-    color: #fff; text-decoration: none;
+    color: #CA8A04; text-decoration: none;
     font-size: 10px; letter-spacing: 3px;
     text-transform: uppercase; font-family: 'Inter', sans-serif;
-    border-bottom: 1px solid #444; padding-bottom: 6px;
-    transition: border-color 0.3s, gap 0.3s;
+    border-bottom: 1px solid #CA8A04; padding-bottom: 6px;
+    transition: border-color 0.3s, gap 0.3s, color 0.3s;
 }
-.manifest-cta:hover { border-color: #fff; gap: 22px; }
+.manifest-cta:hover { color: #fff; border-color: #fff; gap: 22px; }
 .manifest-cta-arrow { font-size: 14px; }
 
 /* ── TICKER ── */
@@ -179,10 +179,10 @@ body { background: #000; }
     align-items: flex-end; margin-bottom: 60px;
 }
 .section-title {
-    font-size: clamp(32px, 4vw, 52px);
-    font-weight: 600; color: #fff;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -2px; line-height: 1;
+    font-size: clamp(38px, 5vw, 64px);
+    font-weight: 400; color: #fff;
+    font-family: 'Cormorant', serif;
+    letter-spacing: -1px; line-height: 1;
 }
 .section-link {
     font-size: 9px; letter-spacing: 3px;
@@ -242,16 +242,16 @@ body { background: #000; }
     letter-spacing: -0.5px;
 }
 .pcard-add {
-    display: none; /* shown on hover via JS */
+    display: none;
     position: absolute; bottom: 68px; left: 4px; right: 4px;
-    background: #fff; color: #000; border: none;
+    background: #CA8A04; color: #000; border: none;
     padding: 11px; font-size: 9px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
+    letter-spacing: 2.5px; text-transform: uppercase;
     cursor: pointer; font-family: 'Inter', sans-serif;
-    z-index: 5;
+    z-index: 5; transition: background 0.2s;
 }
 .pcard:hover .pcard-add { display: block; }
-.pcard-add:hover { background: #e8e8e8; }
+.pcard-add:hover { background: #d97706; }
 
 @media (max-width: 900px) {
     .products-3d-grid { grid-template-columns: repeat(2, 1fr); }
@@ -282,8 +282,8 @@ body { background: #000; }
 .size-btn:hover { border-color: #555; color: #ccc; }
 .size-btn.active { background: #fff; color: #000; border-color: #fff; }
 .prod-popup-btn-row { display: flex; flex-direction: column; gap: 10px; }
-.prod-popup-cart-btn { background: #fff; color: #000; border: none; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-weight: 700; border-radius: 0; }
-.prod-popup-cart-btn:hover { background: #e8e8e8; }
+.prod-popup-cart-btn { background: #CA8A04; color: #000; border: none; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-weight: 700; border-radius: 0; }
+.prod-popup-cart-btn:hover { background: #d97706; }
 .prod-popup-order-btn { background: transparent; color: #555; border: 1px solid #1a1a1a; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; width: 100%; border-radius: 0; }
 .prod-popup-order-btn:hover { border-color: #444; color: #ccc; }
 .prod-popup-descr { font-size: 12px; color: #282828; line-height: 1.9; font-family: 'Inter', sans-serif; border-top: 1px solid #161616; padding-top: 20px; }
