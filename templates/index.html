@@ -232,16 +232,16 @@ body { background: #000; }
 .prod-model {
     position: relative;
     background: #080808;
-    min-height: 500px;
-    overflow: hidden;
+    /* explicit height so canvas always knows its true size */
+    height: 620px;
+    will-change: transform, opacity;
 }
 .prod-canvas {
-    position: absolute; inset: 0;
-    width: 100% !important; height: 100% !important;
     display: block;
+    /* renderer.setSize sets px dimensions; CSS just keeps it in flow */
+    width: 100% !important;
+    height: 100% !important;
 }
-/* slide-in starting state (set by GSAP) */
-.prod-model { will-change: transform, opacity; }
 
 /* ── Info side ── */
 .prod-info {
@@ -336,13 +336,13 @@ body { background: #000; }
     .pcard3d { grid-template-columns: 1fr; min-height: auto; }
     .pcard3d:nth-child(even) .prod-model { order: 0; }
     .pcard3d:nth-child(even) .prod-info  { order: 1; }
-    .prod-model { min-height: 360px; }
+    .prod-model { height: 380px; }
     .prod-info { padding: 36px 24px 44px; }
     .section-header { padding: 0 16px 24px; }
     .pcard3d-btn { max-width: 100%; }
 }
 @media (max-width: 500px) {
-    .prod-model { min-height: 280px; }
+    .prod-model { height: 300px; }
     .prod-info { padding: 28px 16px 36px; }
 }
 
@@ -1222,8 +1222,8 @@ const prodModels    = []; // { model, baseScale, introY }
 
 function initProdCanvas(canvas, gltfScene) {
   const parent = canvas.parentElement;
-  const W = parent.clientWidth  || 640;
-  const H = parent.clientHeight || 600;
+  const W = parent.offsetWidth  || 640;
+  const H = parent.offsetHeight || 620;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
@@ -1231,13 +1231,14 @@ function initProdCanvas(canvas, gltfScene) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping      = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.2;
-  renderer.setSize(W, H, false);
+  renderer.setSize(W, H); // true = also sets canvas CSS size
 
   const scene  = new THREE.Scene();
   addLights(scene);
 
-  const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 100);
-  camera.position.set(0, 0, 5.5);
+  // Camera far enough back that nothing gets clipped
+  const camera = new THREE.PerspectiveCamera(48, W / H, 0.1, 100);
+  camera.position.set(0, 0, 8);
 
   // Clone + center model
   const model = new THREE.Group();
@@ -1245,10 +1246,10 @@ function initProdCanvas(canvas, gltfScene) {
   const sz = centerGroup(model);
   scene.add(model);
 
-  // Fit to view
+  // Scale: leave 30% breathing room on all sides
   const visH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   const visW = visH * (W / H);
-  const baseScale = Math.min(visH * 0.78 / sz.y, visW * 0.62 / sz.x);
+  const baseScale = Math.min(visH * 0.60 / sz.y, visW * 0.55 / sz.x);
   model.scale.setScalar(baseScale);
 
   prodRenderers.push(renderer);
@@ -1256,21 +1257,23 @@ function initProdCanvas(canvas, gltfScene) {
   prodCameras.push(camera);
   prodModels.push({ model, baseScale, introY: Math.PI * 2.5 });
 
+  // ResizeObserver keeps canvas in sync with container
+  new ResizeObserver(() => {
+    const idx = prodCanvases.indexOf(canvas);
+    if (idx === -1 || !prodRenderers[idx]) return;
+    const nw = parent.offsetWidth  || 640;
+    const nh = parent.offsetHeight || 620;
+    prodRenderers[idx].setSize(nw, nh);
+    prodCameras[idx].aspect = nw / nh;
+    prodCameras[idx].updateProjectionMatrix();
+    // recalc scale for new aspect
+    const vH = 2 * prodCameras[idx].position.z * Math.tan(THREE.MathUtils.degToRad(prodCameras[idx].fov / 2));
+    const vW = vH * (nw / nh);
+    prodModels[idx].baseScale = Math.min(vH * 0.60 / sz.y, vW * 0.55 / sz.x);
+  }).observe(parent);
+
   return renderer;
 }
-
-function resizeProdCanvases() {
-  prodCanvases.forEach((canvas, i) => {
-    const parent = canvas.parentElement;
-    const W = parent.clientWidth  || 640;
-    const H = parent.clientHeight || 600;
-    if (!prodRenderers[i]) return;
-    prodRenderers[i].setSize(W, H, false);
-    prodCameras[i].aspect = W / H;
-    prodCameras[i].updateProjectionMatrix();
-  });
-}
-window.addEventListener('resize', resizeProdCanvases);
 
 // Mouse follow (subtle, shared)
 let mxGlobal = 0, myGlobal = 0;
@@ -1319,7 +1322,6 @@ new GLTFLoader().load(
       // staggered fade-in
       gsap.from(canvas, { opacity: 0, duration: 1.0, delay: i * 0.15, ease: 'power2.out' });
     });
-    resizeProdCanvases();
   },
   null,
   e => console.warn('GLB load error', e)
