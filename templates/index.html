@@ -1,42 +1,304 @@
 {% extends "base.html" %}
-
 {% block title %}Главная{% endblock %}
 
-{% block content %}
-<!-- БОЛЬШАЯ ФОТОГРАФИЯ -->
-<section class="hero">
-    <div class="hero-image">
-        <img src="/static/images/8D7B73E7-963C-4990-B3BF-016EAF07F347_1_105_c.jpeg" alt="Одежда">
-        <div class="hero-gradient"></div>
-        <div class="hero-overlay">
-            <h1>НОВАЯ КОЛЛЕКЦИЯ</h1>
-            <p>Стильная одежда для каждого дня</p>
-            <a href="/catalog" class="hero-btn">Смотреть каталог</a>
-        </div>
-    </div>
-</section>
+{% block extra_css %}
+<style>
+html { overflow-x: hidden; }
 
-<!-- КАРТОЧКИ ТОВАРОВ (10 штук) -->
+/* ── INTRO OVERLAY ── */
+#introOverlay {
+    position: fixed; inset: 0; z-index: 9999;
+    pointer-events: none;
+}
+#introCanvas { display: block; width: 100%; height: 100%; }
+
+/* ── EXPERIENCE ── */
+.exp-section {
+    height: 100vh; position: relative;
+    background: #000; overflow: hidden;
+}
+
+/* S1: Hero */
+.s1-inner {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 2;
+}
+.hero-title {
+    font-size: clamp(52px, 10vw, 128px);
+    font-weight: 700; letter-spacing: -4px;
+    color: #fff; font-family: 'Inter', sans-serif;
+    text-align: center; line-height: 0.9;
+}
+.hero-title .line { display: block; overflow: hidden; padding-bottom: 6px; }
+.hero-title .word {
+    display: inline-block;
+    transform: translateY(110%);
+}
+.hero-sub {
+    font-size: 11px; letter-spacing: 5px;
+    text-transform: uppercase; color: #2a2a2a;
+    font-family: 'Inter', sans-serif;
+    margin-top: 36px; opacity: 0;
+}
+.scroll-hint {
+    position: absolute; bottom: 52px;
+    left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column;
+    align-items: center; gap: 18px; opacity: 0;
+}
+.scroll-hint-text {
+    font-size: 9px; letter-spacing: 4px;
+    text-transform: uppercase; color: #2a2a2a;
+    font-family: 'Inter', sans-serif;
+}
+.scroll-hint-line {
+    width: 1px; height: 80px;
+    background: #111; position: relative; overflow: hidden;
+}
+.scroll-hint-line::after {
+    content: '';
+    position: absolute; top: -100%;
+    left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, transparent, #fff 50%, transparent);
+    animation: lineFlow 2s ease-in-out infinite;
+}
+@keyframes lineFlow { 0% { top: -100%; } 100% { top: 100%; } }
+
+/* S2: Three.js cloth */
+#threeCanvas {
+    position: absolute; inset: 0;
+    width: 100% !important; height: 100% !important;
+    display: block;
+}
+.s2-text {
+    position: absolute; bottom: 14%; left: 50%;
+    transform: translateX(-50%);
+    text-align: center; z-index: 2; pointer-events: none;
+}
+.s2-season {
+    font-size: 9px; letter-spacing: 5px;
+    text-transform: uppercase; color: #333;
+    font-family: 'Inter', sans-serif;
+    display: block; margin-bottom: 10px;
+}
+.s2-title {
+    font-size: clamp(56px, 10vw, 120px);
+    font-weight: 700; color: #fff;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -3px; line-height: 1;
+    opacity: 0.08;
+}
+
+/* S3: Text section */
+.s3-inner {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.s3-content {
+    text-align: center; max-width: 560px; padding: 0 32px;
+}
+.s3-eyebrow {
+    font-size: 9px; letter-spacing: 5px;
+    text-transform: uppercase; color: #2a2a2a;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 28px; display: block;
+}
+.s3-heading {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 400; color: #fff;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 28px;
+}
+.s3-body {
+    font-size: 14px; color: #333;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.9; margin-bottom: 48px;
+}
+.s3-cta {
+    display: inline-block; color: #fff;
+    border: 1px solid #1e1e1e;
+    padding: 16px 48px; font-size: 10px;
+    letter-spacing: 3px; text-transform: uppercase;
+    text-decoration: none; font-family: 'Inter', sans-serif;
+    transition: all 0.4s;
+}
+.s3-cta:hover { border-color: #fff; background: rgba(255,255,255,0.03); }
+
+/* ── PRODUCTS ── */
+.products-section {
+    max-width: 1100px; margin: 100px auto;
+    padding: 0 20px; background: #000;
+}
+.product-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center; margin-bottom: 80px;
+}
+.product-row-reverse { direction: rtl; }
+.product-row-reverse .product-info { direction: ltr; }
+.product-image-wrapper { display: flex; justify-content: center; align-items: center; }
+.product-image {
+    position: relative; width: 100%;
+    max-width: 350px; height: 350px;
+    cursor: pointer; overflow: hidden;
+}
+.product-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    transition: opacity 0.4s ease;
+}
+.front-img { opacity: 1; z-index: 1; }
+.back-img { opacity: 0; z-index: 0; }
+.product-image:hover .front-img { opacity: 0; }
+.product-image:hover .back-img { opacity: 1; }
+.like-icon {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    border: none; cursor: pointer; z-index: 10;
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s, background 0.2s;
+}
+.like-icon:hover { transform: scale(1.1); background: rgba(0,0,0,0.85); }
+.heart-svg { width: 22px; height: 22px; }
+.heart-svg path { fill: none; stroke: #fff; stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; }
+.like-icon.liked .heart-svg path { fill: #ff3b5c; stroke: #ff3b5c; }
+.product-info { direction: ltr; }
+.product-name { font-size: 30px; font-weight: 600; margin-bottom: 14px; color: #fff; font-family: 'Inter', sans-serif; }
+.product-description { font-size: 14px; color: #2a2a2a; line-height: 1.6; margin-bottom: 20px; font-family: 'Inter', sans-serif; }
+.product-price { font-size: 26px; font-weight: 400; color: #fff; margin-bottom: 24px; font-family: 'Inter', sans-serif; }
+.product-btn {
+    background: white; color: black; border: none;
+    padding: 14px 32px; font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s;
+    font-family: 'Inter', sans-serif; border-radius: 0;
+}
+.product-btn:hover { background: #e8e8e8; }
+
+/* ── POPUP ── */
+.prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 20px; }
+.prod-popup.active { display: flex; }
+.prod-popup-inner { background: #111; max-width: 900px; width: 100%; max-height: 92vh; display: flex; overflow: hidden; position: relative; border: 1px solid #1e1e1e; }
+.prod-popup-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.07); border: none; font-size: 22px; cursor: pointer; z-index: 10; color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.prod-popup-close:hover { background: rgba(255,255,255,0.15); }
+.prod-popup-left { width: 50%; flex-shrink: 0; background: #0d0d0d; display: flex; flex-direction: column; }
+.prod-popup-main-img { flex: 1; overflow: hidden; min-height: 320px; }
+.prod-popup-main-img img { width: 100%; height: 100%; object-fit: cover; }
+.prod-popup-thumbs { display: flex; gap: 6px; padding: 10px 12px; background: #111; overflow-x: auto; border-top: 1px solid #1e1e1e; }
+.prod-popup-thumb { width: 56px; height: 56px; overflow: hidden; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: border-color 0.2s; }
+.prod-popup-thumb.active { border-color: #fff; }
+.prod-popup-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.prod-popup-right { flex: 1; padding: 44px 32px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; }
+.prod-popup-name { font-size: 24px; font-weight: 500; color: #fff; font-family: 'Inter', sans-serif; }
+.prod-popup-price { font-size: 26px; font-weight: 400; color: #fff; font-family: 'Inter', sans-serif; }
+.prod-popup-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #333; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
+.prod-popup-sizes { display: flex; gap: 8px; flex-wrap: wrap; }
+.size-btn { min-width: 44px; height: 40px; background: #1a1a1a; border: 1px solid #222; color: #666; font-size: 13px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; padding: 0 12px; border-radius: 0; }
+.size-btn:hover { border-color: #fff; color: #fff; }
+.size-btn.active { background: #fff; color: #000; border-color: #fff; }
+.prod-popup-btn-row { display: flex; flex-direction: column; gap: 10px; }
+.prod-popup-cart-btn { background: #fff; color: #000; border: none; padding: 15px 28px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-weight: 700; border-radius: 0; }
+.prod-popup-cart-btn:hover { background: #e0e0e0; }
+.prod-popup-order-btn { background: transparent; color: #fff; border: 1px solid #222; padding: 15px 28px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: border-color 0.2s; width: 100%; border-radius: 0; }
+.prod-popup-order-btn:hover { border-color: #fff; }
+.prod-popup-descr { font-size: 13px; color: #333; line-height: 1.8; font-family: 'Inter', sans-serif; border-top: 1px solid #1a1a1a; padding-top: 20px; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 12px 28px; z-index: 9998; font-size: 12px; font-family: 'Inter', sans-serif; border-radius: 0; animation: toastFade 2.2s forwards; }
+@keyframes toastFade { 0%,70%{opacity:1} 100%{opacity:0} }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+    .product-row { grid-template-columns: 1fr; gap: 24px; text-align: center; margin-bottom: 60px; }
+    .product-row-reverse { direction: ltr; }
+    .product-image { max-width: 260px; height: 260px; margin: 0 auto; }
+    .product-name { font-size: 22px; }
+    .hero-title { letter-spacing: -2px; }
+}
+@media (max-width: 640px) {
+    .prod-popup { padding: 0; }
+    .prod-popup-inner { flex-direction: column; max-height: 100vh; }
+    .prod-popup-left { width: 100%; height: 55vw; min-height: 180px; flex-shrink: 0; }
+    .prod-popup-right { padding: 20px 16px 24px; gap: 14px; }
+    .prod-popup-name { font-size: 18px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── INTRO OVERLAY ── -->
+<div id="introOverlay">
+    <canvas id="introCanvas"></canvas>
+</div>
+
+<!-- ── EXPERIENCE ── -->
+<div id="expWrap">
+
+    <!-- S1: Hero title -->
+    <section class="exp-section" id="s1">
+        <div class="s1-inner">
+            <h1 class="hero-title">
+                <span class="line"><span class="word">STORE</span></span>
+                <span class="line"><span class="word">BY SASHA</span></span>
+            </h1>
+            <p class="hero-sub">Одежда которая говорит сама за себя</p>
+            <div class="scroll-hint" id="scrollHint">
+                <span class="scroll-hint-text">Листай вниз</span>
+                <div class="scroll-hint-line"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- S2: 3D cloth -->
+    <section class="exp-section" id="s2">
+        <canvas id="threeCanvas"></canvas>
+        <div class="s2-text">
+            <span class="s2-season">Весна — Лето 2026</span>
+            <div class="s2-title">SS 26</div>
+        </div>
+    </section>
+
+    <!-- S3: Text -->
+    <section class="exp-section" id="s3">
+        <div class="s3-inner">
+            <div class="s3-content">
+                <span class="s3-eyebrow">О коллекции</span>
+                <h2 class="s3-heading">Каждая вещь —<br>это история</h2>
+                <p class="s3-body">Ручная работа. Ограниченные серии.<br>Для тех кто понимает разницу.</p>
+                <a href="/catalog" class="s3-cta">Смотреть коллекцию</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- ── PRODUCTS ── -->
 <div class="products-section">
     <div class="products-container" id="productsGrid">
         {% for i in range(1, 11) %}
-        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} fade-item" data-product-id="{{ i }}">
+        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %}"
+             data-product-id="{{ i }}">
             <div class="product-image-wrapper">
-                <div class="product-image" data-id="{{ i }}" data-name="Шмотка {{ i }}" data-price="{{ 1500 + i * 100 }}">
-                    <!-- ФОТО 1 -->
-                    <img src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="Фото 1" class="product-img front-img">
-                    <!-- ФОТО 2 -->
-                    <img src="/static/images/photo_2026-05-17_22.34.46.jpeg" alt="Фото 2" class="product-img back-img">
+                <div class="product-image"
+                     data-id="{{ i }}"
+                     data-name="Шмотка {{ i }}"
+                     data-price="{{ 1500 + i * 100 }}">
+                    <img src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="" class="product-img front-img">
+                    <img src="/static/images/photo_2026-05-17_22.34.46.jpeg" alt="" class="product-img back-img">
                     <button class="like-icon" data-id="{{ i }}">
-                        <svg viewBox="0 0 24 24" class="heart-svg" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <svg viewBox="0 0 24 24" class="heart-svg">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
                     </button>
                 </div>
             </div>
             <div class="product-info">
                 <h3 class="product-name">Шмотка {{ i }}</h3>
-                <p class="product-description">Стильная и удобная вещь для вашего гардероба. Отличное качество и современный дизайн.</p>
+                <p class="product-description">Стильная и удобная вещь для вашего гардероба.</p>
                 <div class="product-price">{{ 1500 + i * 100 }} ₽</div>
-                <button class="product-btn add-to-cart" 
+                <button class="product-btn add-to-cart"
                         data-id="{{ i }}"
                         data-name="Шмотка {{ i }}"
                         data-price="{{ 1500 + i * 100 }}">
@@ -48,592 +310,7 @@
     </div>
 </div>
 
-<style>
-    .hero {
-        width: 100%;
-        height: 80vh;
-        min-height: 600px;
-        overflow: hidden;
-        position: relative;
-    }
-    
-    .hero-image {
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-    
-    .hero-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .hero-gradient {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 50%;
-        background: linear-gradient(to bottom, rgba(0,0,0,0), #000000);
-        pointer-events: none;
-    }
-    
-    .hero-overlay {
-        position: absolute;
-        bottom: 15%;
-        left: 0;
-        right: 0;
-        text-align: center;
-        color: white;
-        z-index: 2;
-    }
-    
-    .hero-overlay h1 {
-        font-size: 56px;
-        font-weight: 700;
-        margin-bottom: 16px;
-        letter-spacing: 2px;
-    }
-    
-    .hero-overlay p {
-        font-size: 20px;
-        margin-bottom: 30px;
-        opacity: 0.9;
-    }
-    
-    .hero-btn {
-        background: white;
-        color: black;
-        text-decoration: none;
-        padding: 14px 36px;
-        border-radius: 40px;
-        font-weight: 600;
-        transition: 0.2s;
-        display: inline-block;
-    }
-    
-    .hero-btn:hover {
-        transform: scale(1.05);
-        background: #f0f0f0;
-    }
-    
-    .products-section {
-        max-width: 1100px;
-        margin: 80px auto;
-        padding: 0 20px;
-        background: #000000;
-    }
-    
-    .product-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
-        align-items: center;
-        margin-bottom: 80px;
-        opacity: 0;
-        transform: translateX(80px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    
-    .product-row.visible {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    
-    .product-row-reverse {
-        direction: rtl;
-    }
-    
-    .product-row-reverse .product-info {
-        direction: ltr;
-    }
-    
-    .product-image-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    .product-image {
-        position: relative;
-        width: 100%;
-        max-width: 350px;
-        height: 350px;
-        cursor: pointer;
-        overflow: hidden;
-        border-radius: 20px;
-    }
-    
-    .product-img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: opacity 0.3s ease;
-    }
-    
-    .front-img {
-        opacity: 1;
-        z-index: 1;
-    }
-    
-    .back-img {
-        opacity: 0;
-        z-index: 0;
-    }
-    
-    .product-image:hover .front-img {
-        opacity: 0;
-    }
-    
-    .product-image:hover .back-img {
-        opacity: 1;
-    }
-    
-    .like-icon {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(4px);
-        border: none;
-        cursor: pointer;
-        z-index: 10;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s, background 0.2s;
-    }
-
-    .like-icon:hover {
-        transform: scale(1.1);
-        background: rgba(0, 0, 0, 0.8);
-    }
-
-    .heart-svg { width: 22px; height: 22px; }
-    .heart-svg path {
-        fill: none;
-        stroke: #fff;
-        stroke-width: 1.5;
-        transition: fill 0.3s ease, stroke 0.3s ease;
-    }
-    .like-icon.liked .heart-svg path {
-        fill: #ff3b5c;
-        stroke: #ff3b5c;
-    }
-    
-    .product-info {
-        direction: ltr;
-    }
-    
-    .product-name {
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 16px;
-        color: white;
-    }
-    
-    .product-description {
-        font-size: 16px;
-        color: rgba(255, 255, 255, 0.7);
-        line-height: 1.5;
-        margin-bottom: 20px;
-    }
-    
-    .product-price {
-        font-size: 28px;
-        font-weight: 800;
-        color: white;
-        margin-bottom: 25px;
-    }
-    
-    .product-btn {
-        background: white;
-        color: black;
-        border: none;
-        padding: 14px 28px;
-        border-radius: 0;
-        font-size: 14px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        cursor: pointer;
-        transition: background 0.2s, opacity 0.2s;
-        font-family: 'Inter', sans-serif;
-    }
-
-    .product-btn:hover {
-        background: #e0e0e0;
-    }
-    
-    /* Product popup */
-    .prod-popup {
-        display: none; position: fixed; inset: 0; z-index: 5000;
-        background: rgba(0,0,0,0.8);
-        align-items: center; justify-content: center; padding: 20px;
-    }
-    .prod-popup.active { display: flex; }
-
-    .prod-popup-inner {
-        background: #111;
-        max-width: 900px; width: 100%; max-height: 92vh;
-        display: flex; overflow: hidden; position: relative;
-        border: 1px solid #222;
-    }
-
-    .prod-popup-close {
-        position: absolute; top: 16px; right: 16px;
-        background: rgba(255,255,255,0.08); border: none;
-        font-size: 22px; cursor: pointer; z-index: 10;
-        color: #fff; width: 36px; height: 36px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        transition: background 0.2s;
-    }
-    .prod-popup-close:hover { background: rgba(255,255,255,0.18); }
-
-    .prod-popup-left {
-        width: 50%; flex-shrink: 0;
-        background: #1a1a1a; display: flex; flex-direction: column;
-    }
-    .prod-popup-main-img { flex: 1; overflow: hidden; min-height: 320px; }
-    .prod-popup-main-img img { width: 100%; height: 100%; object-fit: cover; }
-
-    .prod-popup-thumbs {
-        display: flex; gap: 6px;
-        padding: 10px 12px; background: #111; overflow-x: auto;
-        border-top: 1px solid #222;
-    }
-    .prod-popup-thumb {
-        width: 56px; height: 56px; overflow: hidden;
-        cursor: pointer; flex-shrink: 0;
-        border: 2px solid transparent; transition: border-color 0.2s;
-    }
-    .prod-popup-thumb.active { border-color: #fff; }
-    .prod-popup-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-    .prod-popup-right {
-        flex: 1; padding: 44px 32px 32px;
-        overflow-y: auto; display: flex; flex-direction: column; gap: 22px;
-        background: #111;
-    }
-    .prod-popup-badge {
-        display: inline-block; background: #ff4a4a; color: #fff;
-        font-size: 10px; font-weight: 700; letter-spacing: 1px;
-        padding: 3px 10px; font-family: 'Inter', sans-serif;
-    }
-    .prod-popup-name {
-        font-size: 24px; font-weight: 500; color: #fff;
-        font-family: 'Inter', sans-serif; line-height: 1.3;
-    }
-    .prod-popup-price-row { display: flex; align-items: baseline; gap: 12px; }
-    .prod-popup-price {
-        font-size: 26px; font-weight: 400; color: #fff;
-        font-family: 'Inter', sans-serif;
-    }
-    .prod-popup-price-old {
-        font-size: 16px; color: #555; text-decoration: line-through;
-        font-family: 'Inter', sans-serif;
-    }
-    .prod-popup-label {
-        font-size: 10px; font-weight: 600; letter-spacing: 2px;
-        text-transform: uppercase; color: #555;
-        margin-bottom: 10px; font-family: 'Inter', sans-serif;
-    }
-    .prod-popup-sizes { display: flex; gap: 8px; flex-wrap: wrap; }
-    .size-btn {
-        min-width: 44px; height: 40px;
-        background: #1a1a1a; border: 1px solid #333; color: #aaa;
-        font-size: 13px; font-weight: 500;
-        cursor: pointer; transition: all 0.2s;
-        font-family: 'Inter', sans-serif; padding: 0 12px;
-    }
-    .size-btn:hover { border-color: #fff; color: #fff; }
-    .size-btn.active { background: #fff; color: #000; border-color: #fff; }
-
-    .prod-popup-btn-row { display: flex; flex-direction: column; gap: 10px; }
-    .prod-popup-cart-btn {
-        background: #fff; color: #000; border: none;
-        padding: 15px 28px; font-size: 13px; letter-spacing: 1px;
-        text-transform: uppercase;
-        cursor: pointer; font-family: 'Inter', sans-serif;
-        transition: background 0.2s; width: 100%; font-weight: 600;
-    }
-    .prod-popup-cart-btn:hover { background: #e0e0e0; }
-    .prod-popup-order-btn {
-        background: transparent; color: #fff;
-        border: 1px solid #333;
-        padding: 15px 28px; font-size: 13px; letter-spacing: 1px;
-        text-transform: uppercase;
-        cursor: pointer; font-family: 'Inter', sans-serif;
-        transition: border-color 0.2s; width: 100%;
-    }
-    .prod-popup-order-btn:hover { border-color: #fff; }
-
-    .prod-popup-descr {
-        font-size: 13px; color: #555; line-height: 1.8;
-        font-family: 'Inter', sans-serif;
-        border-top: 1px solid #1e1e1e; padding-top: 20px;
-    }
-
-    @media (max-width: 640px) {
-        .prod-popup { padding: 0; }
-        .prod-popup-inner { flex-direction: column; max-height: 100vh; }
-        .prod-popup-left { width: 100%; height: 55vw; min-height: 200px; flex-shrink: 0; }
-        .prod-popup-right { padding: 20px 18px 24px; gap: 14px; }
-        .prod-popup-name { font-size: 18px; }
-        .prod-popup-price { font-size: 20px; }
-    }
-    
-    @media (max-width: 768px) {
-        .hero {
-            height: 60vh;
-            min-height: 400px;
-        }
-        .hero-overlay h1 {
-            font-size: 28px;
-        }
-        .hero-overlay p {
-            font-size: 14px;
-        }
-        .product-row {
-            grid-template-columns: 1fr;
-            gap: 30px;
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        .product-row-reverse {
-            direction: ltr;
-        }
-        .product-name {
-            font-size: 24px;
-        }
-        .product-price {
-            font-size: 22px;
-        }
-        .product-image {
-            max-width: 280px;
-            height: 280px;
-            margin: 0 auto;
-        }
-    }
-    
-    .toast {
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #2ecc71;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 40px;
-        z-index: 1000;
-        font-weight: 500;
-        animation: fadeOut 2s forwards;
-    }
-    
-    .toast.error {
-        background: #e74c3c;
-    }
-    
-    @keyframes fadeOut {
-        0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-        70% { opacity: 1; }
-        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
-    }
-</style>
-
-<script>
-    // Плавное появление
-    const fadeItems = document.querySelectorAll('.fade-item');
-    
-    function checkVisibility() {
-        fadeItems.forEach(item => {
-            const rect = item.getBoundingClientRect();
-            if (rect.top < window.innerHeight - 100) {
-                item.classList.add('visible');
-            }
-        });
-    }
-    
-    window.addEventListener('load', checkVisibility);
-    window.addEventListener('scroll', checkVisibility);
-    checkVisibility();
-    
-    // ЛАЙКИ (избранное) — иконка на карточке меняется, в шапке НЕТ
-    let likedProducts = JSON.parse(localStorage.getItem('liked_products') || '[]');
-    
-    function updateLikeButtons() {
-        document.querySelectorAll('.like-icon').forEach(btn => {
-            const id = btn.dataset.id;
-            btn.classList.toggle('liked', likedProducts.includes(id));
-        });
-        if (window.updateLikesCount) window.updateLikesCount();
-    }
-
-    function toggleLike(productId, btnElement) {
-        if (likedProducts.includes(productId)) {
-            likedProducts = likedProducts.filter(id => id !== productId);
-            btnElement.classList.remove('liked');
-            showToast('Удалено из избранного');
-        } else {
-            likedProducts.push(productId);
-            btnElement.classList.add('liked');
-            showToast('Добавлено в избранное');
-        }
-        localStorage.setItem('liked_products', JSON.stringify(likedProducts));
-        if (window.updateLikesCount) window.updateLikesCount();
-    }
-    
-    document.querySelectorAll('.like-icon').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleLike(btn.dataset.id, btn);
-        });
-    });
-    
-    updateLikeButtons();
-    
-    // ПОПАП ТОВАРА
-    const POPUP_IMGS = [
-        '/static/images/photo_2026-05-17_22.34.33.jpeg',
-        '/static/images/photo_2026-05-17_22.34.46.jpeg'
-    ];
-
-    function openProdPopup(id, name, price) {
-        const popup = document.getElementById('prodPopup');
-        document.getElementById('popupName').textContent = name;
-        document.getElementById('popupPrice').textContent = Number(price).toLocaleString('ru') + ' р.';
-        document.getElementById('popupMainImg').src = POPUP_IMGS[0];
-        document.getElementById('popupThumbs').innerHTML = POPUP_IMGS.map((src, i) =>
-            `<div class="prod-popup-thumb ${i===0?'active':''}" onclick="setPopupImg(this,'${src}')"><img src="${src}" alt=""></div>`
-        ).join('');
-        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('popupCartBtn').onclick = () => {
-            const size = document.querySelector('.size-btn.active')?.dataset.size || '';
-            addFromPopup(id, name, price, size);
-        };
-        document.getElementById('popupOrderBtn').onclick = async () => {
-            const size = document.querySelector('.size-btn.active')?.dataset.size || '';
-            const fullName = size ? `${name} (${size})` : name;
-            await fetch('/api/cart/add', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ product_id: String(id)+(size?'_'+size:''), name: fullName, price: Number(price) })
-            });
-            location.href = '/order';
-        };
-        popup.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function setPopupImg(thumb, src) {
-        document.getElementById('popupMainImg').src = src;
-        document.querySelectorAll('.prod-popup-thumb').forEach(t => t.classList.remove('active'));
-        thumb.classList.add('active');
-    }
-
-    function closeProdPopup() {
-        document.getElementById('prodPopup').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    async function addFromPopup(id, name, price, size) {
-        const fullName = size ? `${name} (${size})` : name;
-        try {
-            const res = await fetch('/api/cart/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ product_id: id + (size ? '_' + size : ''), name: fullName, price: Number(price) })
-            });
-            const data = await res.json();
-            if (data.success) {
-                closeProdPopup();
-                updateCartCount();
-                if (window.renderT706Cart) renderT706Cart();
-                if (window.openCart) openCart();
-            }
-        } catch {}
-    }
-
-    document.getElementById('prodPopup').addEventListener('click', e => {
-        if (e.target === document.getElementById('prodPopup')) closeProdPopup();
-    });
-    document.getElementById('prodPopupClose').addEventListener('click', closeProdPopup);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProdPopup(); });
-
-    document.querySelectorAll('.size-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
-
-    document.querySelectorAll('.product-image').forEach(container => {
-        container.addEventListener('click', e => {
-            if (e.target.closest('.like-icon')) return;
-            openProdPopup(container.dataset.id, container.dataset.name, container.dataset.price);
-        });
-    });
-    
-    // КОРЗИНА
-    async function addToCart(productId, productName, productPrice) {
-        try {
-            const response = await fetch('/api/cart/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    product_id: productId,
-                    name: productName,
-                    price: productPrice
-                })
-            });
-            const data = await response.json();
-            if (data.success) {
-                updateCartCount();
-                if (window.renderT706Cart) renderT706Cart();
-                if (window.openCart) openCart();
-            } else {
-                showToast('❌ Ошибка', true);
-            }
-        } catch (err) {
-            showToast('❌ Ошибка соединения', true);
-        }
-    }
-    
-    function showToast(message, isError = false) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        if (isError) toast.classList.add('error');
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-    }
-    
-    async function updateCartCount() {
-        try {
-            const response = await fetch('/api/cart/count');
-            const data = await response.json();
-            const el = document.getElementById('cart-count');
-            if (el) el.textContent = data.count || 0;
-        } catch(err) {}
-    }
-    
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            addToCart(btn.dataset.id, btn.dataset.name, parseInt(btn.dataset.price));
-        });
-    });
-    
-    updateCartCount();
-    setInterval(updateCartCount, 5000);
-</script>
-
-<!-- Product popup -->
+<!-- ── PRODUCT POPUP ── -->
 <div class="prod-popup" id="prodPopup">
     <div class="prod-popup-inner">
         <button class="prod-popup-close" id="prodPopupClose">&times;</button>
@@ -642,11 +319,8 @@
             <div class="prod-popup-thumbs" id="popupThumbs"></div>
         </div>
         <div class="prod-popup-right">
-            <div id="popupBadge" class="prod-popup-badge" style="display:none">НОВИНКА</div>
             <div class="prod-popup-name" id="popupName"></div>
-            <div class="prod-popup-price-row">
-                <div class="prod-popup-price" id="popupPrice"></div>
-            </div>
+            <div class="prod-popup-price" id="popupPrice"></div>
             <div>
                 <div class="prod-popup-label">Размер</div>
                 <div class="prod-popup-sizes">
@@ -665,4 +339,324 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.166.0/build/three.module.js';
+
+gsap.registerPlugin(ScrollTrigger);
+
+// ── SMOOTH SCROLL ──
+const lenis = new Lenis({
+    duration: 2.2,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothTouch: false,
+});
+function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+requestAnimationFrame(raf);
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add(time => lenis.raf(time * 1000));
+gsap.ticker.lagSmoothing(0);
+
+// ── INTRO BLOB ──
+const overlay = document.getElementById('introOverlay');
+const ic = document.getElementById('introCanvas');
+const ctx = ic.getContext('2d');
+ic.width  = window.innerWidth;
+ic.height = window.innerHeight;
+const ocx = ic.width / 2, ocy = ic.height / 2;
+const maxR = Math.hypot(ocx, ocy) * 1.4;
+const prog = { v: 0 };
+
+function drawBlob() {
+    const r = prog.v * maxR;
+    ctx.clearRect(0, 0, ic.width, ic.height);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, ic.width, ic.height);
+    if (r < 1) return;
+    const t = Date.now() / 1000;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    const N = 80;
+    for (let i = 0; i <= N; i++) {
+        const a = (i / N) * Math.PI * 2;
+        const jitter = (1 - prog.v) * (
+            Math.sin(a * 6 + t * 2.5) * 0.07 +
+            Math.cos(a * 11 + t * 1.8) * 0.04
+        );
+        const rr = r * (1 + jitter);
+        const x = ocx + Math.cos(a) * rr;
+        const y = ocy + Math.sin(a) * rr;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+}
+
+// Keep redrawing for organic edges
+let blobDone = false;
+(function blobFrame() { if (!blobDone) { drawBlob(); requestAnimationFrame(blobFrame); } })();
+
+gsap.to(prog, {
+    v: 1, duration: 2.6, delay: 0.2,
+    ease: 'power2.inOut',
+    onUpdate: drawBlob,
+    onComplete: () => {
+        blobDone = true;
+        overlay.style.display = 'none';
+        heroIn();
+    }
+});
+
+// ── HERO TEXT IN ──
+function heroIn() {
+    gsap.timeline()
+        .to('.hero-title .word', {
+            translateY: '0%', duration: 1.6,
+            stagger: 0.15, ease: 'power4.out',
+        })
+        .to('.hero-sub', {
+            opacity: 1, y: 0, duration: 1.2, ease: 'power3.out'
+        }, '-=0.9')
+        .to('#scrollHint', {
+            opacity: 1, duration: 1, ease: 'power2.out'
+        }, '-=0.6');
+}
+
+// ── THREE.JS CLOTH ──
+const canvas3 = document.getElementById('threeCanvas');
+const renderer = new THREE.WebGLRenderer({ canvas: canvas3, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+camera.position.set(0, 0, 5);
+
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+const dirL = new THREE.DirectionalLight(0xffffff, 2.5);
+dirL.position.set(2, 4, 4); scene.add(dirL);
+const fillL = new THREE.PointLight(0x6688ff, 1.2, 20);
+fillL.position.set(-3, -2, 3); scene.add(fillL);
+const rimL = new THREE.DirectionalLight(0xffffff, 0.6);
+rimL.position.set(-2, 2, -4); scene.add(rimL);
+
+// Cloth mesh
+const SEG = 90;
+const geo = new THREE.PlaneGeometry(3.2, 4.0, SEG, SEG);
+const mat = new THREE.MeshPhongMaterial({
+    color: 0xffffff, specular: 0x222222,
+    shininess: 20, side: THREE.DoubleSide,
+});
+const cloth = new THREE.Mesh(geo, mat);
+scene.add(cloth);
+
+const origPos = geo.attributes.position.array.slice();
+let scrollProg = 0, t3 = 0;
+
+function resizeRenderer() {
+    const s = document.getElementById('s2');
+    renderer.setSize(s.clientWidth, s.clientHeight);
+    camera.aspect = s.clientWidth / s.clientHeight;
+    camera.updateProjectionMatrix();
+}
+resizeRenderer();
+window.addEventListener('resize', resizeRenderer);
+
+ScrollTrigger.create({
+    trigger: '#s2', start: 'top top', end: 'bottom top',
+    scrub: 2,
+    onUpdate: s => { scrollProg = s.progress; }
+});
+
+function tickCloth() {
+    const pos = geo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+        const ox = origPos[i * 3];
+        const oy = origPos[i * 3 + 1];
+        // Breathing
+        const wave =
+            Math.sin(ox * 2.2 + t3 * 0.55) * 0.13 +
+            Math.cos(oy * 2.8 + t3 * 0.72) * 0.09 +
+            Math.sin((ox + oy) * 1.6 + t3 * 0.38) * 0.06 +
+            Math.sin(ox * 5   - t3 * 0.48) * 0.025;
+        // Scroll crumple
+        const crumple = scrollProg * (
+            Math.sin(oy * 3.5 + t3 * 0.9) * 0.5 +
+            Math.cos(ox * 2.8 + t3 * 0.6) * 0.35
+        );
+        pos.setZ(i, wave + crumple);
+        pos.setX(i, ox + Math.sin(oy * 1.8 + t3 * 0.3) * scrollProg * 0.18);
+    }
+    pos.needsUpdate = true;
+    geo.computeVertexNormals();
+    cloth.rotation.y = scrollProg * Math.PI * 0.7;
+    cloth.rotation.x = scrollProg * Math.PI * 0.18;
+}
+
+(function renderLoop() {
+    requestAnimationFrame(renderLoop);
+    t3 += 0.015;
+    tickCloth();
+    renderer.render(scene, camera);
+})();
+
+// ── S2 TEXT PARALLAX ──
+gsap.to('.s2-title', {
+    scrollTrigger: { trigger: '#s2', start: 'top top', end: 'bottom top', scrub: true },
+    opacity: 0.25, y: -60, ease: 'none'
+});
+
+// ── S3 REVEAL ──
+const s3Els = ['.s3-eyebrow', '.s3-heading', '.s3-body', '.s3-cta'];
+s3Els.forEach((sel, i) => {
+    gsap.from(sel, {
+        scrollTrigger: { trigger: '#s3', start: 'top 70%' },
+        opacity: 0, y: 40 - i * 6,
+        duration: 1.2 + i * 0.1,
+        delay: i * 0.12,
+        ease: 'power3.out',
+    });
+});
+
+// ── PRODUCTS SCROLL ──
+document.querySelectorAll('.product-row').forEach(row => {
+    gsap.from(row, {
+        scrollTrigger: { trigger: row, start: 'top 88%' },
+        opacity: 0, y: 70,
+        duration: 1.4, ease: 'power3.out',
+    });
+});
+
+// ── LIKES ──
+let liked = JSON.parse(localStorage.getItem('liked_products') || '[]');
+function syncLikes() {
+    document.querySelectorAll('.like-icon').forEach(b =>
+        b.classList.toggle('liked', liked.includes(b.dataset.id)));
+    if (window.updateLikesCount) window.updateLikesCount();
+}
+document.querySelectorAll('.like-icon').forEach(btn =>
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        liked = liked.includes(id) ? liked.filter(x => x !== id) : [...liked, id];
+        btn.classList.toggle('liked', liked.includes(id));
+        localStorage.setItem('liked_products', JSON.stringify(liked));
+        if (window.updateLikesCount) window.updateLikesCount();
+    })
+);
+syncLikes();
+
+// ── POPUP ──
+const IMGS = [
+    '/static/images/photo_2026-05-17_22.34.33.jpeg',
+    '/static/images/photo_2026-05-17_22.34.46.jpeg'
+];
+
+function openPopup(id, name, price) {
+    document.getElementById('popupName').textContent = name;
+    document.getElementById('popupPrice').textContent =
+        Number(price).toLocaleString('ru') + ' р.';
+    document.getElementById('popupMainImg').src = IMGS[0];
+    document.getElementById('popupThumbs').innerHTML = IMGS.map((src, i) =>
+        `<div class="prod-popup-thumb ${i===0?'active':''}" onclick="window._setThumb(this,'${src}')"><img src="${src}" alt=""></div>`
+    ).join('');
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('popupCartBtn').onclick = () => {
+        const sz = document.querySelector('.size-btn.active')?.dataset.size || '';
+        addFromPopup(id, name, price, sz);
+    };
+    document.getElementById('popupOrderBtn').onclick = async () => {
+        const sz = document.querySelector('.size-btn.active')?.dataset.size || '';
+        const fn = sz ? name + ' (' + sz + ')' : name;
+        await fetch('/api/cart/add', {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ product_id: String(id)+(sz?'_'+sz:''), name: fn, price: Number(price) })
+        });
+        location.href = '/order';
+    };
+    document.getElementById('prodPopup').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+window._setThumb = function(el, src) {
+    document.getElementById('popupMainImg').src = src;
+    document.querySelectorAll('.prod-popup-thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+};
+
+function closePopup() {
+    document.getElementById('prodPopup').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.getElementById('prodPopup').addEventListener('click', e => {
+    if (e.target === document.getElementById('prodPopup')) closePopup();
+});
+document.getElementById('prodPopupClose').addEventListener('click', closePopup);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
+document.querySelectorAll('.size-btn').forEach(btn =>
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    })
+);
+document.querySelectorAll('.product-image').forEach(c =>
+    c.addEventListener('click', e => {
+        if (e.target.closest('.like-icon')) return;
+        openPopup(c.dataset.id, c.dataset.name, c.dataset.price);
+    })
+);
+
+async function addFromPopup(id, name, price, sz) {
+    const fn = sz ? name + ' (' + sz + ')' : name;
+    const res = await fetch('/api/cart/add', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ product_id: String(id)+(sz?'_'+sz:''), name: fn, price: Number(price) })
+    });
+    const data = await res.json();
+    if (data.success) {
+        closePopup();
+        if (window.updateCartCount) window.updateCartCount();
+        if (window.renderT706Cart) window.renderT706Cart();
+        if (window.openCart) window.openCart();
+    }
+}
+
+// ── CART ──
+document.querySelectorAll('.add-to-cart').forEach(btn =>
+    btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        const res = await fetch('/api/cart/add', {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ product_id: btn.dataset.id, name: btn.dataset.name, price: parseInt(btn.dataset.price) })
+        });
+        const data = await res.json();
+        if (data.success) {
+            if (window.updateCartCount) window.updateCartCount();
+            if (window.renderT706Cart) window.renderT706Cart();
+            if (window.openCart) window.openCart();
+        }
+    })
+);
+
+async function updateCartCount() {
+    try {
+        const r = await fetch('/api/cart/count');
+        const d = await r.json();
+        const el = document.getElementById('cart-count');
+        if (el) el.textContent = d.count || 0;
+    } catch {}
+}
+window.updateCartCount = updateCartCount;
+updateCartCount();
+setInterval(updateCartCount, 5000);
+
+</script>
 {% endblock %}
