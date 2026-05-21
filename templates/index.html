@@ -84,15 +84,16 @@ body { background: #000; }
 
 /* ── THREE CANVAS SECTION ── */
 .cloth-section {
-    height: 100vh; background: #000;
+    height: 140vh; background: #000;
     position: relative; overflow: hidden;
 }
 #threeCanvas {
-    position: absolute; inset: 0;
-    width: 100% !important; height: 100% !important;
+    position: sticky; top: 0;
+    width: 100% !important; height: 100vh !important;
+    display: block;
 }
 .cloth-label {
-    position: absolute; bottom: 12%; left: 50%;
+    position: absolute; bottom: 6%; left: 50%;
     transform: translateX(-50%);
     text-align: center; pointer-events: none; z-index: 2;
 }
@@ -170,12 +171,12 @@ body { background: #000; }
 
 /* ── PRODUCTS ── */
 .products-section {
-    max-width: 1080px; margin: 0 auto;
-    padding: 120px 24px 140px; background: #000;
+    max-width: 1280px; margin: 0 auto;
+    padding: 100px 24px 140px; background: #000;
 }
 .section-header {
     display: flex; justify-content: space-between;
-    align-items: flex-end; margin-bottom: 80px;
+    align-items: flex-end; margin-bottom: 60px;
 }
 .section-title {
     font-size: clamp(32px, 4vw, 52px);
@@ -192,73 +193,72 @@ body { background: #000; }
 }
 .section-link:hover { color: #fff; border-color: #fff; }
 
-.product-row {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 64px; align-items: center; margin-bottom: 100px;
+/* 3D card grid */
+.products-3d-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
 }
-.product-row:last-child { margin-bottom: 0; }
-.product-row-reverse { direction: rtl; }
-.product-row-reverse .product-info { direction: ltr; }
-.product-image-wrapper { display: flex; justify-content: center; }
-.product-image {
-    position: relative; width: 100%;
-    max-width: 380px; height: 400px;
-    cursor: pointer; overflow: hidden;
-}
-.product-img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%; object-fit: cover;
-    transition: opacity 0.5s ease;
-}
-.front-img { opacity: 1; z-index: 1; }
-.back-img  { opacity: 0; z-index: 0; }
-.product-image:hover .front-img { opacity: 0; }
-.product-image:hover .back-img  { opacity: 1; }
-.like-icon {
-    position: absolute; top: 14px; right: 14px;
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.08);
-    cursor: pointer; z-index: 10;
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s, background 0.2s;
-}
-.like-icon:hover { transform: scale(1.12); background: rgba(0,0,0,0.8); }
-.heart-svg { width: 20px; height: 20px; }
-.heart-svg path { fill: none; stroke: #fff; stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; }
-.like-icon.liked .heart-svg path { fill: #ff3b5c; stroke: #ff3b5c; }
 
-.product-tag {
-    font-size: 8px; letter-spacing: 4px;
-    text-transform: uppercase; color: #555;
-    font-family: 'Inter', sans-serif;
-    margin-bottom: 20px;
+.pcard {
+    cursor: pointer; background: #000;
+    position: relative;
 }
-.product-name {
-    font-size: clamp(22px, 2.5vw, 32px);
-    font-weight: 600; color: #fff;
-    font-family: 'Inter', sans-serif;
-    margin-bottom: 16px; letter-spacing: -0.5px;
+.pcard-canvas-wrap {
+    width: 100%; aspect-ratio: 3/4;
+    background: #060606;
+    position: relative; overflow: hidden;
 }
-.product-description {
-    font-size: 13px; color: #666;
-    line-height: 1.8; margin-bottom: 24px;
-    font-family: 'Inter', sans-serif;
+.pcard-canvas-wrap canvas {
+    width: 100% !important; height: 100% !important;
+    display: block;
 }
-.product-price {
-    font-size: 28px; font-weight: 300;
-    color: #fff; margin-bottom: 28px;
-    font-family: 'Inter', sans-serif; letter-spacing: -1px;
+.pcard-like {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.07);
+    cursor: pointer; z-index: 10;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
 }
-.product-btn {
+.pcard-like:hover { transform: scale(1.12); }
+.heart-svg { width: 18px; height: 18px; }
+.heart-svg path { fill: none; stroke: #fff; stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; }
+.pcard-like.liked .heart-svg path { fill: #ff3b5c; stroke: #ff3b5c; }
+
+.pcard-footer {
+    padding: 16px 4px 28px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: 1px solid #0d0d0d;
+}
+.pcard-name {
+    font-size: 13px; color: #fff;
+    font-family: 'Inter', sans-serif; font-weight: 400;
+}
+.pcard-price {
+    font-size: 15px; color: #fff;
+    font-family: 'Inter', sans-serif; font-weight: 300;
+    letter-spacing: -0.5px;
+}
+.pcard-add {
+    display: none; /* shown on hover via JS */
+    position: absolute; bottom: 68px; left: 4px; right: 4px;
     background: #fff; color: #000; border: none;
-    padding: 14px 36px; font-size: 10px; font-weight: 700;
-    letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 11px; font-size: 9px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
     cursor: pointer; font-family: 'Inter', sans-serif;
-    border-radius: 0; transition: background 0.2s, transform 0.15s;
-    display: inline-block;
+    z-index: 5;
 }
-.product-btn:hover { background: #e8e8e8; transform: translateY(-1px); }
+.pcard:hover .pcard-add { display: block; }
+.pcard-add:hover { background: #e8e8e8; }
+
+@media (max-width: 900px) {
+    .products-3d-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 540px) {
+    .products-3d-grid { grid-template-columns: 1fr 1fr; gap: 1px; }
+}
 
 /* ── POPUP ── */
 .prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; padding: 20px; }
@@ -390,35 +390,28 @@ body { background: #000; }
         <h2 class="section-title">Новинки</h2>
         <a href="/catalog" class="section-link">Весь каталог</a>
     </div>
-    <div id="productsGrid">
+    <div class="products-3d-grid" id="productsGrid">
+        {% set names = ['Oversize Tee', 'Dropped Shoulder', 'Washed Black', 'Essential White', 'Heavy Cotton', 'Vintage Cut'] %}
         {% for i in range(1, 7) %}
-        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} prod-anim"
-             data-product-id="{{ i }}">
-            <div class="product-image-wrapper">
-                <div class="product-image"
-                     data-id="{{ i }}"
-                     data-name="Шмотка {{ i }}"
-                     data-price="{{ 1500 + i * 100 }}">
-                    <img src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="" class="product-img front-img">
-                    <img src="/static/images/photo_2026-05-17_22.34.46.jpeg" alt="" class="product-img back-img">
-                    <button class="like-icon" data-id="{{ i }}">
-                        <svg viewBox="0 0 24 24" class="heart-svg">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="product-tag">{{ ['Хит продаж', 'Новинка', 'Лимит', 'Эксклюзив', 'Bestseller', 'New drop'][loop.index0 % 6] }}</div>
-                <h3 class="product-name">Шмотка {{ i }}</h3>
-                <p class="product-description">Стильная и удобная вещь для вашего гардероба. Высококачественный материал, современный крой.</p>
-                <div class="product-price">{{ 1500 + i * 100 }} ₽</div>
-                <button class="product-btn add-to-cart"
-                        data-id="{{ i }}"
-                        data-name="Шмотка {{ i }}"
-                        data-price="{{ 1500 + i * 100 }}">
-                    В корзину
+        <div class="pcard prod-anim"
+             data-id="{{ i }}"
+             data-name="{{ names[loop.index0] }}"
+             data-price="{{ 1500 + i * 100 }}">
+            <div class="pcard-canvas-wrap">
+                <canvas id="pcanvas{{ i }}"></canvas>
+                <button class="pcard-like" data-id="{{ i }}">
+                    <svg viewBox="0 0 24 24" class="heart-svg">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
                 </button>
+            </div>
+            <button class="pcard-add add-to-cart"
+                    data-id="{{ i }}"
+                    data-name="{{ names[loop.index0] }}"
+                    data-price="{{ 1500 + i * 100 }}">В корзину</button>
+            <div class="pcard-footer">
+                <span class="pcard-name">{{ names[loop.index0] }}</span>
+                <span class="pcard-price">{{ 1500 + i * 100 }} ₽</span>
             </div>
         </div>
         {% endfor %}
@@ -584,12 +577,12 @@ gsap.from('.section-link',  { scrollTrigger: { trigger: '.products-section', sta
 ──────────────────────────────────────── */
 var liked = JSON.parse(localStorage.getItem('liked_products') || '[]');
 function syncLikes() {
-    document.querySelectorAll('.like-icon').forEach(function(b) {
+    document.querySelectorAll('.pcard-like').forEach(function(b) {
         b.classList.toggle('liked', liked.includes(b.dataset.id));
     });
     if (window.updateLikesCount) window.updateLikesCount();
 }
-document.querySelectorAll('.like-icon').forEach(function(btn) {
+document.querySelectorAll('.pcard-like').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
         e.stopPropagation();
         var id = btn.dataset.id;
@@ -650,9 +643,9 @@ document.querySelectorAll('.size-btn').forEach(function(btn) {
         btn.classList.add('active');
     });
 });
-document.querySelectorAll('.product-image').forEach(function(c) {
+document.querySelectorAll('.pcard').forEach(function(c) {
     c.addEventListener('click', function(e) {
-        if (e.target.closest('.like-icon')) return;
+        if (e.target.closest('.pcard-like') || e.target.closest('.pcard-add')) return;
         openPopup(c.dataset.id, c.dataset.name, c.dataset.price);
     });
 });
@@ -713,146 +706,243 @@ updateCartCount();
 setInterval(updateCartCount, 5000);
 </script>
 
-<!-- ── THREE.JS T-SHIRT (ES module, accesses gsap/ScrollTrigger globals) ── -->
+<!-- ── THREE.JS (ES module) ── -->
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-(function() {
-const canvas  = document.getElementById('threeCanvas');
-const section = document.getElementById('clothSection');
-if (!canvas || !section) return;
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function makeLights(scene) {
+  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+  const k = new THREE.DirectionalLight(0xffffff, 5); k.position.set(3, 5, 5); scene.add(k);
+  const f = new THREE.DirectionalLight(0x8899ff, 1.2); f.position.set(-4, -1, 3); scene.add(f);
+  const r = new THREE.DirectionalLight(0xffffff, 1.1); r.position.set(-1, 3, -5); scene.add(r);
+  const b = new THREE.DirectionalLight(0xffffff, 0.4); b.position.set(0, -4, 2); scene.add(b);
+}
 
-/* ── Renderer ── */
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setClearColor(0x000000, 1);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping      = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+function centerModel(grp) {
+  const box = new THREE.Box3().setFromObject(grp);
+  const ctr = box.getCenter(new THREE.Vector3());
+  const sz  = box.getSize(new THREE.Vector3());
+  grp.position.sub(ctr);
+  return Math.max(sz.x, sz.y, sz.z);
+}
 
-/* ── Scene / Camera ── */
-const scene  = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-camera.position.set(0, 0, 6);
+/* ═══════════════════════════════════════════
+   MAIN CLOTH SECTION
+═══════════════════════════════════════════ */
+{
+  const canvas  = document.getElementById('threeCanvas');
+  const section = document.getElementById('clothSection');
 
-/* ── Lights ── */
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-const key = new THREE.DirectionalLight(0xffffff, 4.5);
-key.position.set(3, 5, 5); scene.add(key);
-const fill = new THREE.DirectionalLight(0x7799ff, 1.2);
-fill.position.set(-4, -1, 3); scene.add(fill);
-const rim = new THREE.DirectionalLight(0xffffff, 1.0);
-rim.position.set(-1, 3, -5); scene.add(rim);
-const bot = new THREE.DirectionalLight(0xffffff, 0.4);
-bot.position.set(0, -4, 2); scene.add(bot);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 1);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
 
-/* ── Loading bar ── */
-const loadWrap = document.createElement('div');
-loadWrap.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;pointer-events:none;gap:20px;';
-loadWrap.innerHTML = `
-  <div style="width:160px;height:1px;background:#111;position:relative;overflow:hidden;">
-    <div id="tLoadBar" style="position:absolute;top:0;left:-100%;height:100%;width:100%;background:linear-gradient(90deg,transparent,#555,transparent);animation:tbarAnim 1.2s ease-in-out infinite;"></div>
-  </div>
-  <style>@keyframes tbarAnim{0%{left:-100%}100%{left:100%}}</style>`;
-section.appendChild(loadWrap);
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  camera.position.set(0, 0, 6.5);
+  makeLights(scene);
 
-/* ── Load GLB ── */
-const loader = new GLTFLoader();
-let tshirt = null, baseScale = 1;
-let mouseX = 0, mouseY = 0, targetRX = 0, targetRY = 0;
-let scrollProg = 0;
+  /* Loading */
+  const loadEl = document.createElement('div');
+  loadEl.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;';
+  loadEl.innerHTML = '<div style="width:140px;height:1px;background:#111;overflow:hidden;"><div id="mlBar" style="height:100%;width:0%;background:#666;transition:width .2s;"></div></div>';
+  section.appendChild(loadEl);
 
-loader.load('/static/models/tshirt.glb',
-  (gltf) => {
-    tshirt = new THREE.Group();
-    tshirt.add(gltf.scene);
+  let model = null, baseScale = 1;
+  let meshes = [], origPositions = [];
+  let mouseX = 0, mouseY = 0, tRY = 0, tRX = 0;
+  let scrollProg = 0, t = 0;
+  let isHover = false, hoverStrength = 0;
 
-    /* Center + scale to fit nicely */
-    const box = new THREE.Box3().setFromObject(tshirt);
-    const sz  = box.getSize(new THREE.Vector3());
-    const ctr = box.getCenter(new THREE.Vector3());
-    tshirt.position.sub(ctr);
+  const loader = new GLTFLoader();
+  loader.load('/static/models/tshirt.glb',
+    (gltf) => {
+      model = new THREE.Group();
+      model.add(gltf.scene);
+      const maxDim = centerModel(model);
+      baseScale = 3.2 / maxDim;
+      model.scale.setScalar(baseScale);
+      model.rotation.set(-0.1, 0.25, 0);
+      scene.add(model);
+      loadEl.remove();
 
-    const maxDim = Math.max(sz.x, sz.y, sz.z);
-    baseScale = 2.6 / maxDim;
-    tshirt.scale.setScalar(baseScale);
+      /* Collect deformable meshes */
+      model.traverse(c => {
+        if (c.isMesh && c.geometry.attributes.position) {
+          const pos = c.geometry.attributes.position;
+          meshes.push(c);
+          origPositions.push(pos.array.slice());
+        }
+      });
 
-    /* Nice initial angle */
-    tshirt.rotation.x = -0.12;
-    tshirt.rotation.y = 0.25;
+      gsap.from(canvas, { opacity: 0, duration: 1.2, ease: 'power2.out' });
+      onResize();
+    },
+    (xhr) => { if (xhr.total) { const b = document.getElementById('mlBar'); if(b) b.style.width = (xhr.loaded/xhr.total*100)+'%'; } },
+    (e) => { console.warn(e); loadEl.remove(); }
+  );
 
-    scene.add(tshirt);
-    loadWrap.remove();
-
-    /* Fade in */
-    gsap.from(canvas, { opacity: 0, duration: 1.2, ease: 'power2.out' });
-  },
-  (xhr) => {
-    if (xhr.total) {
-      const bar = document.getElementById('tLoadBar');
-      if (bar) { bar.style.animation = 'none'; bar.style.left = '0'; bar.style.width = (xhr.loaded / xhr.total * 100) + '%'; }
+  function onResize() {
+    const w = section.clientWidth, h = section.clientHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    if (model) {
+      const s = Math.min(w / 800, 1.0) * 0.9 + 0.1;
+      model.scale.setScalar(baseScale * s);
     }
-  },
-  (err) => { console.warn('GLB load error', err); loadWrap.remove(); }
-);
+  }
+  onResize();
+  window.addEventListener('resize', onResize);
 
-/* ── Resize ── */
-function resize() {
-  const w = section.clientWidth, h = section.clientHeight;
-  renderer.setSize(w, h);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
+  /* Mouse */
+  window.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+  const sec = document.getElementById('clothSection');
+  sec.addEventListener('mouseenter', () => { isHover = true; });
+  sec.addEventListener('mouseleave', () => { isHover = false; });
 
-  /* Scale model to viewport: on mobile make it smaller */
-  if (tshirt) {
-    const vFactor = Math.min(w / 900, 1);
-    tshirt.scale.setScalar(baseScale * (0.72 + vFactor * 0.38));
+  /* Scroll */
+  ScrollTrigger.create({
+    trigger: '#clothSection', start: 'top top', end: 'bottom top',
+    scrub: 1.8,
+    onUpdate: s => { scrollProg = s.progress; }
+  });
+
+  /* Vertex deformation */
+  function deformMeshes() {
+    meshes.forEach((mesh, mi) => {
+      const pos  = mesh.geometry.attributes.position;
+      const orig = origPositions[mi];
+      for (let i = 0; i < pos.count; i++) {
+        const ox = orig[i*3], oy = orig[i*3+1], oz = orig[i*3+2];
+
+        /* Hover bend: gentle wave ripple */
+        const hWave = hoverStrength * (
+          Math.sin(ox * 4 + mouseX * 2 + t * 1.5) * 0.03 +
+          Math.cos(oy * 3 + mouseY * 2 + t * 1.2) * 0.025
+        );
+
+        /* Scroll crumple */
+        const crumple = scrollProg * (
+          Math.sin(ox * 5.0 + t * 1.4) * 0.28 +
+          Math.cos(oy * 4.0 - t * 1.1) * 0.22 +
+          Math.sin((ox - oy) * 3.0 + t * 0.9) * 0.15
+        );
+
+        pos.setXYZ(i, ox + crumple * 0.12, oy + crumple * 0.1, oz + hWave + crumple);
+      }
+      pos.needsUpdate = true;
+      mesh.geometry.computeVertexNormals();
+    });
+  }
+
+  /* Render loop */
+  (function tick() {
+    requestAnimationFrame(tick);
+    t += 0.012;
+    hoverStrength += (isHover ? 1 : 0 - hoverStrength) * 0.06;
+
+    if (model) {
+      tRY += (mouseX * 0.45 - tRY) * 0.04;
+      tRX += (-mouseY * 0.22 - tRX) * 0.04;
+
+      model.position.y  = Math.sin(t * 0.5) * 0.07 - scrollProg * 0.5;
+      model.rotation.y  = 0.25 + tRY + scrollProg * Math.PI * 1.4;
+      model.rotation.x  = -0.1  + tRX + scrollProg * 0.25;
+      model.rotation.z  = Math.sin(t * 0.28) * 0.018 + scrollProg * 0.1;
+
+      if (meshes.length) deformMeshes();
+    }
+
+    renderer.render(scene, camera);
+  })();
+}
+
+/* ═══════════════════════════════════════════
+   PRODUCT CARD MODELS
+═══════════════════════════════════════════ */
+{
+  const CARD_COUNT = 6;
+  const loader2 = new GLTFLoader();
+  let srcScene = null;
+
+  loader2.load('/static/models/tshirt.glb', (gltf) => {
+    srcScene = gltf.scene;
+    for (let i = 1; i <= CARD_COUNT; i++) {
+      const cvs = document.getElementById('pcanvas' + i);
+      if (cvs) setupCard(cvs, i);
+    }
+  }, null, e => console.warn('card glb err', e));
+
+  function setupCard(cvs, idx) {
+    const wrap = cvs.parentElement;
+    const w = wrap.clientWidth || 300;
+    const h = wrap.clientHeight || 400;
+
+    const renderer = new THREE.WebGLRenderer({ canvas: cvs, antialias: true, alpha: false });
+    renderer.setClearColor(0x060606, 1);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.setSize(w, h);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, w/h, 0.1, 100);
+    camera.position.set(0, 0, 6);
+    makeLights(scene);
+
+    const model = new THREE.Group();
+    model.add(srcScene.clone(true));
+    const maxDim = centerModel(model);
+    const sc = 3.0 / maxDim;
+    model.scale.setScalar(sc);
+    model.rotation.y = (idx - 1) * 0.18 - 0.3;
+    scene.add(model);
+
+    let cardT   = idx * 0.8;
+    let cardMX  = 0, cardMY = 0, cardTRY = 0, cardTRX = 0;
+    let cardHov = false, cardHS = 0;
+
+    cvs.addEventListener('mousemove', e => {
+      const r = cvs.getBoundingClientRect();
+      cardMX = (e.clientX - r.left) / r.width  * 2 - 1;
+      cardMY = (e.clientY - r.top)  / r.height * 2 - 1;
+    });
+    wrap.parentElement.addEventListener('mouseenter', () => { cardHov = true; });
+    wrap.parentElement.addEventListener('mouseleave', () => { cardHov = false; });
+
+    /* Resize */
+    const ro = new ResizeObserver(() => {
+      const nw = wrap.clientWidth, nh = wrap.clientHeight;
+      if (nw && nh) { renderer.setSize(nw, nh); camera.aspect = nw/nh; camera.updateProjectionMatrix(); }
+    });
+    ro.observe(wrap);
+
+    (function cardTick() {
+      requestAnimationFrame(cardTick);
+      cardT += 0.009;
+      cardHS += (cardHov ? 1 : 0 - cardHS) * 0.07;
+      cardTRY += (cardMX * 0.38 * cardHS - cardTRY) * 0.06;
+      cardTRX += (-cardMY * 0.18 * cardHS - cardTRX) * 0.06;
+
+      model.rotation.y = (idx-1) * 0.18 - 0.3 + cardTRY + cardT * 0.004;
+      model.rotation.x = -0.08 + cardTRX;
+      model.position.y = Math.sin(cardT * 0.45 + idx) * 0.06;
+
+      renderer.render(scene, camera);
+    })();
   }
 }
-resize();
-window.addEventListener('resize', resize);
-
-/* ── Mouse parallax ── */
-window.addEventListener('mousemove', (e) => {
-  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
-  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-});
-
-/* ── Scroll ── */
-ScrollTrigger.create({
-  trigger: '#clothSection',
-  start: 'top top', end: 'bottom top',
-  scrub: 2,
-  onUpdate: (s) => { scrollProg = s.progress; }
-});
-
-/* ── Render loop ── */
-let t = 0;
-(function tick() {
-  requestAnimationFrame(tick);
-  t += 0.01;
-
-  if (tshirt) {
-    /* Smooth mouse follow */
-    targetRY += (mouseX * 0.35 - targetRY) * 0.05;
-    targetRX += (-mouseY * 0.18 - targetRX) * 0.05;
-
-    /* Floating */
-    const floatY = Math.sin(t * 0.55) * 0.06;
-
-    tshirt.position.y  = floatY - scrollProg * 0.4;
-    tshirt.rotation.y  = 0.25 + targetRY + scrollProg * Math.PI * 1.2;
-    tshirt.rotation.x  = -0.12 + targetRX + scrollProg * 0.22;
-    tshirt.rotation.z  = Math.sin(t * 0.3) * 0.015 + scrollProg * 0.08;
-
-    /* Breathe */
-    const breathe = 1 + Math.sin(t * 0.7) * 0.008;
-    tshirt.scale.setScalar(baseScale * breathe * (0.72 + Math.min(section.clientWidth / 900, 1) * 0.38));
-  }
-
-  renderer.render(scene, camera);
-})();
-})(); // end IIFE
 </script>
 {% endblock %}
