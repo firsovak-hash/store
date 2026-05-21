@@ -829,7 +829,9 @@ function centerGroup(grp) {
       float scatter = exp(-jDist) * (n3 * 1.4 + 0.15);
 
       /* ── движение: след за курсором ── */
-      float ink = (mainSplat * 13. + scatter * 10.) * speed * 1.2;
+      /* + постоянная база: блоб всегда есть под курсором */
+      float ink = (mainSplat * 13. + scatter * 10.) * speed * 1.2
+                + mainSplat * 2.8;
       c.r += ink;
 
       /* ── клякса: органичный блоб, расплывается и дышит ── */
@@ -869,7 +871,7 @@ function centerGroup(grp) {
 
   const DISP_FRAG = `
     precision highp float;
-    uniform sampler2D uTex1, uTex2, uSim;
+    uniform sampler2D uTex1, uSim;
     uniform float uImgAR, uScreenAR;
     varying vec2 vUv;
     vec2 coverUV(vec2 uv, float imgAR, float scrAR){
@@ -881,13 +883,16 @@ function centerGroup(grp) {
     }
     void main(){
       vec2 cuv = coverUV(vUv, uImgAR, uScreenAR);
-      vec4 p1 = texture2D(uTex1, cuv);
-      vec4 p2 = texture2D(uTex2, cuv);
-      /* warm orange tint on photo1 */
-      float lum = dot(p1.rgb, vec3(0.299,0.587,0.114));
-      p1.rgb = mix(p1.rgb, vec3(lum*1.42, lum*0.88, lum*0.50), 0.68);
-      float reveal = smoothstep(0.03, 0.58, texture2D(uSim,vUv).r);
-      gl_FragColor = mix(p1, p2, reveal);
+      vec4 photo = texture2D(uTex1, cuv);
+
+      /* ── база: тёплое цветное фото ── */
+      float lum = dot(photo.rgb, vec3(0.299, 0.587, 0.114));
+      photo.rgb = mix(photo.rgb, vec3(lum*1.28, lum*0.84, lum*0.50), 0.30);
+
+      /* ── под курсором: ч/б ── */
+      vec3 bw    = vec3(lum * 0.82);
+      float desat = smoothstep(0.02, 0.54, texture2D(uSim, vUv).r);
+      gl_FragColor = vec4(mix(photo.rgb, bw, desat), 1.0);
     }
   `;
 
