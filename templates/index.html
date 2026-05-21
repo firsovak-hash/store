@@ -121,32 +121,6 @@ body { background: #000; }
     align-items: center; gap: 14px;
 }
 
-/* ── THREE CANVAS SECTION ── */
-.cloth-section {
-    height: 220vh; background: #000;
-    position: relative;
-}
-#threeCanvas {
-    position: sticky; top: 0; left: 0;
-    width: 100% !important; height: 100vh !important;
-    display: block; z-index: 1;
-}
-.cloth-label {
-    position: absolute; bottom: 6%; left: 50%;
-    transform: translateX(-50%);
-    text-align: center; pointer-events: none; z-index: 2;
-}
-.cloth-season {
-    font-size: 8px; letter-spacing: 6px;
-    text-transform: uppercase; color: #555;
-    font-family: 'Inter', sans-serif;
-    display: block; margin-bottom: 12px;
-}
-.cloth-num {
-    font-size: clamp(60px, 12vw, 130px);
-    font-weight: 700; color: rgba(255,255,255,0.08);
-    font-family: 'Inter', sans-serif; letter-spacing: -4px;
-}
 
 /* ── MANIFEST SECTION ── */
 .manifest {
@@ -210,13 +184,16 @@ body { background: #000; }
 
 /* ── PRODUCTS ── */
 .products-section {
-    max-width: 1280px; margin: 0 auto;
-    padding: 120px 32px 160px; background: #000;
+    background: #000;
+    padding: 80px 0 140px;
 }
 .section-header {
+    max-width: 1400px; margin: 0 auto;
     display: flex; justify-content: space-between;
-    align-items: flex-end; margin-bottom: 64px;
-    border-bottom: 1px solid #111; padding-bottom: 24px;
+    align-items: flex-end;
+    padding: 0 48px 32px;
+    border-bottom: 1px solid #111;
+    margin-bottom: 0;
 }
 .section-title {
     font-size: clamp(32px, 4vw, 52px);
@@ -233,58 +210,46 @@ body { background: #000; }
 }
 .section-link:hover { color: #fff; border-color: #fff; }
 
-/* ── CHECKERBOARD CARDS ── */
+/* ── CHECKERBOARD ROWS ── */
 .pcards-grid {
     display: flex; flex-direction: column;
-    gap: 3px;
 }
 
 .pcard3d {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    min-height: 540px;
-    background: #111;
+    min-height: 600px;
+    border-bottom: 1px solid #0d0d0d;
     cursor: pointer;
-    transition: background 0.3s;
-}
-.pcard3d:hover { background: #161616; }
-
-/* Even cards: flip sides */
-.pcard3d:nth-child(even) .pcard-imgs { order: 2; }
-.pcard3d:nth-child(even) .pcard-info  { order: 1; }
-
-/* ── Image side ── */
-.pcard-imgs {
-    position: relative;
     overflow: hidden;
-    background: #1e1e1e;
 }
-.pcard-img {
-    width: 100%; height: 100%;
-    object-fit: cover; display: block;
-    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.pcard3d:hover .pcard-img { transform: scale(1.04); }
 
-/* image inner rounded frame */
-.pcard-img-wrap {
-    position: absolute; inset: 20px;
-    overflow: hidden; border-radius: 18px;
-    background: #2c2c2c;
+/* Even rows: model RIGHT, info LEFT */
+.pcard3d:nth-child(even) .prod-model { order: 2; }
+.pcard3d:nth-child(even) .prod-info  { order: 1; }
+
+/* ── 3D model side ── */
+.prod-model {
+    position: relative;
+    background: #080808;
+    min-height: 500px;
+    overflow: hidden;
 }
-.pcard-img-wrap img {
-    width: 100%; height: 100%;
-    object-fit: cover; display: block;
-    transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+.prod-canvas {
+    position: absolute; inset: 0;
+    width: 100% !important; height: 100% !important;
+    display: block;
 }
-.pcard3d:hover .pcard-img-wrap img { transform: scale(1.04); }
+/* slide-in starting state (set by GSAP) */
+.prod-model { will-change: transform, opacity; }
 
 /* ── Info side ── */
-.pcard-info {
+.prod-info {
     display: flex; flex-direction: column;
     justify-content: center;
-    padding: 52px 56px;
-    gap: 0;
+    padding: 60px 64px;
+    background: #0b0b0b;
+    will-change: transform, opacity;
 }
 
 /* badge pill */
@@ -295,61 +260,56 @@ body { background: #000; }
     letter-spacing: 1px; text-transform: uppercase;
     font-family: 'Inter', sans-serif;
     padding: 7px 16px; border-radius: 999px;
-    width: fit-content; margin-bottom: 24px;
+    width: fit-content; margin-bottom: 28px;
 }
 .pcard-badge-icon { font-size: 13px; }
 .pcard-badge:empty { display: none; }
 
 /* name */
 .pcard3d-name {
-    font-size: clamp(24px, 2.8vw, 38px);
+    font-size: clamp(26px, 2.6vw, 40px);
     font-weight: 700; color: #fff;
     font-family: 'Inter', sans-serif;
-    line-height: 1.15; letter-spacing: -0.5px;
-    margin-bottom: 16px;
+    line-height: 1.1; letter-spacing: -0.5px;
+    margin-bottom: 14px;
 }
 
 /* price */
 .pcard3d-price {
-    font-size: clamp(28px, 3.2vw, 44px);
+    font-size: clamp(30px, 3vw, 46px);
     font-weight: 700; color: #fff;
     font-family: 'Inter', sans-serif;
-    letter-spacing: -1px; margin-bottom: 28px;
+    letter-spacing: -1px; margin-bottom: 32px;
 }
 
 /* features */
 .pcard-features {
     list-style: none; padding: 0; margin: 0 0 32px;
-    display: flex; flex-direction: column; gap: 10px;
+    display: flex; flex-direction: column; gap: 12px;
 }
 .pcard-features li {
     display: flex; align-items: center; gap: 12px;
-    font-size: 14px; color: #bbb;
-    font-family: 'Inter', sans-serif; font-weight: 400;
+    font-size: 14px; color: #aaa;
+    font-family: 'Inter', sans-serif;
 }
 .pcard-features li::before {
-    content: '✓';
-    color: #EA580C; font-weight: 700;
-    font-size: 14px; flex-shrink: 0;
+    content: '✓'; color: #EA580C;
+    font-weight: 700; font-size: 14px; flex-shrink: 0;
 }
 
 /* size row */
-.pcard-sizes {
-    margin-bottom: 28px;
-}
+.pcard-sizes { margin-bottom: 32px; }
 .pcard-sizes-label {
     font-size: 9px; font-weight: 600;
     letter-spacing: 2px; text-transform: uppercase;
-    color: #555; font-family: 'Inter', sans-serif;
+    color: #444; font-family: 'Inter', sans-serif;
     margin-bottom: 12px;
 }
-.pcard-size-row {
-    display: flex; gap: 8px; flex-wrap: wrap;
-}
+.pcard-size-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .pcard-size-btn {
     min-width: 44px; height: 44px;
-    background: #1a1a1a; border: 1px solid #2a2a2a;
-    color: #666; font-size: 12px;
+    background: #151515; border: 1px solid #222;
+    color: #555; font-size: 12px;
     cursor: pointer; font-family: 'Inter', sans-serif;
     border-radius: 8px; padding: 0 10px;
     transition: all 0.2s;
@@ -360,10 +320,10 @@ body { background: #000; }
 /* CTA button */
 .pcard3d-btn {
     display: flex; align-items: center; justify-content: center;
-    gap: 10px; width: 100%; max-width: 340px;
+    gap: 10px; width: 100%; max-width: 320px;
     background: #EA580C; color: #fff; border: none;
     padding: 17px 24px; font-size: 14px; font-weight: 700;
-    letter-spacing: 0.5px; border-radius: 12px;
+    letter-spacing: 0.3px; border-radius: 12px;
     cursor: pointer; font-family: 'Inter', sans-serif;
     transition: background 0.2s, transform 0.15s;
 }
@@ -373,20 +333,17 @@ body { background: #000; }
 
 /* ── MOBILE ── */
 @media (max-width: 860px) {
-    .pcard3d {
-        grid-template-columns: 1fr;
-        min-height: auto;
-    }
-    .pcard3d:nth-child(even) .pcard-imgs { order: 0; }
-    .pcard3d:nth-child(even) .pcard-info  { order: 1; }
-    .pcard-imgs { min-height: 320px; }
-    .pcard-info { padding: 32px 24px 40px; }
-    .products-section { padding: 80px 16px 100px; }
+    .pcard3d { grid-template-columns: 1fr; min-height: auto; }
+    .pcard3d:nth-child(even) .prod-model { order: 0; }
+    .pcard3d:nth-child(even) .prod-info  { order: 1; }
+    .prod-model { min-height: 360px; }
+    .prod-info { padding: 36px 24px 44px; }
+    .section-header { padding: 0 16px 24px; }
+    .pcard3d-btn { max-width: 100%; }
 }
 @media (max-width: 500px) {
-    .pcard-img-wrap { inset: 12px; border-radius: 12px; }
-    .pcard-info { padding: 24px 16px 32px; }
-    .pcard3d-btn { max-width: 100%; }
+    .prod-model { min-height: 280px; }
+    .prod-info { padding: 28px 16px 36px; }
 }
 
 /* ── POPUP ── */
@@ -468,15 +425,6 @@ body { background: #000; }
     </div>
 </section>
 
-<!-- ── 3D CLOTH SECTION ── -->
-<section class="cloth-section" id="clothSection">
-    <canvas id="threeCanvas"></canvas>
-    <div class="cloth-label">
-        <span class="cloth-season">Весна — Лето 2026</span>
-        <div class="cloth-num">SS 26</div>
-    </div>
-</section>
-
 <!-- ── TICKER ── -->
 <div class="ticker-wrap">
     <div class="ticker-track" id="tickerTrack">
@@ -526,9 +474,9 @@ body { background: #000; }
     </div>
     <div class="pcards-grid" id="productsGrid">
         {% set features_map = {
-            '1': ['Ручная роспись акрилом', 'Высота 8–10 см', 'Красивая подарочная упаковка'],
-            '2': ['Точная передача питомца', 'Парная подставка', 'Срок изготовления 5–7 дней'],
-            '3': ['Любой вид спорта', 'Спортивный инвентарь в комплекте', 'Индивидуальная форма'],
+            '1': ['Ручная роспись акрилом', 'Высота 8–10 см', 'Подарочная упаковка'],
+            '2': ['Точная передача питомца', 'Парная подставка', 'Срок 5–7 дней'],
+            '3': ['Любой вид спорта', 'Инвентарь в комплекте', 'Индивидуальная форма'],
             '4': ['Максимальная детализация', 'Упаковка с магнитным замком', 'Приоритетное изготовление'],
             '5': ['Крепление для ключей', 'Миниатюра 4–5 см', 'Прочное покрытие'],
             '6': ['До 5 человек', 'Общая подставка с именами', 'Семейная композиция']
@@ -539,16 +487,13 @@ body { background: #000; }
              data-name="{{ product.name }}"
              data-price="{{ product.price }}">
 
-            <!-- Image side -->
-            <div class="pcard-imgs">
-                <div class="pcard-img-wrap">
-                    <img src="/static/images/photo_2026-05-17_22.34.33.jpeg"
-                         alt="{{ product.name }}" loading="lazy">
-                </div>
+            <!-- 3D model side -->
+            <div class="prod-model">
+                <canvas class="prod-canvas" data-prod-idx="{{ loop.index0 }}"></canvas>
             </div>
 
             <!-- Info side -->
-            <div class="pcard-info">
+            <div class="prod-info">
                 {% if product.badge %}
                 <div class="pcard-badge">
                     <span class="pcard-badge-icon">🔥</span>
@@ -718,11 +663,6 @@ function heroIn() {
         }, '-=0.5');
 }
 
-// Three.js cloth num parallax (triggered from module below)
-gsap.to('.cloth-num', {
-    scrollTrigger: { trigger: '#clothSection', start: 'top top', end: 'bottom top', scrub: true },
-    opacity: 0.12, y: -50, ease: 'none'
-});
 
 /* ────────────────────────────────────────
    SCROLL ANIMATIONS
@@ -733,14 +673,25 @@ gsap.from('.manifest-title',   { scrollTrigger: { trigger: '#manifest', start: '
 gsap.from('.manifest-body',    { scrollTrigger: { trigger: '#manifest', start: 'top 60%' }, opacity: 0, y: 30, duration: 1.1, ease: 'power3.out', delay: 0.2 });
 gsap.from('.manifest-cta',     { scrollTrigger: { trigger: '#manifest', start: 'top 55%' }, opacity: 0, y: 20, duration: 1.0, ease: 'power3.out', delay: 0.3 });
 
-// Products — animate each card
-document.querySelectorAll('.pcard3d').forEach(function(card, i) {
-    gsap.from(card, {
-        scrollTrigger: { trigger: card, start: 'top 88%' },
-        opacity: 0, y: 60,
-        duration: 1.2, ease: 'power3.out',
-        delay: i * 0.05
-    });
+// Products — checkerboard slide-in (model from side, info fade up)
+document.querySelectorAll('.pcard3d').forEach(function(row, i) {
+    var isEven = i % 2 === 1;
+    var modelDiv = row.querySelector('.prod-model');
+    var infoDiv  = row.querySelector('.prod-info');
+    var st = { trigger: row, start: 'top 80%' };
+
+    // model slides from left or right
+    gsap.fromTo(modelDiv,
+        { x: isEven ? 80 : -80, opacity: 0 },
+        { x: 0, opacity: 1, duration: 1.3, ease: 'power3.out',
+          scrollTrigger: st }
+    );
+    // info fades up with slight delay
+    gsap.fromTo(infoDiv,
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', delay: 0.18,
+          scrollTrigger: st }
+    );
 });
 
 // Section header
@@ -896,11 +847,11 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
    HELPERS
 ═══════════════════════════════════════════ */
 function addLights(scene) {
-  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
-  const k = new THREE.DirectionalLight(0xffffff, 5.5); k.position.set(3, 5, 5);   scene.add(k);
-  const f = new THREE.DirectionalLight(0x8899ff, 1.6); f.position.set(-4,-1, 3);  scene.add(f);
-  const r = new THREE.DirectionalLight(0xffffff, 1.1); r.position.set(-1, 3,-5);  scene.add(r);
-  const b = new THREE.DirectionalLight(0xffffff, 0.5); b.position.set( 0,-4, 2);  scene.add(b);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+  const k = new THREE.DirectionalLight(0xffffff, 5.0); k.position.set(3, 5, 5);  scene.add(k);
+  const f = new THREE.DirectionalLight(0x8899ff, 1.4); f.position.set(-4,-1, 3); scene.add(f);
+  const r = new THREE.DirectionalLight(0xffffff, 1.0); r.position.set(-1, 3,-5); scene.add(r);
+  const b = new THREE.DirectionalLight(0xffffff, 0.4); b.position.set( 0,-4, 2); scene.add(b);
 }
 
 function centerGroup(grp) {
@@ -1257,158 +1208,122 @@ function centerGroup(grp) {
 })();
 
 /* ═══════════════════════════════════════════
-   MAIN CLOTH SECTION
+   PRODUCT 3D CANVASES
 ═══════════════════════════════════════════ */
-const mainCanvas   = document.getElementById('threeCanvas');
-const clothSection = document.getElementById('clothSection');
 
-const mainRenderer = new THREE.WebGLRenderer({ canvas: mainCanvas, antialias: true, alpha: false });
-mainRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-mainRenderer.setClearColor(0x000000, 1);
-mainRenderer.outputColorSpace = THREE.SRGBColorSpace;
-mainRenderer.toneMapping      = THREE.ACESFilmicToneMapping;
-mainRenderer.toneMappingExposure = 1.2;
+let globalT = 0;
 
-const mainScene  = new THREE.Scene();
-const mainCamera = new THREE.PerspectiveCamera(56, 1, 0.1, 100);
-mainCamera.position.set(0, 0, 6.5);
-addLights(mainScene);
+// Per-canvas state
+const prodCanvases  = Array.from(document.querySelectorAll('.prod-canvas'));
+const prodRenderers = [];
+const prodScenes    = [];
+const prodCameras   = [];
+const prodModels    = []; // { model, baseScale, introY }
 
-// Progress bar
-const loadEl = document.createElement('div');
-loadEl.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;';
-loadEl.innerHTML = '<div style="width:140px;height:1px;background:#111;overflow:hidden;"><div id="mlBar" style="height:100%;width:0%;background:#666;transition:width .2s;"></div></div>';
-clothSection.appendChild(loadEl);
+function initProdCanvas(canvas, gltfScene) {
+  const parent = canvas.parentElement;
+  const W = parent.clientWidth  || 640;
+  const H = parent.clientHeight || 600;
 
-let mainModel = null, mainBaseScale = 1, mainModelSz = new THREE.Vector3(1,1,1);
-let mainMeshes = [], mainOrigPos = [];
-let mouseX = 0, mouseY = 0, tgtRY = 0, tgtRX = 0;
-let scrollProg = 0, globalT = 0;
-let isHover = false, hoverStr = 0;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping      = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  renderer.setSize(W, H, false);
 
-function calcMainScale() {
-  const visH = 2 * mainCamera.position.z * Math.tan(THREE.MathUtils.degToRad(mainCamera.fov / 2));
-  const visW = visH * mainCamera.aspect;
-  // Fit both dimensions, slightly generous fill
-  mainBaseScale = Math.min(
-    visH * 0.84 / mainModelSz.y,
-    visW * 0.68 / mainModelSz.x
-  );
+  const scene  = new THREE.Scene();
+  addLights(scene);
+
+  const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 100);
+  camera.position.set(0, 0, 5.5);
+
+  // Clone + center model
+  const model = new THREE.Group();
+  model.add(gltfScene.clone(true));
+  const sz = centerGroup(model);
+  scene.add(model);
+
+  // Fit to view
+  const visH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const visW = visH * (W / H);
+  const baseScale = Math.min(visH * 0.78 / sz.y, visW * 0.62 / sz.x);
+  model.scale.setScalar(baseScale);
+
+  prodRenderers.push(renderer);
+  prodScenes.push(scene);
+  prodCameras.push(camera);
+  prodModels.push({ model, baseScale, introY: Math.PI * 2.5 });
+
+  return renderer;
 }
 
-function resizeMain() {
-  const w = clothSection.clientWidth, h = window.innerHeight;
-  mainRenderer.setSize(w, h);
-  mainCamera.aspect = w / h;
-  mainCamera.updateProjectionMatrix();
-  if (mainModel) calcMainScale();
-}
-resizeMain();
-window.addEventListener('resize', resizeMain);
-
-window.addEventListener('mousemove', e => {
-  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
-  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-});
-clothSection.addEventListener('mouseenter', () => isHover = true);
-clothSection.addEventListener('mouseleave', () => isHover = false);
-
-ScrollTrigger.create({
-  trigger: '#clothSection', start: 'top top', end: 'bottom top',
-  scrub: 1.5,
-  onUpdate: s => { scrollProg = s.progress; }
-});
-
-function deformMain() {
-  mainMeshes.forEach((mesh, mi) => {
-    const pos  = mesh.geometry.attributes.position;
-    const orig = mainOrigPos[mi];
-    const t    = globalT;
-    for (let i = 0; i < pos.count; i++) {
-      const ox = orig[i*3], oy = orig[i*3+1], oz = orig[i*3+2];
-
-      // Hover ripple — pronounced bend toward cursor
-      const hv = hoverStr * (
-        Math.sin(ox * 8  + mouseX * 4.5 + t * 2.4) * 0.10 +
-        Math.cos(oy * 6  + mouseY * 4.5 + t * 1.9) * 0.08 +
-        Math.sin((ox+oy)*5.5 + t * 1.6) * 0.055
-      );
-
-      // Scroll crumple — squared for dramatic late-scroll feel
-      const sp = scrollProg * scrollProg;
-      const cr = sp * (
-        Math.sin(ox * 7.5 + t * 1.7) * 0.60 +
-        Math.cos(oy * 5.5 - t * 1.4) * 0.50 +
-        Math.sin((ox-oy)*5.0 + t * 1.1) * 0.38 +
-        Math.cos((ox+oy)*3.5 - t * 0.9) * 0.28
-      );
-
-      pos.setXYZ(i,
-        ox + hv * 0.6 + cr * 0.22,
-        oy + hv       + cr * 0.18,
-        oz + hv * 0.4 + cr * 1.5
-      );
-    }
-    pos.needsUpdate = true;
-    mesh.geometry.computeVertexNormals();
+function resizeProdCanvases() {
+  prodCanvases.forEach((canvas, i) => {
+    const parent = canvas.parentElement;
+    const W = parent.clientWidth  || 640;
+    const H = parent.clientHeight || 600;
+    if (!prodRenderers[i]) return;
+    prodRenderers[i].setSize(W, H, false);
+    prodCameras[i].aspect = W / H;
+    prodCameras[i].updateProjectionMatrix();
   });
 }
+window.addEventListener('resize', resizeProdCanvases);
 
-(function mainTick() {
-  requestAnimationFrame(mainTick);
+// Mouse follow (subtle, shared)
+let mxGlobal = 0, myGlobal = 0;
+window.addEventListener('mousemove', e => {
+  mxGlobal = (e.clientX / window.innerWidth  - 0.5) * 2;
+  myGlobal = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+// ── Render loop for all product canvases ──
+(function prodTick() {
+  requestAnimationFrame(prodTick);
   globalT += 0.013;
-  hoverStr += ((isHover ? 1 : 0) - hoverStr) * 0.075;
 
-  if (mainModel) {
-    tgtRY += (mouseX * 0.80 - tgtRY) * 0.048;
-    tgtRX += (-mouseY * 0.40 - tgtRX) * 0.048;
+  prodModels.forEach((pm, i) => {
+    if (!pm) return;
+    const { model, baseScale } = pm;
 
-    const floatY  = Math.sin(globalT * 0.37) * 0.28 + Math.sin(globalT * 0.80) * 0.10;
-    const breathe = 1 + Math.sin(globalT * 0.46) * 0.050 + Math.sin(globalT * 0.98) * 0.022;
+    // Unwind intro spin
+    if (pm.introY > 0.002) pm.introY *= 0.955;
+    else pm.introY = 0;
 
-    mainModel.position.y  = floatY - scrollProg * 1.0;
-    mainModel.position.x  = Math.sin(globalT * 0.26) * 0.08;
-    mainModel.rotation.y  = 0.2 + tgtRY + scrollProg * Math.PI * 1.9;
-    mainModel.rotation.x  = -0.08 + tgtRX + scrollProg * 0.35;
-    mainModel.rotation.z  = Math.sin(globalT * 0.20) * 0.05 + scrollProg * 0.14;
-    mainModel.scale.setScalar(mainBaseScale * breathe * (1 - scrollProg * 0.14));
+    // Slow idle rotation + intro offset
+    model.rotation.y  = globalT * 0.38 + pm.introY;
+    model.rotation.x  = Math.sin(globalT * 0.22 + i * 1.1) * 0.08 + myGlobal * 0.04;
+    model.rotation.z  = Math.sin(globalT * 0.15 + i * 0.7) * 0.03;
 
-    if (mainMeshes.length) deformMain();
-  }
+    // Float
+    model.position.y  = Math.sin(globalT * 0.45 + i * 0.9) * 0.15;
 
-  mainRenderer.render(mainScene, mainCamera);
+    // Breathe scale
+    const breathe = 1 + Math.sin(globalT * 0.5 + i * 1.3) * 0.025;
+    model.scale.setScalar(baseScale * breathe);
+
+    prodRenderers[i].render(prodScenes[i], prodCameras[i]);
+  });
 })();
 
 /* ═══════════════════════════════════════════
-   LOAD GLB — shared source for all renderers
+   LOAD GLB
 ═══════════════════════════════════════════ */
 new GLTFLoader().load(
   '/static/models/tshirt.glb',
   (gltf) => {
-    loadEl.remove();
-
-    // ── Main hero model ──
-    mainModel = new THREE.Group();
-    mainModel.add(gltf.scene.clone(true));
-    mainModelSz = centerGroup(mainModel);
-    mainModel.rotation.set(-0.08, 0.2, 0);
-    mainScene.add(mainModel);
-    calcMainScale();
-
-    mainModel.traverse(c => {
-      if (c.isMesh && c.geometry.attributes.position) {
-        mainMeshes.push(c);
-        mainOrigPos.push(c.geometry.attributes.position.array.slice());
-      }
+    prodCanvases.forEach((canvas, i) => {
+      initProdCanvas(canvas, gltf.scene);
+      // staggered fade-in
+      gsap.from(canvas, { opacity: 0, duration: 1.0, delay: i * 0.15, ease: 'power2.out' });
     });
-
-    gsap.from(mainCanvas, { opacity: 0, duration: 1.2, ease: 'power2.out' });
+    resizeProdCanvases();
   },
-  xhr => { if (xhr.total) { const b = document.getElementById('mlBar'); if(b) b.style.width = (xhr.loaded/xhr.total*100)+'%'; } },
-  e  => { console.warn('GLB load error', e); loadEl.remove(); }
+  null,
+  e => console.warn('GLB load error', e)
 );
-
-
 
 </script>
 {% endblock %}
