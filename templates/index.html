@@ -88,15 +88,16 @@ body { background: #000; }
     50%       { opacity: 1;   }
 }
 @keyframes breatheScale {
-    0%, 100% { transform: translateX(-50%) scale(1);    }
-    50%       { transform: translateX(-50%) scale(1.04); }
+    0%, 100% { transform: scale(1);    }
+    50%       { transform: scale(1.05); }
 }
 .hero-sub-breathe {
     animation: breatheOpacity 4s ease-in-out infinite;
 }
-.scroll-prompt {
+.scroll-prompt-inner {
     animation: breatheScale 3.5s ease-in-out infinite;
-    transform-origin: center bottom;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
 }
 
 /* ── THREE CANVAS SECTION ── */
@@ -300,7 +301,7 @@ body { background: #000; }
 .prod-popup-right { flex: 1; padding: 44px 32px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; }
 .prod-popup-name { font-size: 22px; font-weight: 500; color: #fff; font-family: 'Inter', sans-serif; letter-spacing: -0.5px; }
 .prod-popup-price { font-size: 24px; font-weight: 300; color: #fff; font-family: 'Inter', sans-serif; }
-.prod-popup-label { font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #2a2a2a; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
+.prod-popup-label { font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #555; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
 .prod-popup-sizes { display: flex; gap: 8px; flex-wrap: wrap; }
 .size-btn { min-width: 44px; height: 40px; background: #111; border: 1px solid #1e1e1e; color: #444; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; padding: 0 12px; border-radius: 0; }
 .size-btn:hover { border-color: #555; color: #ccc; }
@@ -310,7 +311,7 @@ body { background: #000; }
 .prod-popup-cart-btn:hover { background: #d97706; }
 .prod-popup-order-btn { background: transparent; color: #555; border: 1px solid #1a1a1a; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; width: 100%; border-radius: 0; }
 .prod-popup-order-btn:hover { border-color: #444; color: #ccc; }
-.prod-popup-descr { font-size: 12px; color: #282828; line-height: 1.9; font-family: 'Inter', sans-serif; border-top: 1px solid #161616; padding-top: 20px; }
+.prod-popup-descr { font-size: 12px; color: #666; line-height: 1.9; font-family: 'Inter', sans-serif; border-top: 1px solid #222; padding-top: 20px; }
 
 /* ── TOAST ── */
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 11px 26px; z-index: 9999; font-size: 11px; font-family: 'Inter', sans-serif; letter-spacing: 1px; animation: toastFade 2.4s forwards; }
@@ -353,8 +354,10 @@ body { background: #000; }
         <div class="hero-tag hero-sub-breathe" id="heroTag">Ограниченные серии &nbsp;·&nbsp; Ручная работа &nbsp;·&nbsp; Только для своих</div>
     </div>
     <div class="scroll-prompt" id="scrollPrompt">
-        <span>Листай вниз</span>
-        <div class="scroll-line"></div>
+        <div class="scroll-prompt-inner">
+            <span>Листай вниз</span>
+            <div class="scroll-line"></div>
+        </div>
     </div>
 </section>
 
