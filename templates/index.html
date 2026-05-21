@@ -775,19 +775,60 @@ function centerGroup(grp) {
     uniform vec2 uMouse, uPrevMouse;
     uniform float uDissipation, uAspect;
     varying vec2 vUv;
+
+    /* детерминированный шум на пиксель — фиксированный «разброс» */
+    float hash(vec2 p){
+      p = fract(p * vec2(127.1, 311.7));
+      p += dot(p, p + 73.63);
+      return fract(p.x * p.y);
+    }
+
     void main(){
       float px = 1./512.;
       vec4 c = texture2D(uPrev, vUv);
-      vec4 blur = (
-        texture2D(uPrev,vUv+vec2(px,0.))+texture2D(uPrev,vUv-vec2(px,0.))+
-        texture2D(uPrev,vUv+vec2(0.,px))+texture2D(uPrev,vUv-vec2(0.,px))
-      )*.25;
-      c = mix(c, blur, 0.16) * uDissipation;
-      vec2 p = (vUv - uMouse) * vec2(uAspect, 1.);
-      vec2 dv = (uMouse - uPrevMouse) * vec2(uAspect, 1.);
+
+      /* ── диффузия: 2 прохода, мягкое размытие ── */
+      vec4 b1 = (
+        texture2D(uPrev,vUv+vec2(px ,0.)) + texture2D(uPrev,vUv-vec2(px ,0.)) +
+        texture2D(uPrev,vUv+vec2(0.,px )) + texture2D(uPrev,vUv-vec2(0.,px ))
+      ) * 0.25;
+      vec4 b2 = (
+        texture2D(uPrev,vUv+vec2(px*2.,0.)) + texture2D(uPrev,vUv-vec2(px*2.,0.)) +
+        texture2D(uPrev,vUv+vec2(0.,px*2.)) + texture2D(uPrev,vUv-vec2(0.,px*2.))
+      ) * 0.25;
+      c = mix(c, mix(b1, b2, 0.38), 0.26) * uDissipation;
+
+      vec2 asp = vec2(uAspect, 1.);
+      vec2 p   = (vUv - uMouse) * asp;
+      vec2 dv  = (uMouse - uPrevMouse) * asp;
       float speed = length(dv);
-      c.r += exp(-dot(p,p)*420.) * speed * 24.;
-      c.r = clamp(c.r, 0., 1.);
+
+      /* ── направление движения → вытянутый эллипс ── */
+      vec2 dir  = speed > 0.0001 ? normalize(dv) : vec2(0., 1.);
+      vec2 perp = vec2(-dir.y, dir.x);
+      float along  = dot(p, dir);
+      float across = dot(p, perp);
+      float eDist  = along*along*42. + across*across*82.;
+      float mainSplat = exp(-eDist);
+
+      /* ── органический разброс вокруг траектории ──
+         Похоже на облако точек вокруг линии регрессии:
+         каждый пиксель смещён уникальным шумом,
+         интенсивность убывает от центра нелинейно      */
+      float n1 = hash(vUv * 511.0);
+      float n2 = hash(vUv * 511.0 + 17.31);
+      float n3 = hash(vUv * 511.0 + 53.77);
+
+      /* случайное смещение вокруг центра пятна */
+      vec2 jitter = vec2((n1-0.5)*0.13, (n2-0.5)*0.09);
+      vec2 pj = (vUv - uMouse + jitter) * asp;
+      float jDist = dot(pj, pj) * 58.;
+      /* вес разброса: у каждого пикселя своя «судьба» */
+      float scatter = exp(-jDist) * (n3 * 1.4 + 0.15);
+
+      /* ── итог ── */
+      float ink = (mainSplat * 13. + scatter * 10.) * speed * 1.2;
+      c.r = clamp(c.r + ink, 0., 1.);
       gl_FragColor = c;
     }
   `;
@@ -829,7 +870,7 @@ function centerGroup(grp) {
     uPrev:        { value: rts[1].texture },
     uMouse:       { value: new THREE.Vector2(-2,-2) },
     uPrevMouse:   { value: new THREE.Vector2(-2,-2) },
-    uDissipation: { value: 0.982 },
+    uDissipation: { value: 0.993 },
     uAspect:      { value: 1.0 }
   };
   simSc.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({
