@@ -805,27 +805,24 @@ function centerGroup(grp) {
       vec2 dv  = uVelocity * asp;
       float speed = length(dv);
 
-      /* ── направление движения → вытянутый эллипс ── */
-      vec2 dir  = speed > 0.0001 ? normalize(dv) : vec2(0., 1.);
-      vec2 perp = vec2(-dir.y, dir.x);
-      float along  = dot(p, dir);
-      float across = dot(p, perp);
-      float eDist  = along*along*68. + across*across*130.;
-      float mainSplat = exp(-eDist);
+      /* ── органическая клякса (не эллипс!) ── */
+      float ang  = atan(p.y, p.x);
+      float rr   = length(p);
+      float sw   = 1.0
+        + sin(ang*2. + uTime*0.40) * 0.34
+        + sin(ang*3. - uTime*0.26) * 0.21
+        + cos(ang*5. + uTime*0.55) * 0.14
+        + sin(ang*7. - uTime*0.18) * 0.08;
+      float splatD    = rr / max(sw, 0.22);
+      float mainSplat = exp(-splatD*splatD * 85.);
 
-      /* ── органический разброс вокруг траектории ──
-         Похоже на облако точек вокруг линии регрессии:
-         каждый пиксель смещён уникальным шумом,
-         интенсивность убывает от центра нелинейно      */
+      /* ── хаотичный разброс вокруг (регрессионное облако) ── */
       float n1 = hash(vUv * 511.0);
       float n2 = hash(vUv * 511.0 + 17.31);
       float n3 = hash(vUv * 511.0 + 53.77);
-
-      /* случайное смещение вокруг центра пятна */
-      vec2 jitter = vec2((n1-0.5)*0.13, (n2-0.5)*0.09);
-      vec2 pj = (vUv - uMouse + jitter) * asp;
-      float jDist = dot(pj, pj) * 92.;
-      /* вес разброса: у каждого пикселя своя «судьба» */
+      vec2 jitter = vec2((n1-0.5)*0.16, (n2-0.5)*0.12);
+      vec2 pj     = (vUv - uMouse + jitter) * asp;
+      float jDist = dot(pj, pj) * 75.;
       float scatter = exp(-jDist) * (n3 * 1.4 + 0.15);
 
       /* ── движение: след за курсором ── */
@@ -840,27 +837,33 @@ function centerGroup(grp) {
         float d   = length(pp);
         float ang = atan(pp.y, pp.x);
 
-        /* угловые гармоники — форма кляксы меняется со временем */
+        /* угловые гармоники — больше выраженности, щупальца симбиота */
         float warp = 1.0
-          + sin(ang*2. + uTime*0.48) * 0.28
-          + sin(ang*3. - uTime*0.31) * 0.17
-          + cos(ang*5. + uTime*0.59) * 0.11
-          + sin(ang*7. - uTime*0.20) * 0.06
-          + cos(ang*11.+ uTime*0.14) * 0.03;
-        float blobD = d / max(warp, 0.25); /* деформированное расстояние */
+          + sin(ang*2. + uTime*0.44) * 0.42
+          + sin(ang*3. - uTime*0.28) * 0.26
+          + cos(ang*4. + uTime*0.57) * 0.18
+          + sin(ang*6. - uTime*0.19) * 0.12
+          + cos(ang*9. + uTime*0.33) * 0.07
+          + sin(ang*13.- uTime*0.14) * 0.04;
+        float blobD = d / max(warp, 0.18);
 
-        /* быстрое начальное расплывание: почти полный размер за ~0.4 с */
-        float spread  = 1.0 - exp(-uPuddleAge * 5.0);
+        /* разливается медленнее — чтобы было видно как растёт */
+        float spread  = 1.0 - exp(-uPuddleAge * 1.6);
 
-        /* дыхание: радиус пульсирует туда-сюда */
-        float breathe = 1.0 + sin(uTime*1.15)*0.13 + sin(uTime*1.82)*0.06;
-        float blobR   = 0.17 * spread * breathe;
+        /* дыхание симбиота: 3 частоты, большая амплитуда */
+        float breathe = 1.0
+          + sin(uTime*0.78)*0.22
+          + sin(uTime*1.55)*0.11
+          + sin(uTime*2.40)*0.05;
 
-        /* мягкий край кляксы */
-        float blob = smoothstep(blobR, blobR * 0.60, blobD);
+        /* почти весь экран в максимуме */
+        float blobR = 0.68 * spread * breathe;
 
-        /* добавление чернил тоже дышит */
-        float inkRate = 0.0048 * (0.60 + 0.40 * sin(uTime*1.15));
+        /* мягкий живой край */
+        float blob = smoothstep(blobR, blobR * 0.52, blobD);
+
+        /* чернила тоже дышат — пульсирует видимость */
+        float inkRate = 0.0055 * (0.52 + 0.48 * sin(uTime*0.78));
         c.r += blob * uPuddleStr * inkRate;
       }
 
