@@ -2,6 +2,7 @@
 {% block title %}Главная{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css">
 <style>
 html { overflow-x: hidden; scroll-behavior: auto; }
 body { background: #000; }
@@ -21,71 +22,35 @@ body { background: #000; }
     position: relative; overflow: hidden;
 }
 
-/* ── HERO SLIDESHOW ── */
-.hero-slides {
+/* ── HERO WEBGL CANVAS ── */
+#hero-gl {
     position: absolute; inset: 0;
-    z-index: 0; pointer-events: none;
+    width: 100% !important; height: 100% !important;
+    display: block; z-index: 1; pointer-events: none;
 }
-.hero-slide {
-    position: absolute; inset: 0;
-    background-size: cover; background-position: center top;
-    opacity: 0;
-    transition: opacity 1.4s cubic-bezier(0.4,0,0.2,1);
-    will-change: opacity;
-    transform: scale(1.04);
-    transition: opacity 1.4s cubic-bezier(0.4,0,0.2,1),
-                transform 6s ease-out;
-}
-.hero-slide.active {
-    opacity: 1;
-    transform: scale(1);
-}
-/* dark gradient overlay so text stays readable */
-.hero-slide::after {
-    content: '';
-    position: absolute; inset: 0;
+/* dark gradient so text stays readable */
+.hero::after {
+    content: ''; pointer-events: none;
+    position: absolute; inset: 0; z-index: 2;
     background: linear-gradient(
         to bottom,
-        rgba(0,0,0,0.38) 0%,
-        rgba(0,0,0,0.28) 40%,
-        rgba(0,0,0,0.55) 100%
+        rgba(0,0,0,0.20) 0%,
+        rgba(0,0,0,0.05) 45%,
+        rgba(0,0,0,0.50) 100%
     );
 }
 
-/* slide counter strips */
-.hero-strips {
-    position: absolute; bottom: 110px; left: 50%;
-    transform: translateX(-50%);
-    display: flex; gap: 6px; z-index: 3; pointer-events: none;
-}
-.hero-strip {
-    width: 32px; height: 1px;
-    background: rgba(255,255,255,0.22);
-    position: relative; overflow: hidden;
-    transition: width 0.3s ease;
-}
-.hero-strip.active { background: rgba(255,255,255,0.8); width: 56px; }
-.hero-strip-fill {
-    position: absolute; top: 0; left: 0; bottom: 0;
-    width: 0%; background: #fff;
-    transition: none;
-}
-.hero-strip.filling .hero-strip-fill {
-    width: 100%;
-    transition: width var(--fill-dur, 4000ms) linear;
-}
-
 .hero-noise {
-    position: absolute; inset: 0; pointer-events: none; opacity: 0.04;
-    z-index: 1;
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.035;
+    z-index: 3;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
 }
 .hero-lines {
-    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    position: absolute; inset: 0; pointer-events: none; z-index: 3;
     background-image: repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px);
 }
 .hero-inner {
-    position: relative; z-index: 2;
+    position: relative; z-index: 4;
     text-align: center; padding: 0 20px;
 }
 .hero-eyebrow {
@@ -378,15 +343,8 @@ body { background: #000; }
 
 <!-- ── HERO ── -->
 <section class="hero" id="hero">
-    <!-- Slideshow background -->
-    <div class="hero-slides" id="heroSlides">
-        <div class="hero-slide active" style="background-image:url('/static/images/photo_2026-05-17_22.34.33.jpeg')"></div>
-        <div class="hero-slide" style="background-image:url('/static/images/photo_2026-05-17_22.34.46.jpeg')"></div>
-    </div>
-    <div class="hero-strips" id="heroStrips">
-        <div class="hero-strip active filling" style="--fill-dur:4000ms"><div class="hero-strip-fill"></div></div>
-        <div class="hero-strip"><div class="hero-strip-fill"></div></div>
-    </div>
+    <!-- WebGL fluid reveal canvas -->
+    <canvas id="hero-gl"></canvas>
 
     <div class="hero-noise"></div>
     <div class="hero-lines"></div>
@@ -519,13 +477,16 @@ body { background: #000; }
 {% endblock %}
 
 {% block extra_js %}
-<!-- GSAP -->
+<!-- GSAP 3.12.5 + plugins -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+<!-- Splitting.js -->
+<script src="https://unpkg.com/splitting/dist/splitting.min.js"></script>
 
-<!-- Three.js importmap -->
+<!-- Three.js r170 importmap -->
 <script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.166.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.166.0/examples/jsm/"}}
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
 </script>
 
 <script>
@@ -640,43 +601,6 @@ document.querySelectorAll('.pcard3d').forEach(function(card, i) {
 gsap.from('.section-title', { scrollTrigger: { trigger: '.products-section', start: 'top 80%' }, opacity: 0, y: 30, duration: 1.0, ease: 'power3.out' });
 gsap.from('.section-link',  { scrollTrigger: { trigger: '.products-section', start: 'top 80%' }, opacity: 0, y: 20, duration: 0.9, ease: 'power3.out', delay: 0.1 });
 
-/* ────────────────────────────────────────
-   HERO SLIDESHOW (auto-play)
-──────────────────────────────────────── */
-(function() {
-    var INTERVAL = 4000; // ms per slide
-    var slides = document.querySelectorAll('.hero-slide');
-    var strips = document.querySelectorAll('#heroStrips .hero-strip');
-    if (slides.length < 2) return;
-
-    var cur = 0;
-    var timer = null;
-
-    function show(idx) {
-        // out: current
-        slides[cur].classList.remove('active');
-        strips[cur].classList.remove('active', 'filling');
-        var fillEl = strips[cur].querySelector('.hero-strip-fill');
-        fillEl.style.transition = 'none';
-        fillEl.style.width = '0%';
-
-        cur = (idx + slides.length) % slides.length;
-
-        // in: next
-        slides[cur].classList.add('active');
-        var s = strips[cur];
-        s.classList.add('active');
-        // force reflow then animate fill
-        void s.querySelector('.hero-strip-fill').offsetWidth;
-        s.style.setProperty('--fill-dur', INTERVAL + 'ms');
-        s.classList.add('filling');
-    }
-
-    // Kick off auto-cycle
-    timer = setInterval(function() {
-        show(cur + 1);
-    }, INTERVAL);
-})();
 
 /* ────────────────────────────────────────
    LIKES  (legacy — no like icons on 3D cards)
@@ -824,6 +748,166 @@ function centerGroup(grp) {
   grp.position.sub(box.getCenter(new THREE.Vector3()));
   return box.getSize(new THREE.Vector3());
 }
+
+/* ═══════════════════════════════════════════
+   HERO FLUID REVEAL
+═══════════════════════════════════════════ */
+(function() {
+  const heroCanvas = document.getElementById('hero-gl');
+  if (!heroCanvas) return;
+  const heroSection = document.getElementById('hero');
+
+  const R = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
+  R.setPixelRatio(1);
+  R.setClearColor(0x000000, 1);
+
+  const cam = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+  const mainSc = new THREE.Scene();
+  const simSc  = new THREE.Scene();
+  const geo = new THREE.PlaneGeometry(2, 2);
+
+  /* ── Shaders ── */
+  const VERT = `varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.);}`;
+
+  const SIM_FRAG = `
+    precision highp float;
+    uniform sampler2D uPrev;
+    uniform vec2 uMouse, uPrevMouse;
+    uniform float uDissipation, uAspect;
+    varying vec2 vUv;
+    void main(){
+      float px = 1./512.;
+      vec4 c = texture2D(uPrev, vUv);
+      vec4 blur = (
+        texture2D(uPrev,vUv+vec2(px,0.))+texture2D(uPrev,vUv-vec2(px,0.))+
+        texture2D(uPrev,vUv+vec2(0.,px))+texture2D(uPrev,vUv-vec2(0.,px))
+      )*.25;
+      c = mix(c, blur, 0.16) * uDissipation;
+      vec2 p = (vUv - uMouse) * vec2(uAspect, 1.);
+      vec2 dv = (uMouse - uPrevMouse) * vec2(uAspect, 1.);
+      float speed = length(dv);
+      c.r += exp(-dot(p,p)*420.) * speed * 24.;
+      c.r = clamp(c.r, 0., 1.);
+      gl_FragColor = c;
+    }
+  `;
+
+  const DISP_FRAG = `
+    precision highp float;
+    uniform sampler2D uTex1, uTex2, uSim;
+    uniform float uImgAR, uScreenAR;
+    varying vec2 vUv;
+    vec2 coverUV(vec2 uv, float imgAR, float scrAR){
+      if(scrAR > imgAR){
+        return vec2(uv.x, (uv.y-.5)*(imgAR/scrAR)+.5);
+      } else {
+        return vec2((uv.x-.5)*(scrAR/imgAR)+.5, uv.y);
+      }
+    }
+    void main(){
+      vec2 cuv = coverUV(vUv, uImgAR, uScreenAR);
+      vec4 p1 = texture2D(uTex1, cuv);
+      vec4 p2 = texture2D(uTex2, cuv);
+      /* warm orange tint on photo1 */
+      float lum = dot(p1.rgb, vec3(0.299,0.587,0.114));
+      p1.rgb = mix(p1.rgb, vec3(lum*1.42, lum*0.88, lum*0.50), 0.68);
+      float reveal = smoothstep(0.03, 0.58, texture2D(uSim,vUv).r);
+      gl_FragColor = mix(p1, p2, reveal);
+    }
+  `;
+
+  /* ── Render targets (ping-pong) ── */
+  const SIM_RES = 512;
+  const rtCfg = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+                  format: THREE.RGBAFormat, type: THREE.HalfFloatType, depthBuffer: false };
+  let rts = [new THREE.WebGLRenderTarget(SIM_RES,SIM_RES,rtCfg),
+             new THREE.WebGLRenderTarget(SIM_RES,SIM_RES,rtCfg)];
+  let ri = 0;
+
+  /* ── Materials ── */
+  const simUni = {
+    uPrev:        { value: rts[1].texture },
+    uMouse:       { value: new THREE.Vector2(-2,-2) },
+    uPrevMouse:   { value: new THREE.Vector2(-2,-2) },
+    uDissipation: { value: 0.982 },
+    uAspect:      { value: 1.0 }
+  };
+  simSc.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({
+    uniforms: simUni, vertexShader: VERT, fragmentShader: SIM_FRAG, depthTest: false
+  })));
+
+  const dispUni = {
+    uTex1:     { value: null },
+    uTex2:     { value: null },
+    uSim:      { value: null },
+    uImgAR:    { value: 1.5 },
+    uScreenAR: { value: 1.78 }
+  };
+  mainSc.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({
+    uniforms: dispUni, vertexShader: VERT, fragmentShader: DISP_FRAG, depthTest: false
+  })));
+
+  /* ── Textures (portrait photos, CORS) ── */
+  const tl = new THREE.TextureLoader();
+  tl.crossOrigin = 'anonymous';
+  const PHOTOS = [
+    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1600&q=85&auto=format',
+    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1600&q=85&auto=format'
+  ];
+  PHOTOS.forEach((url, i) => {
+    tl.load(url, tex => {
+      tex.minFilter = tex.magFilter = THREE.LinearFilter;
+      if (i === 0) {
+        dispUni.uTex1.value = tex;
+        dispUni.uImgAR.value = tex.image.naturalWidth / tex.image.naturalHeight || 1.5;
+      } else {
+        dispUni.uTex2.value = tex;
+      }
+    });
+  });
+
+  /* ── Resize ── */
+  function resizeHero() {
+    const w = heroSection.clientWidth || window.innerWidth;
+    const h = heroSection.clientHeight || window.innerHeight;
+    R.setSize(w, h, false);
+    simUni.uAspect.value  = w / h;
+    dispUni.uScreenAR.value = w / h;
+  }
+  resizeHero();
+  window.addEventListener('resize', resizeHero);
+
+  /* ── Mouse ── */
+  const mouse = new THREE.Vector2(-2,-2);
+  const prev  = new THREE.Vector2(-2,-2);
+  let active = false;
+
+  heroSection.addEventListener('mousemove', e => {
+    const rc = heroSection.getBoundingClientRect();
+    mouse.set((e.clientX-rc.left)/rc.width, 1-(e.clientY-rc.top)/rc.height);
+    active = true;
+  });
+  heroSection.addEventListener('mouseleave', () => { active = false; mouse.set(-2,-2); });
+
+  /* ── Render loop ── */
+  function heroTick() {
+    requestAnimationFrame(heroTick);
+    simUni.uPrev.value   = rts[ri].texture;
+    simUni.uMouse.value.copy(active ? mouse : new THREE.Vector2(-2,-2));
+    simUni.uPrevMouse.value.copy(prev);
+    R.setRenderTarget(rts[1-ri]);
+    R.render(simSc, cam);
+    dispUni.uSim.value = rts[1-ri].texture;
+    R.setRenderTarget(null);
+    R.render(mainSc, cam);
+    ri = 1 - ri;
+    prev.copy(active ? mouse : new THREE.Vector2(-2,-2));
+  }
+  heroTick();
+
+  /* ── Fade in ── */
+  gsap.fromTo(heroCanvas, { opacity: 0 }, { opacity: 1, duration: 1.8, delay: 1.2, ease: 'power2.out' });
+})();
 
 /* ═══════════════════════════════════════════
    MAIN CLOTH SECTION
