@@ -775,7 +775,7 @@ function centerGroup(grp) {
     uniform vec2 uMouse, uVelocity;
     uniform vec2 uPuddleMouse;
     uniform float uDissipation, uAspect;
-    uniform float uPuddleAge, uPuddleStr;
+    uniform float uPuddleAge, uPuddleStr, uTime;
     varying vec2 vUv;
 
     /* детерминированный шум на пиксель — фиксированный «разброс» */
@@ -832,15 +832,34 @@ function centerGroup(grp) {
       float ink = (mainSplat * 13. + scatter * 10.) * speed * 1.2;
       c.r += ink;
 
-      /* ── лужа: кольцо расширяется от точки остановки ── */
+      /* ── клякса: органичный блоб, расплывается и дышит ── */
       if(uPuddleStr > 0.001){
-        vec2 pp = (vUv - uPuddleMouse) * asp;
-        float d  = length(pp);
-        float r  = uPuddleAge * 0.28;          /* радиус растёт со временем   */
-        float w  = 0.022 + r * 0.20;           /* кольцо утолщается при расширении */
-        float fade = exp(-uPuddleAge * 0.55);  /* плавно гаснет                */
-        float ring = exp(-(d-r)*(d-r)/(w*w)) * uPuddleStr * fade;
-        c.r += ring * 0.18;
+        vec2 pp   = (vUv - uPuddleMouse) * asp;
+        float d   = length(pp);
+        float ang = atan(pp.y, pp.x);
+
+        /* угловые гармоники — форма кляксы меняется со временем */
+        float warp = 1.0
+          + sin(ang*2. + uTime*0.48) * 0.28
+          + sin(ang*3. - uTime*0.31) * 0.17
+          + cos(ang*5. + uTime*0.59) * 0.11
+          + sin(ang*7. - uTime*0.20) * 0.06
+          + cos(ang*11.+ uTime*0.14) * 0.03;
+        float blobD = d / max(warp, 0.25); /* деформированное расстояние */
+
+        /* быстрое начальное расплывание: почти полный размер за ~0.4 с */
+        float spread  = 1.0 - exp(-uPuddleAge * 5.0);
+
+        /* дыхание: радиус пульсирует туда-сюда */
+        float breathe = 1.0 + sin(uTime*1.15)*0.13 + sin(uTime*1.82)*0.06;
+        float blobR   = 0.17 * spread * breathe;
+
+        /* мягкий край кляксы */
+        float blob = smoothstep(blobR, blobR * 0.60, blobD);
+
+        /* добавление чернил тоже дышит */
+        float inkRate = 0.0048 * (0.60 + 0.40 * sin(uTime*1.15));
+        c.r += blob * uPuddleStr * inkRate;
       }
 
       c.r = clamp(c.r, 0., 1.);
@@ -888,6 +907,7 @@ function centerGroup(grp) {
     uPuddleMouse: { value: new THREE.Vector2(-2,-2) },
     uPuddleAge:   { value: 0.0 },
     uPuddleStr:   { value: 0.0 },
+    uTime:        { value: 0.0 },
     uDissipation: { value: 0.993 },
     uAspect:      { value: 1.0 }
   };
@@ -937,68 +957,75 @@ function centerGroup(grp) {
   window.addEventListener('resize', resizeHero);
 
   /* ── Mouse + инерция + лужа ── */
-  const mouse      = new THREE.Vector2(-2, -2);
-  const lastPos    = new THREE.Vector2(-2, -2);
-  const vel        = new THREE.Vector2(0, 0);
-  const puddlePos  = new THREE.Vector2(-2, -2);
-  const INERTIA    = 0.95;     // больше → длиннее хвост после остановки
-  const VEL_STOP   = 0.0018;   // порог "курсор остановился"
+  const mouse     = new THREE.Vector2(-2, -2);
+  const lastPos   = new THREE.Vector2(-2, -2);
+  const vel       = new THREE.Vector2(0, 0);
+  const puddlePos = new THREE.Vector2(-2, -2);
+  const INERTIA   = 0.95;
 
   let active       = false;
-  let prevVelLen   = 0;
-  let puddleActive = false;
+  let puddleOn     = false;   // курсор стоит — лужа активна
   let puddleAge    = 0;
-  let puddleStr    = 0;
+  let puddleStr    = 0;       // плавное значение [0..1]
+  let simTime      = 0;
+  let stopTimer    = null;
 
   heroSection.addEventListener('mousemove', e => {
     const rc = heroSection.getBoundingClientRect();
     mouse.set((e.clientX - rc.left) / rc.width, 1 - (e.clientY - rc.top) / rc.height);
     active = true;
+
+    /* курсор двинулся — гасим лужу, ставим таймер на новую */
+    clearTimeout(stopTimer);
+    if (puddleOn) { puddleOn = false; puddleAge = 0; }
+
+    stopTimer = setTimeout(() => {
+      /* курсор не двигался 55 мс — запускаем лужу немедленно */
+      if (active) {
+        puddleOn = true;
+        puddleAge = 0;
+        puddlePos.copy(lastPos);
+      }
+    }, 55);
   });
-  heroSection.addEventListener('mouseleave', () => { active = false; });
+
+  heroSection.addEventListener('mouseleave', () => {
+    active = false;
+    clearTimeout(stopTimer);
+    /* лужа остаётся и плавно гаснет через puddleStr→0 */
+  });
 
   /* ── Render loop ── */
   function heroTick() {
     requestAnimationFrame(heroTick);
 
-    /* скорость */
+    simTime += 0.016;
+
+    /* скорость с инерцией */
     if (active) {
-      const delta = new THREE.Vector2().subVectors(mouse, lastPos);
-      vel.lerp(delta, 0.38);
+      vel.lerp(new THREE.Vector2().subVectors(mouse, lastPos), 0.38);
       lastPos.copy(mouse);
     } else {
       vel.multiplyScalar(INERTIA);
       if (vel.length() < 0.00004) vel.set(0, 0);
     }
 
-    const vLen = vel.length();
+    /* возраст лужи тикает только пока активна */
+    if (puddleOn && active) puddleAge += 0.016;
 
-    /* запускаем лужу в момент, когда скорость упала ниже порога */
-    if (!puddleActive && prevVelLen > VEL_STOP && vLen <= VEL_STOP) {
-      puddleActive = true;
-      puddleAge    = 0;
-      puddleStr    = Math.min(1.0, prevVelLen * 38);
-      puddlePos.copy(lastPos);
-    }
+    /* плавный fade in/out силы лужи */
+    const target = (puddleOn && active) ? 1.0 : 0.0;
+    const rate   = target > puddleStr ? 0.055 : 0.08;
+    puddleStr   += (target - puddleStr) * rate;
+    if (puddleStr < 0.001) puddleStr = 0;
 
-    /* тикаем возраст лужи */
-    if (puddleActive) {
-      puddleAge += 0.016;       // ~1/60 с за кадр
-      if (puddleAge > 3.2) {    // через 3.2 с лужа исчезает
-        puddleActive = false;
-        puddleStr    = 0;
-        puddleAge    = 0;
-      }
-    }
-
-    prevVelLen = vLen;
-
+    simUni.uTime.value        = simTime;
     simUni.uMouse.value.copy(lastPos);
     simUni.uVelocity.value.copy(vel);
     simUni.uPuddleMouse.value.copy(puddlePos);
-    simUni.uPuddleAge.value = puddleAge;
-    simUni.uPuddleStr.value = puddleActive ? puddleStr : 0;
-    simUni.uPrev.value = rts[ri].texture;
+    simUni.uPuddleAge.value   = puddleAge;
+    simUni.uPuddleStr.value   = puddleStr;
+    simUni.uPrev.value        = rts[ri].texture;
 
     R.setRenderTarget(rts[1-ri]);
     R.render(simSc, cam);
