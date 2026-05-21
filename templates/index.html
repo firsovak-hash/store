@@ -773,7 +773,9 @@ function centerGroup(grp) {
     precision highp float;
     uniform sampler2D uPrev;
     uniform vec2 uMouse, uVelocity;
+    uniform vec2 uPuddleMouse;
     uniform float uDissipation, uAspect;
+    uniform float uPuddleAge, uPuddleStr;
     varying vec2 vUv;
 
     /* детерминированный шум на пиксель — фиксированный «разброс» */
@@ -826,9 +828,22 @@ function centerGroup(grp) {
       /* вес разброса: у каждого пикселя своя «судьба» */
       float scatter = exp(-jDist) * (n3 * 1.4 + 0.15);
 
-      /* ── итог ── */
+      /* ── движение: след за курсором ── */
       float ink = (mainSplat * 13. + scatter * 10.) * speed * 1.2;
-      c.r = clamp(c.r + ink, 0., 1.);
+      c.r += ink;
+
+      /* ── лужа: кольцо расширяется от точки остановки ── */
+      if(uPuddleStr > 0.001){
+        vec2 pp = (vUv - uPuddleMouse) * asp;
+        float d  = length(pp);
+        float r  = uPuddleAge * 0.28;          /* радиус растёт со временем   */
+        float w  = 0.022 + r * 0.20;           /* кольцо утолщается при расширении */
+        float fade = exp(-uPuddleAge * 0.55);  /* плавно гаснет                */
+        float ring = exp(-(d-r)*(d-r)/(w*w)) * uPuddleStr * fade;
+        c.r += ring * 0.18;
+      }
+
+      c.r = clamp(c.r, 0., 1.);
       gl_FragColor = c;
     }
   `;
@@ -870,6 +885,9 @@ function centerGroup(grp) {
     uPrev:        { value: rts[1].texture },
     uMouse:       { value: new THREE.Vector2(-2,-2) },
     uVelocity:    { value: new THREE.Vector2(0, 0) },
+    uPuddleMouse: { value: new THREE.Vector2(-2,-2) },
+    uPuddleAge:   { value: 0.0 },
+    uPuddleStr:   { value: 0.0 },
     uDissipation: { value: 0.993 },
     uAspect:      { value: 1.0 }
   };
@@ -918,39 +936,68 @@ function centerGroup(grp) {
   resizeHero();
   window.addEventListener('resize', resizeHero);
 
-  /* ── Mouse + инерция ── */
-  const mouse   = new THREE.Vector2(-2, -2);
-  const lastPos = new THREE.Vector2(-2, -2); // последняя позиция в герое
-  const vel     = new THREE.Vector2(0, 0);   // скорость с инерцией
-  const INERTIA = 0.88; // коэф. затухания за кадр (~60fps → ~0.5s хвост)
+  /* ── Mouse + инерция + лужа ── */
+  const mouse      = new THREE.Vector2(-2, -2);
+  const lastPos    = new THREE.Vector2(-2, -2);
+  const vel        = new THREE.Vector2(0, 0);
+  const puddlePos  = new THREE.Vector2(-2, -2);
+  const INERTIA    = 0.95;     // больше → длиннее хвост после остановки
+  const VEL_STOP   = 0.0018;   // порог "курсор остановился"
 
-  let active = false;
+  let active       = false;
+  let prevVelLen   = 0;
+  let puddleActive = false;
+  let puddleAge    = 0;
+  let puddleStr    = 0;
 
   heroSection.addEventListener('mousemove', e => {
     const rc = heroSection.getBoundingClientRect();
     mouse.set((e.clientX - rc.left) / rc.width, 1 - (e.clientY - rc.top) / rc.height);
     active = true;
   });
-  // при уходе курсора НЕ сбрасываем позицию — инерция продолжается
   heroSection.addEventListener('mouseleave', () => { active = false; });
 
   /* ── Render loop ── */
   function heroTick() {
     requestAnimationFrame(heroTick);
 
+    /* скорость */
     if (active) {
-      // мышь движется: обновляем скорость через lerp → плавный разгон
       const delta = new THREE.Vector2().subVectors(mouse, lastPos);
       vel.lerp(delta, 0.38);
       lastPos.copy(mouse);
     } else {
-      // мышь остановилась / ушла: скорость плавно затухает
       vel.multiplyScalar(INERTIA);
-      if (vel.length() < 0.00005) vel.set(0, 0);
+      if (vel.length() < 0.00004) vel.set(0, 0);
     }
+
+    const vLen = vel.length();
+
+    /* запускаем лужу в момент, когда скорость упала ниже порога */
+    if (!puddleActive && prevVelLen > VEL_STOP && vLen <= VEL_STOP) {
+      puddleActive = true;
+      puddleAge    = 0;
+      puddleStr    = Math.min(1.0, prevVelLen * 38);
+      puddlePos.copy(lastPos);
+    }
+
+    /* тикаем возраст лужи */
+    if (puddleActive) {
+      puddleAge += 0.016;       // ~1/60 с за кадр
+      if (puddleAge > 3.2) {    // через 3.2 с лужа исчезает
+        puddleActive = false;
+        puddleStr    = 0;
+        puddleAge    = 0;
+      }
+    }
+
+    prevVelLen = vLen;
 
     simUni.uMouse.value.copy(lastPos);
     simUni.uVelocity.value.copy(vel);
+    simUni.uPuddleMouse.value.copy(puddlePos);
+    simUni.uPuddleAge.value = puddleAge;
+    simUni.uPuddleStr.value = puddleActive ? puddleStr : 0;
     simUni.uPrev.value = rts[ri].texture;
 
     R.setRenderTarget(rts[1-ri]);
