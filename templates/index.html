@@ -718,6 +718,7 @@ setInterval(updateCartCount, 5000);
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+(function() {
 const canvas  = document.getElementById('threeCanvas');
 const section = document.getElementById('clothSection');
 if (!canvas || !section) return;
@@ -852,5 +853,6 @@ let t = 0;
 
   renderer.render(scene, camera);
 })();
+})(); // end IIFE
 </script>
 {% endblock %}

@@ -7,6 +7,11 @@ app = Flask(__name__)
 app.secret_key = 'секретный-ключ-для-корзины-поменяй-потом'  # ОБЯЗАТЕЛЬНО для session
 CORS(app)  # Разрешаем запросы с Тильды
 
+# GLB mime type
+import mimetypes
+mimetypes.add_type('model/gltf-binary', '.glb')
+mimetypes.add_type('model/gltf+json', '.gltf')
+
 # Товары
 PRODUCTS = {
     '1': {
