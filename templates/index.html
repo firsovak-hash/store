@@ -1076,7 +1076,7 @@ function centerGroup(grp) {
     simUni.uDissipation.value = active ? 0.993 : 0.86;
 
     simUni.uTime.value        = simTime;
-    simUni.uMouse.value.copy(lastPos);
+    simUni.uMouse.value.copy(active ? lastPos : new THREE.Vector2(-2, -2));
     simUni.uVelocity.value.copy(vel);
     simUni.uPuddleMouse.value.copy(puddlePos);
     simUni.uPuddleAge.value   = puddleAge;
