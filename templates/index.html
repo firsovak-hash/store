@@ -193,71 +193,78 @@ body { background: #000; }
 }
 .section-link:hover { color: #fff; border-color: #fff; }
 
-/* 3D card grid */
-.products-3d-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
+.product-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 64px; align-items: center; margin-bottom: 100px;
 }
-
-.pcard {
-    cursor: pointer; background: #000;
-    position: relative;
+.product-row:last-child { margin-bottom: 0; }
+.product-row-reverse { direction: rtl; }
+.product-row-reverse .product-info { direction: ltr; }
+.product-image-wrapper { display: flex; justify-content: center; }
+.product-image {
+    position: relative; width: 100%;
+    max-width: 380px; height: 400px;
+    cursor: pointer; overflow: hidden;
 }
-.pcard-canvas-wrap {
-    width: 100%; aspect-ratio: 3/4;
-    background: #060606;
-    position: relative; overflow: hidden;
+.product-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    transition: opacity 0.5s ease;
 }
-.pcard-canvas-wrap canvas {
-    width: 100% !important; height: 100% !important;
-    display: block;
-}
-.pcard-like {
-    position: absolute; top: 12px; right: 12px;
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.07);
+.front-img { opacity: 1; z-index: 1; }
+.back-img  { opacity: 0; z-index: 0; }
+.product-image:hover .front-img { opacity: 0; }
+.product-image:hover .back-img  { opacity: 1; }
+.like-icon {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.08);
     cursor: pointer; z-index: 10;
-    width: 36px; height: 36px; border-radius: 50%;
+    width: 40px; height: 40px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background 0.2s;
 }
-.pcard-like:hover { transform: scale(1.12); }
-.heart-svg { width: 18px; height: 18px; }
+.like-icon:hover { transform: scale(1.12); background: rgba(0,0,0,0.8); }
+.heart-svg { width: 20px; height: 20px; }
 .heart-svg path { fill: none; stroke: #fff; stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; }
-.pcard-like.liked .heart-svg path { fill: #ff3b5c; stroke: #ff3b5c; }
+.like-icon.liked .heart-svg path { fill: #ff3b5c; stroke: #ff3b5c; }
 
-.pcard-footer {
-    padding: 16px 4px 28px;
-    display: flex; justify-content: space-between; align-items: baseline;
-    border-top: 1px solid #0d0d0d;
+.product-tag {
+    font-size: 8px; letter-spacing: 4px;
+    text-transform: uppercase; color: #555;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 20px;
 }
-.pcard-name {
-    font-size: 13px; color: #fff;
-    font-family: 'Inter', sans-serif; font-weight: 400;
+.product-name {
+    font-size: clamp(22px, 2.5vw, 32px);
+    font-weight: 600; color: #fff;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 16px; letter-spacing: -0.5px;
 }
-.pcard-price {
-    font-size: 15px; color: #fff;
-    font-family: 'Inter', sans-serif; font-weight: 300;
-    letter-spacing: -0.5px;
+.product-description {
+    font-size: 13px; color: #666;
+    line-height: 1.8; margin-bottom: 24px;
+    font-family: 'Inter', sans-serif;
 }
-.pcard-add {
-    display: none;
-    position: absolute; bottom: 68px; left: 4px; right: 4px;
+.product-price {
+    font-size: 28px; font-weight: 300;
+    color: #fff; margin-bottom: 28px;
+    font-family: 'Inter', sans-serif; letter-spacing: -1px;
+}
+.product-btn {
     background: #CA8A04; color: #000; border: none;
-    padding: 11px; font-size: 9px; font-weight: 700;
+    padding: 14px 36px; font-size: 10px; font-weight: 700;
     letter-spacing: 2.5px; text-transform: uppercase;
     cursor: pointer; font-family: 'Inter', sans-serif;
-    z-index: 5; transition: background 0.2s;
+    border-radius: 0; transition: background 0.2s, transform 0.15s;
+    display: inline-block;
 }
-.pcard:hover .pcard-add { display: block; }
-.pcard-add:hover { background: #d97706; }
+.product-btn:hover { background: #d97706; transform: translateY(-1px); }
 
-@media (max-width: 900px) {
-    .products-3d-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 540px) {
-    .products-3d-grid { grid-template-columns: 1fr 1fr; gap: 1px; }
+@media (max-width: 768px) {
+    .product-row { grid-template-columns: 1fr; gap: 24px; text-align: center; margin-bottom: 64px; }
+    .product-row-reverse { direction: ltr; }
+    .product-image { max-width: 280px; height: 300px; margin: 0 auto; }
 }
 
 /* ── POPUP ── */
@@ -390,28 +397,36 @@ body { background: #000; }
         <h2 class="section-title">Новинки</h2>
         <a href="/catalog" class="section-link">Весь каталог</a>
     </div>
-    <div class="products-3d-grid" id="productsGrid">
-        {% set names = ['Oversize Tee', 'Dropped Shoulder', 'Washed Black', 'Essential White', 'Heavy Cotton', 'Vintage Cut'] %}
+    <div id="productsGrid">
+        {% set tags = ['Хит продаж', 'Новинка', 'Лимит', 'Эксклюзив', 'Bestseller', 'New drop'] %}
         {% for i in range(1, 7) %}
-        <div class="pcard prod-anim"
+        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} prod-anim"
              data-id="{{ i }}"
-             data-name="{{ names[loop.index0] }}"
+             data-name="Шмотка {{ i }}"
              data-price="{{ 1500 + i * 100 }}">
-            <div class="pcard-canvas-wrap">
-                <canvas id="pcanvas{{ i }}"></canvas>
-                <button class="pcard-like" data-id="{{ i }}">
-                    <svg viewBox="0 0 24 24" class="heart-svg">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </button>
+            <div class="product-image-wrapper">
+                <div class="product-image"
+                     data-id="{{ i }}"
+                     data-name="Шмотка {{ i }}"
+                     data-price="{{ 1500 + i * 100 }}">
+                    <img src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="" class="product-img front-img">
+                    <img src="/static/images/photo_2026-05-17_22.34.46.jpeg" alt="" class="product-img back-img">
+                    <button class="like-icon" data-id="{{ i }}">
+                        <svg viewBox="0 0 24 24" class="heart-svg">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <button class="pcard-add add-to-cart"
-                    data-id="{{ i }}"
-                    data-name="{{ names[loop.index0] }}"
-                    data-price="{{ 1500 + i * 100 }}">В корзину</button>
-            <div class="pcard-footer">
-                <span class="pcard-name">{{ names[loop.index0] }}</span>
-                <span class="pcard-price">{{ 1500 + i * 100 }} ₽</span>
+            <div class="product-info">
+                <div class="product-tag">{{ tags[loop.index0 % 6] }}</div>
+                <h3 class="product-name">Шмотка {{ i }}</h3>
+                <p class="product-description">Стильная и удобная вещь для вашего гардероба. Высококачественный материал, современный крой.</p>
+                <div class="product-price">{{ 1500 + i * 100 }} ₽</div>
+                <button class="product-btn add-to-cart"
+                        data-id="{{ i }}"
+                        data-name="Шмотка {{ i }}"
+                        data-price="{{ 1500 + i * 100 }}">В корзину</button>
             </div>
         </div>
         {% endfor %}
@@ -577,12 +592,12 @@ gsap.from('.section-link',  { scrollTrigger: { trigger: '.products-section', sta
 ──────────────────────────────────────── */
 var liked = JSON.parse(localStorage.getItem('liked_products') || '[]');
 function syncLikes() {
-    document.querySelectorAll('.pcard-like').forEach(function(b) {
+    document.querySelectorAll('.like-icon').forEach(function(b) {
         b.classList.toggle('liked', liked.includes(b.dataset.id));
     });
     if (window.updateLikesCount) window.updateLikesCount();
 }
-document.querySelectorAll('.pcard-like').forEach(function(btn) {
+document.querySelectorAll('.like-icon').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
         e.stopPropagation();
         var id = btn.dataset.id;
@@ -643,9 +658,9 @@ document.querySelectorAll('.size-btn').forEach(function(btn) {
         btn.classList.add('active');
     });
 });
-document.querySelectorAll('.pcard').forEach(function(c) {
+document.querySelectorAll('.product-image').forEach(function(c) {
     c.addEventListener('click', function(e) {
-        if (e.target.closest('.pcard-like') || e.target.closest('.pcard-add')) return;
+        if (e.target.closest('.like-icon')) return;
         openPopup(c.dataset.id, c.dataset.name, c.dataset.price);
     });
 });
@@ -864,81 +879,5 @@ function centerModel(grp) {
   })();
 }
 
-/* ═══════════════════════════════════════════
-   PRODUCT CARD MODELS
-═══════════════════════════════════════════ */
-{
-  const CARD_COUNT = 6;
-  const loader2 = new GLTFLoader();
-  let srcScene = null;
-
-  loader2.load('/static/models/tshirt.glb', (gltf) => {
-    srcScene = gltf.scene;
-    for (let i = 1; i <= CARD_COUNT; i++) {
-      const cvs = document.getElementById('pcanvas' + i);
-      if (cvs) setupCard(cvs, i);
-    }
-  }, null, e => console.warn('card glb err', e));
-
-  function setupCard(cvs, idx) {
-    const wrap = cvs.parentElement;
-    const w = wrap.clientWidth || 300;
-    const h = wrap.clientHeight || 400;
-
-    const renderer = new THREE.WebGLRenderer({ canvas: cvs, antialias: true, alpha: false });
-    renderer.setClearColor(0x060606, 1);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-    renderer.setSize(w, h);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
-
-    const scene  = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(32, w/h, 0.1, 100);
-    camera.position.set(0, 0, 6);
-    makeLights(scene);
-
-    const model = new THREE.Group();
-    model.add(srcScene.clone(true));
-    const maxDim = centerModel(model);
-    const sc = 3.0 / maxDim;
-    model.scale.setScalar(sc);
-    model.rotation.y = (idx - 1) * 0.18 - 0.3;
-    scene.add(model);
-
-    let cardT   = idx * 0.8;
-    let cardMX  = 0, cardMY = 0, cardTRY = 0, cardTRX = 0;
-    let cardHov = false, cardHS = 0;
-
-    cvs.addEventListener('mousemove', e => {
-      const r = cvs.getBoundingClientRect();
-      cardMX = (e.clientX - r.left) / r.width  * 2 - 1;
-      cardMY = (e.clientY - r.top)  / r.height * 2 - 1;
-    });
-    wrap.parentElement.addEventListener('mouseenter', () => { cardHov = true; });
-    wrap.parentElement.addEventListener('mouseleave', () => { cardHov = false; });
-
-    /* Resize */
-    const ro = new ResizeObserver(() => {
-      const nw = wrap.clientWidth, nh = wrap.clientHeight;
-      if (nw && nh) { renderer.setSize(nw, nh); camera.aspect = nw/nh; camera.updateProjectionMatrix(); }
-    });
-    ro.observe(wrap);
-
-    (function cardTick() {
-      requestAnimationFrame(cardTick);
-      cardT += 0.009;
-      cardHS += (cardHov ? 1 : 0 - cardHS) * 0.07;
-      cardTRY += (cardMX * 0.38 * cardHS - cardTRY) * 0.06;
-      cardTRX += (-cardMY * 0.18 * cardHS - cardTRX) * 0.06;
-
-      model.rotation.y = (idx-1) * 0.18 - 0.3 + cardTRY + cardT * 0.004;
-      model.rotation.x = -0.08 + cardTRX;
-      model.position.y = Math.sin(cardT * 0.45 + idx) * 0.06;
-
-      renderer.render(scene, camera);
-    })();
-  }
-}
 </script>
 {% endblock %}
