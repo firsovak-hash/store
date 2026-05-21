@@ -84,13 +84,13 @@ body { background: #000; }
 
 /* ── THREE CANVAS SECTION ── */
 .cloth-section {
-    height: 140vh; background: #000;
-    position: relative; overflow: hidden;
+    height: 150vh; background: #000;
+    position: relative;
 }
 #threeCanvas {
-    position: sticky; top: 0;
+    position: sticky; top: 0; left: 0;
     width: 100% !important; height: 100vh !important;
-    display: block;
+    display: block; z-index: 1;
 }
 .cloth-label {
     position: absolute; bottom: 6%; left: 50%;
@@ -745,8 +745,8 @@ function centerModel(grp) {
   renderer.toneMappingExposure = 1.15;
 
   const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, 0, 6.5);
+  const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+  camera.position.set(0, 0, 9);
   makeLights(scene);
 
   /* Loading */
@@ -769,7 +769,7 @@ function centerModel(grp) {
       const maxDim = centerModel(model);
       baseScale = 3.2 / maxDim;
       model.scale.setScalar(baseScale);
-      model.rotation.set(-0.1, 0.25, 0);
+      model.rotation.set(-0.08, 0.2, 0);
       scene.add(model);
       loadEl.remove();
 
@@ -790,14 +790,10 @@ function centerModel(grp) {
   );
 
   function onResize() {
-    const w = section.clientWidth, h = section.clientHeight;
+    const w = section.clientWidth, h = window.innerHeight;
     renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    if (model) {
-      const s = Math.min(w / 800, 1.0) * 0.9 + 0.1;
-      model.scale.setScalar(baseScale * s);
-    }
   }
   onResize();
   window.addEventListener('resize', onResize);
