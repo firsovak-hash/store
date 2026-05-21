@@ -808,7 +808,7 @@ function centerGroup(grp) {
       vec2 perp = vec2(-dir.y, dir.x);
       float along  = dot(p, dir);
       float across = dot(p, perp);
-      float eDist  = along*along*42. + across*across*82.;
+      float eDist  = along*along*68. + across*across*130.;
       float mainSplat = exp(-eDist);
 
       /* ── органический разброс вокруг траектории ──
@@ -822,7 +822,7 @@ function centerGroup(grp) {
       /* случайное смещение вокруг центра пятна */
       vec2 jitter = vec2((n1-0.5)*0.13, (n2-0.5)*0.09);
       vec2 pj = (vUv - uMouse + jitter) * asp;
-      float jDist = dot(pj, pj) * 58.;
+      float jDist = dot(pj, pj) * 92.;
       /* вес разброса: у каждого пикселя своя «судьба» */
       float scatter = exp(-jDist) * (n3 * 1.4 + 0.15);
 
