@@ -27,10 +27,7 @@
 
     .hp-mosaic__item {
         position: relative; overflow: hidden; border-radius: 3px;
-        opacity: 0; transform: translateY(24px);
-        transition: opacity 1.8s ease, transform 1.8s ease;
     }
-    .hp-mosaic__item.visible { opacity: 1; transform: translateY(0); }
     .hp-mosaic__item:hover { z-index: 2; }
 
     .hp-mosaic__item:nth-child(1) { grid-column: 1 / 5;  grid-row: 1 / 4; }
@@ -125,10 +122,8 @@
         row-gap: 64px; column-gap: 28px;
     }
     .t754__col {
-        text-align: center; opacity: 0; transform: translateY(20px);
-        transition: opacity 1.5s ease, transform 1.5s ease;
+        text-align: center;
     }
-    .t754__col.visible { opacity: 1; transform: translateY(0); }
 
     .t754__imgwrapper {
         position: relative; width: 100%; padding-bottom: 115%;
@@ -438,27 +433,50 @@
 
 {% block extra_js %}
 <script>
-    // === COLLAGE ANIMATION ===
-    const mosaicObs = new IntersectionObserver((entries) => {
-        entries.forEach((e, i) => {
-            if (e.isIntersecting) {
-                setTimeout(() => e.target.classList.add('visible'), i * 210);
-                mosaicObs.unobserve(e.target);
-            }
-        });
-    }, { threshold: 0.05 });
-    document.querySelectorAll('.hp-mosaic__item').forEach(el => mosaicObs.observe(el));
+    // === ANIMATIONS via Motion ===
+    function initMotionAnimations() {
+        const { animate, inView, stagger } = window.__motion || {};
+        if (!animate) {
+            // Fallback: старый способ если Motion не загрузился
+            document.querySelectorAll('.hp-mosaic__item, .js-catalog-item').forEach((el, i) => {
+                setTimeout(() => el.classList.add('visible'), i * 150);
+            });
+            return;
+        }
 
-    // === CATALOG ITEMS ANIMATION ===
-    const itemObs = new IntersectionObserver((entries) => {
-        entries.forEach((e, i) => {
-            if (e.isIntersecting) {
-                setTimeout(() => e.target.classList.add('visible'), i * 180);
-                itemObs.unobserve(e.target);
-            }
+        // Коллаж — появление с blur + сдвигом
+        inView('.hp-mosaic__item', (el) => {
+            animate(el,
+                { opacity: [0, 1], y: [40, 0], filter: ['blur(8px)', 'blur(0px)'] },
+                { duration: 1.2, easing: [0.16, 1, 0.3, 1] }
+            );
+            el.style.opacity = '0';
+        }, { amount: 0.05 });
+
+        // Карточки товаров — каскадное появление
+        inView('.t754__parent', (el) => {
+            const items = el.querySelectorAll('.js-catalog-item');
+            animate(items,
+                { opacity: [0, 1], y: [30, 0] },
+                { duration: 0.8, delay: stagger(0.1), easing: [0.16, 1, 0.3, 1] }
+            );
+        }, { amount: 0.1 });
+
+        // Табы категорий — плавное появление
+        inView('.cat-tabs', (el) => {
+            animate(el, { opacity: [0, 1], y: [16, 0] }, { duration: 0.6, easing: 'ease-out' });
+            el.style.opacity = '0';
+        }, { amount: 0.5 });
+    }
+
+    // Ждём загрузки Motion (type="module" асинхронный)
+    if (window.__motion) {
+        initMotionAnimations();
+    } else {
+        window.addEventListener('load', () => {
+            setTimeout(initMotionAnimations, 100);
         });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.js-catalog-item').forEach(el => itemObs.observe(el));
+    }
 
     // === CATEGORY FILTER ===
     document.querySelectorAll('.cat-tab').forEach(tab => {
