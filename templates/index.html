@@ -20,12 +20,68 @@ body { background: #000; }
     align-items: center; justify-content: center;
     position: relative; overflow: hidden;
 }
+
+/* ── HERO SLIDESHOW ── */
+.hero-slides {
+    position: absolute; inset: 0;
+    z-index: 0; pointer-events: none;
+}
+.hero-slide {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center top;
+    opacity: 0;
+    transition: opacity 1.4s cubic-bezier(0.4,0,0.2,1);
+    will-change: opacity;
+    transform: scale(1.04);
+    transition: opacity 1.4s cubic-bezier(0.4,0,0.2,1),
+                transform 6s ease-out;
+}
+.hero-slide.active {
+    opacity: 1;
+    transform: scale(1);
+}
+/* dark gradient overlay so text stays readable */
+.hero-slide::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.38) 0%,
+        rgba(0,0,0,0.28) 40%,
+        rgba(0,0,0,0.55) 100%
+    );
+}
+
+/* slide counter strips */
+.hero-strips {
+    position: absolute; bottom: 110px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 6px; z-index: 3; pointer-events: none;
+}
+.hero-strip {
+    width: 32px; height: 1px;
+    background: rgba(255,255,255,0.22);
+    position: relative; overflow: hidden;
+    transition: width 0.3s ease;
+}
+.hero-strip.active { background: rgba(255,255,255,0.8); width: 56px; }
+.hero-strip-fill {
+    position: absolute; top: 0; left: 0; bottom: 0;
+    width: 0%; background: #fff;
+    transition: none;
+}
+.hero-strip.filling .hero-strip-fill {
+    width: 100%;
+    transition: width var(--fill-dur, 4000ms) linear;
+}
+
 .hero-noise {
     position: absolute; inset: 0; pointer-events: none; opacity: 0.04;
+    z-index: 1;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
 }
 .hero-lines {
-    position: absolute; inset: 0; pointer-events: none;
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
     background-image: repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px);
 }
 .hero-inner {
@@ -221,46 +277,19 @@ body { background: #000; }
     position: relative; cursor: pointer;
     background: #050505;
 }
-/* image slideshow wrapper */
+/* product card image */
 .pcard-imgs {
     position: relative;
     width: 100%; aspect-ratio: 3/4;
     overflow: hidden; background: #111;
 }
 .pcard-img {
-    position: absolute; inset: 0;
     width: 100%; height: 100%;
     object-fit: cover;
-    opacity: 0;
-    transition: opacity 0.28s ease;
-    pointer-events: none;
-    will-change: opacity;
+    display: block;
+    transition: transform 0.6s ease;
 }
-.pcard-img.active { opacity: 1; }
-
-/* progress strips */
-.pcard-strips {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    display: flex; gap: 2px; padding: 0 8px 8px;
-    opacity: 0; transition: opacity 0.2s;
-    pointer-events: none; z-index: 3;
-}
-.pcard3d:hover .pcard-strips { opacity: 1; }
-.pcard-strip {
-    flex: 1; height: 1px;
-    background: rgba(255,255,255,0.22);
-    position: relative; overflow: hidden;
-}
-.pcard-strip.active { background: rgba(255,255,255,0.85); }
-.pcard-strip-fill {
-    position: absolute; top: 0; left: 0; bottom: 0;
-    width: 0%; background: rgba(255,255,255,0.9);
-    transition: none;
-}
-.pcard-strip.filling .pcard-strip-fill {
-    width: 100%;
-    transition: width var(--fill-dur, 700ms) linear;
-}
+.pcard3d:hover .pcard-img { transform: scale(1.04); }
 
 .pcard3d-foot {
     padding: 14px 8px 22px;
@@ -349,6 +378,16 @@ body { background: #000; }
 
 <!-- ── HERO ── -->
 <section class="hero" id="hero">
+    <!-- Slideshow background -->
+    <div class="hero-slides" id="heroSlides">
+        <div class="hero-slide active" style="background-image:url('/static/images/photo_2026-05-17_22.34.33.jpeg')"></div>
+        <div class="hero-slide" style="background-image:url('/static/images/photo_2026-05-17_22.34.46.jpeg')"></div>
+    </div>
+    <div class="hero-strips" id="heroStrips">
+        <div class="hero-strip active filling" style="--fill-dur:4000ms"><div class="hero-strip-fill"></div></div>
+        <div class="hero-strip"><div class="hero-strip-fill"></div></div>
+    </div>
+
     <div class="hero-noise"></div>
     <div class="hero-lines"></div>
     <div class="hero-inner">
@@ -430,16 +469,9 @@ body { background: #000; }
              data-name="{{ product.name }}"
              data-price="{{ product.price }}">
             <div class="pcard-imgs">
-                <img class="pcard-img active"
+                <img class="pcard-img"
                      src="/static/images/photo_2026-05-17_22.34.33.jpeg"
                      alt="{{ product.name }}" loading="lazy">
-                <img class="pcard-img"
-                     src="/static/images/photo_2026-05-17_22.34.46.jpeg"
-                     alt="{{ product.name }}" loading="lazy">
-                <div class="pcard-strips">
-                    <div class="pcard-strip active"><div class="pcard-strip-fill"></div></div>
-                    <div class="pcard-strip"><div class="pcard-strip-fill"></div></div>
-                </div>
             </div>
             <div class="pcard3d-foot">
                 <span class="pcard3d-name">{{ product.name }}</span>
@@ -609,60 +641,41 @@ gsap.from('.section-title', { scrollTrigger: { trigger: '.products-section', sta
 gsap.from('.section-link',  { scrollTrigger: { trigger: '.products-section', start: 'top 80%' }, opacity: 0, y: 20, duration: 0.9, ease: 'power3.out', delay: 0.1 });
 
 /* ────────────────────────────────────────
-   HOVER SLIDESHOW
+   HERO SLIDESHOW (auto-play)
 ──────────────────────────────────────── */
 (function() {
-    var INTERVAL = 700; // ms between slides
+    var INTERVAL = 4000; // ms per slide
+    var slides = document.querySelectorAll('.hero-slide');
+    var strips = document.querySelectorAll('#heroStrips .hero-strip');
+    if (slides.length < 2) return;
 
-    document.querySelectorAll('.pcard3d').forEach(function(card) {
-        var imgs   = card.querySelectorAll('.pcard-img');
-        var strips = card.querySelectorAll('.pcard-strip');
-        if (imgs.length < 2) return;
+    var cur = 0;
+    var timer = null;
 
-        var cur    = 0;
-        var timer  = null;
+    function show(idx) {
+        // out: current
+        slides[cur].classList.remove('active');
+        strips[cur].classList.remove('active', 'filling');
+        var fillEl = strips[cur].querySelector('.hero-strip-fill');
+        fillEl.style.transition = 'none';
+        fillEl.style.width = '0%';
 
-        function show(idx) {
-            imgs[cur].classList.remove('active');
-            strips[cur].classList.remove('active', 'filling');
-            strips[cur].querySelector('.pcard-strip-fill').style.transition = 'none';
-            strips[cur].querySelector('.pcard-strip-fill').style.width = '0%';
+        cur = (idx + slides.length) % slides.length;
 
-            cur = (idx + imgs.length) % imgs.length;
-            imgs[cur].classList.add('active');
+        // in: next
+        slides[cur].classList.add('active');
+        var s = strips[cur];
+        s.classList.add('active');
+        // force reflow then animate fill
+        void s.querySelector('.hero-strip-fill').offsetWidth;
+        s.style.setProperty('--fill-dur', INTERVAL + 'ms');
+        s.classList.add('filling');
+    }
 
-            // Animate fill for current strip
-            var strip = strips[cur];
-            strip.classList.add('active', 'filling');
-            strip.style.setProperty('--fill-dur', INTERVAL + 'ms');
-            // Force reflow so transition starts fresh
-            void strip.querySelector('.pcard-strip-fill').offsetWidth;
-        }
-
-        function startCycle() {
-            show(0); // reset to first
-            timer = setInterval(function() {
-                show(cur + 1);
-            }, INTERVAL);
-        }
-
-        function stopCycle() {
-            clearInterval(timer);
-            timer = null;
-            // Reset all strips, show first image
-            imgs.forEach(function(img) { img.classList.remove('active'); });
-            strips.forEach(function(s) {
-                s.classList.remove('active', 'filling');
-                s.querySelector('.pcard-strip-fill').style.transition = 'none';
-                s.querySelector('.pcard-strip-fill').style.width = '0%';
-            });
-            cur = 0;
-            imgs[0].classList.add('active');
-        }
-
-        card.addEventListener('mouseenter', startCycle);
-        card.addEventListener('mouseleave', stopCycle);
-    });
+    // Kick off auto-cycle
+    timer = setInterval(function() {
+        show(cur + 1);
+    }, INTERVAL);
 })();
 
 /* ────────────────────────────────────────
