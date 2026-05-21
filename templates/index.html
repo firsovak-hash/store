@@ -3,226 +3,308 @@
 
 {% block extra_css %}
 <style>
-html { overflow-x: hidden; }
+html { overflow-x: hidden; scroll-behavior: auto; }
+body { background: #000; }
 
 /* ── INTRO OVERLAY ── */
 #introOverlay {
     position: fixed; inset: 0; z-index: 9999;
-    pointer-events: none;
+    background: #000; pointer-events: none;
 }
-#introCanvas { display: block; width: 100%; height: 100%; }
+#introCanvas { width: 100%; height: 100%; display: block; }
 
-/* ── EXPERIENCE ── */
-.exp-section {
-    height: 100vh; position: relative;
-    background: #000; overflow: hidden;
-}
-
-/* S1: Hero */
-.s1-inner {
-    position: absolute; inset: 0;
+/* ── HERO ── */
+.hero {
+    min-height: 100vh; background: #000;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    z-index: 2;
+    position: relative; overflow: hidden;
+}
+.hero-noise {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+}
+.hero-lines {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px);
+}
+.hero-inner {
+    position: relative; z-index: 2;
+    text-align: center; padding: 0 20px;
+}
+.hero-eyebrow {
+    font-size: 9px; letter-spacing: 6px;
+    text-transform: uppercase; color: #333;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 40px; opacity: 0;
+    transform: translateY(20px);
 }
 .hero-title {
-    font-size: clamp(52px, 10vw, 128px);
-    font-weight: 700; letter-spacing: -4px;
+    font-size: clamp(60px, 13vw, 160px);
+    font-weight: 700; letter-spacing: -6px;
     color: #fff; font-family: 'Inter', sans-serif;
-    text-align: center; line-height: 0.9;
+    line-height: 0.88; text-align: center;
 }
-.hero-title .line { display: block; overflow: hidden; padding-bottom: 6px; }
+.hero-title .line { display: block; overflow: hidden; padding-bottom: 8px; }
 .hero-title .word {
     display: inline-block;
-    transform: translateY(110%);
+    transform: translateY(115%);
 }
-.hero-sub {
-    font-size: 11px; letter-spacing: 5px;
-    text-transform: uppercase; color: #2a2a2a;
+.hero-tag {
+    font-size: 9px; letter-spacing: 5px;
+    text-transform: uppercase; color: #222;
     font-family: 'Inter', sans-serif;
-    margin-top: 36px; opacity: 0;
+    margin-top: 44px; opacity: 0;
+    transform: translateY(20px);
 }
-.scroll-hint {
-    position: absolute; bottom: 52px;
-    left: 50%; transform: translateX(-50%);
+.scroll-prompt {
+    position: absolute; bottom: 44px; left: 50%;
+    transform: translateX(-50%);
     display: flex; flex-direction: column;
-    align-items: center; gap: 18px; opacity: 0;
+    align-items: center; gap: 14px;
+    opacity: 0; z-index: 2;
 }
-.scroll-hint-text {
-    font-size: 9px; letter-spacing: 4px;
-    text-transform: uppercase; color: #2a2a2a;
+.scroll-prompt span {
+    font-size: 8px; letter-spacing: 4px;
+    text-transform: uppercase; color: #222;
     font-family: 'Inter', sans-serif;
 }
-.scroll-hint-line {
-    width: 1px; height: 80px;
-    background: #111; position: relative; overflow: hidden;
+.scroll-line {
+    width: 1px; height: 64px; background: #111;
+    position: relative; overflow: hidden;
 }
-.scroll-hint-line::after {
+.scroll-line::after {
     content: '';
-    position: absolute; top: -100%;
-    left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to bottom, transparent, #fff 50%, transparent);
-    animation: lineFlow 2s ease-in-out infinite;
+    position: absolute; top: -100%; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to bottom, transparent, #555 50%, transparent);
+    animation: lineScroll 1.8s ease-in-out infinite;
 }
-@keyframes lineFlow { 0% { top: -100%; } 100% { top: 100%; } }
+@keyframes lineScroll { to { top: 100%; } }
 
-/* S2: Three.js cloth */
+/* ── THREE CANVAS SECTION ── */
+.cloth-section {
+    height: 100vh; background: #000;
+    position: relative; overflow: hidden;
+}
 #threeCanvas {
     position: absolute; inset: 0;
     width: 100% !important; height: 100% !important;
-    display: block;
 }
-.s2-text {
-    position: absolute; bottom: 14%; left: 50%;
+.cloth-label {
+    position: absolute; bottom: 12%; left: 50%;
     transform: translateX(-50%);
-    text-align: center; z-index: 2; pointer-events: none;
+    text-align: center; pointer-events: none; z-index: 2;
 }
-.s2-season {
-    font-size: 9px; letter-spacing: 5px;
-    text-transform: uppercase; color: #333;
+.cloth-season {
+    font-size: 8px; letter-spacing: 6px;
+    text-transform: uppercase; color: #252525;
     font-family: 'Inter', sans-serif;
-    display: block; margin-bottom: 10px;
+    display: block; margin-bottom: 12px;
 }
-.s2-title {
-    font-size: clamp(56px, 10vw, 120px);
-    font-weight: 700; color: #fff;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -3px; line-height: 1;
-    opacity: 0.08;
+.cloth-num {
+    font-size: clamp(60px, 12vw, 130px);
+    font-weight: 700; color: rgba(255,255,255,0.05);
+    font-family: 'Inter', sans-serif; letter-spacing: -4px;
 }
 
-/* S3: Text section */
-.s3-inner {
-    position: absolute; inset: 0;
+/* ── MANIFEST SECTION ── */
+.manifest {
+    min-height: 100vh; background: #000;
     display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
 }
-.s3-content {
-    text-align: center; max-width: 560px; padding: 0 32px;
+.manifest-inner {
+    max-width: 680px; padding: 80px 32px;
+    text-align: center;
 }
-.s3-eyebrow {
-    font-size: 9px; letter-spacing: 5px;
-    text-transform: uppercase; color: #2a2a2a;
+.manifest-eyebrow {
+    font-size: 8px; letter-spacing: 6px;
+    text-transform: uppercase; color: #222;
     font-family: 'Inter', sans-serif;
-    margin-bottom: 28px; display: block;
+    margin-bottom: 44px; display: block;
 }
-.s3-heading {
-    font-size: clamp(36px, 5vw, 64px);
+.manifest-title {
+    font-size: clamp(38px, 5.5vw, 72px);
     font-weight: 400; color: #fff;
     font-family: 'Inter', sans-serif;
-    line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 28px;
+    line-height: 1.1; letter-spacing: -2px;
+    margin-bottom: 32px;
 }
-.s3-body {
-    font-size: 14px; color: #333;
+.manifest-title em { font-style: normal; color: #333; }
+.manifest-body {
+    font-size: 14px; color: #2a2a2a;
     font-family: 'Inter', sans-serif;
-    line-height: 1.9; margin-bottom: 48px;
+    line-height: 2; margin-bottom: 56px;
 }
-.s3-cta {
-    display: inline-block; color: #fff;
-    border: 1px solid #1e1e1e;
-    padding: 16px 48px; font-size: 10px;
-    letter-spacing: 3px; text-transform: uppercase;
-    text-decoration: none; font-family: 'Inter', sans-serif;
-    transition: all 0.4s;
+.manifest-cta {
+    display: inline-flex; align-items: center; gap: 16px;
+    color: #fff; text-decoration: none;
+    font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; font-family: 'Inter', sans-serif;
+    border-bottom: 1px solid #1e1e1e; padding-bottom: 6px;
+    transition: border-color 0.3s, gap 0.3s;
 }
-.s3-cta:hover { border-color: #fff; background: rgba(255,255,255,0.03); }
+.manifest-cta:hover { border-color: #fff; gap: 22px; }
+.manifest-cta-arrow { font-size: 14px; }
+
+/* ── TICKER ── */
+.ticker-wrap {
+    overflow: hidden; border-top: 1px solid #0d0d0d;
+    border-bottom: 1px solid #0d0d0d;
+    background: #000; padding: 16px 0;
+}
+.ticker-track {
+    display: flex; gap: 0;
+    animation: ticker 22s linear infinite;
+    white-space: nowrap; width: max-content;
+}
+.ticker-item {
+    font-size: 9px; letter-spacing: 5px;
+    text-transform: uppercase; color: #222;
+    font-family: 'Inter', sans-serif;
+    padding: 0 48px;
+}
+.ticker-dot { color: #333; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* ── PRODUCTS ── */
 .products-section {
-    max-width: 1100px; margin: 100px auto;
-    padding: 0 20px; background: #000;
+    max-width: 1080px; margin: 0 auto;
+    padding: 120px 24px 140px; background: #000;
 }
+.section-header {
+    display: flex; justify-content: space-between;
+    align-items: flex-end; margin-bottom: 80px;
+}
+.section-title {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 600; color: #fff;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -2px; line-height: 1;
+}
+.section-link {
+    font-size: 9px; letter-spacing: 3px;
+    text-transform: uppercase; color: #333;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none; border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 3px; transition: color 0.2s, border-color 0.2s;
+}
+.section-link:hover { color: #fff; border-color: #fff; }
+
 .product-row {
     display: grid; grid-template-columns: 1fr 1fr;
-    gap: 60px; align-items: center; margin-bottom: 80px;
+    gap: 64px; align-items: center; margin-bottom: 100px;
 }
+.product-row:last-child { margin-bottom: 0; }
 .product-row-reverse { direction: rtl; }
 .product-row-reverse .product-info { direction: ltr; }
-.product-image-wrapper { display: flex; justify-content: center; align-items: center; }
+.product-image-wrapper { display: flex; justify-content: center; }
 .product-image {
     position: relative; width: 100%;
-    max-width: 350px; height: 350px;
+    max-width: 380px; height: 400px;
     cursor: pointer; overflow: hidden;
 }
 .product-img {
     position: absolute; inset: 0;
     width: 100%; height: 100%; object-fit: cover;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s ease;
 }
 .front-img { opacity: 1; z-index: 1; }
-.back-img { opacity: 0; z-index: 0; }
+.back-img  { opacity: 0; z-index: 0; }
 .product-image:hover .front-img { opacity: 0; }
-.product-image:hover .back-img { opacity: 1; }
+.product-image:hover .back-img  { opacity: 1; }
 .like-icon {
-    position: absolute; top: 12px; right: 12px;
-    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-    border: none; cursor: pointer; z-index: 10;
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer; z-index: 10;
     width: 40px; height: 40px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     transition: transform 0.2s, background 0.2s;
 }
-.like-icon:hover { transform: scale(1.1); background: rgba(0,0,0,0.85); }
-.heart-svg { width: 22px; height: 22px; }
+.like-icon:hover { transform: scale(1.12); background: rgba(0,0,0,0.8); }
+.heart-svg { width: 20px; height: 20px; }
 .heart-svg path { fill: none; stroke: #fff; stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; }
 .like-icon.liked .heart-svg path { fill: #ff3b5c; stroke: #ff3b5c; }
-.product-info { direction: ltr; }
-.product-name { font-size: 30px; font-weight: 600; margin-bottom: 14px; color: #fff; font-family: 'Inter', sans-serif; }
-.product-description { font-size: 14px; color: #2a2a2a; line-height: 1.6; margin-bottom: 20px; font-family: 'Inter', sans-serif; }
-.product-price { font-size: 26px; font-weight: 400; color: #fff; margin-bottom: 24px; font-family: 'Inter', sans-serif; }
-.product-btn {
-    background: white; color: black; border: none;
-    padding: 14px 32px; font-size: 11px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    cursor: pointer; transition: background 0.2s;
-    font-family: 'Inter', sans-serif; border-radius: 0;
+
+.product-tag {
+    font-size: 8px; letter-spacing: 4px;
+    text-transform: uppercase; color: #222;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 20px;
 }
-.product-btn:hover { background: #e8e8e8; }
+.product-name {
+    font-size: clamp(22px, 2.5vw, 32px);
+    font-weight: 600; color: #fff;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 16px; letter-spacing: -0.5px;
+}
+.product-description {
+    font-size: 13px; color: #2a2a2a;
+    line-height: 1.8; margin-bottom: 24px;
+    font-family: 'Inter', sans-serif;
+}
+.product-price {
+    font-size: 28px; font-weight: 300;
+    color: #fff; margin-bottom: 28px;
+    font-family: 'Inter', sans-serif; letter-spacing: -1px;
+}
+.product-btn {
+    background: #fff; color: #000; border: none;
+    padding: 14px 36px; font-size: 10px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    border-radius: 0; transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+}
+.product-btn:hover { background: #e8e8e8; transform: translateY(-1px); }
 
 /* ── POPUP ── */
-.prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 20px; }
+.prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; padding: 20px; }
 .prod-popup.active { display: flex; }
-.prod-popup-inner { background: #111; max-width: 900px; width: 100%; max-height: 92vh; display: flex; overflow: hidden; position: relative; border: 1px solid #1e1e1e; }
-.prod-popup-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.07); border: none; font-size: 22px; cursor: pointer; z-index: 10; color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-.prod-popup-close:hover { background: rgba(255,255,255,0.15); }
-.prod-popup-left { width: 50%; flex-shrink: 0; background: #0d0d0d; display: flex; flex-direction: column; }
+.prod-popup-inner { background: #0d0d0d; max-width: 900px; width: 100%; max-height: 92vh; display: flex; overflow: hidden; position: relative; border: 1px solid #1a1a1a; }
+.prod-popup-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); font-size: 18px; cursor: pointer; z-index: 10; color: #666; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.2s, background 0.2s; }
+.prod-popup-close:hover { color: #fff; background: rgba(255,255,255,0.12); }
+.prod-popup-left { width: 50%; flex-shrink: 0; background: #080808; display: flex; flex-direction: column; }
 .prod-popup-main-img { flex: 1; overflow: hidden; min-height: 320px; }
 .prod-popup-main-img img { width: 100%; height: 100%; object-fit: cover; }
-.prod-popup-thumbs { display: flex; gap: 6px; padding: 10px 12px; background: #111; overflow-x: auto; border-top: 1px solid #1e1e1e; }
+.prod-popup-thumbs { display: flex; gap: 6px; padding: 10px 12px; background: #111; overflow-x: auto; border-top: 1px solid #161616; }
 .prod-popup-thumb { width: 56px; height: 56px; overflow: hidden; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: border-color 0.2s; }
 .prod-popup-thumb.active { border-color: #fff; }
 .prod-popup-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .prod-popup-right { flex: 1; padding: 44px 32px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; }
-.prod-popup-name { font-size: 24px; font-weight: 500; color: #fff; font-family: 'Inter', sans-serif; }
-.prod-popup-price { font-size: 26px; font-weight: 400; color: #fff; font-family: 'Inter', sans-serif; }
-.prod-popup-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #333; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
+.prod-popup-name { font-size: 22px; font-weight: 500; color: #fff; font-family: 'Inter', sans-serif; letter-spacing: -0.5px; }
+.prod-popup-price { font-size: 24px; font-weight: 300; color: #fff; font-family: 'Inter', sans-serif; }
+.prod-popup-label { font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #2a2a2a; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
 .prod-popup-sizes { display: flex; gap: 8px; flex-wrap: wrap; }
-.size-btn { min-width: 44px; height: 40px; background: #1a1a1a; border: 1px solid #222; color: #666; font-size: 13px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; padding: 0 12px; border-radius: 0; }
-.size-btn:hover { border-color: #fff; color: #fff; }
+.size-btn { min-width: 44px; height: 40px; background: #111; border: 1px solid #1e1e1e; color: #444; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; padding: 0 12px; border-radius: 0; }
+.size-btn:hover { border-color: #555; color: #ccc; }
 .size-btn.active { background: #fff; color: #000; border-color: #fff; }
 .prod-popup-btn-row { display: flex; flex-direction: column; gap: 10px; }
-.prod-popup-cart-btn { background: #fff; color: #000; border: none; padding: 15px 28px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-weight: 700; border-radius: 0; }
-.prod-popup-cart-btn:hover { background: #e0e0e0; }
-.prod-popup-order-btn { background: transparent; color: #fff; border: 1px solid #222; padding: 15px 28px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: border-color 0.2s; width: 100%; border-radius: 0; }
-.prod-popup-order-btn:hover { border-color: #fff; }
-.prod-popup-descr { font-size: 13px; color: #333; line-height: 1.8; font-family: 'Inter', sans-serif; border-top: 1px solid #1a1a1a; padding-top: 20px; }
+.prod-popup-cart-btn { background: #fff; color: #000; border: none; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-weight: 700; border-radius: 0; }
+.prod-popup-cart-btn:hover { background: #e8e8e8; }
+.prod-popup-order-btn { background: transparent; color: #555; border: 1px solid #1a1a1a; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; width: 100%; border-radius: 0; }
+.prod-popup-order-btn:hover { border-color: #444; color: #ccc; }
+.prod-popup-descr { font-size: 12px; color: #282828; line-height: 1.9; font-family: 'Inter', sans-serif; border-top: 1px solid #161616; padding-top: 20px; }
 
 /* ── TOAST ── */
-.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 12px 28px; z-index: 9998; font-size: 12px; font-family: 'Inter', sans-serif; border-radius: 0; animation: toastFade 2.2s forwards; }
-@keyframes toastFade { 0%,70%{opacity:1} 100%{opacity:0} }
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 11px 26px; z-index: 9999; font-size: 11px; font-family: 'Inter', sans-serif; letter-spacing: 1px; animation: toastFade 2.4s forwards; }
+@keyframes toastFade { 0%,70%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(8px)} }
 
 /* ── MOBILE ── */
 @media (max-width: 768px) {
-    .product-row { grid-template-columns: 1fr; gap: 24px; text-align: center; margin-bottom: 60px; }
+    .product-row { grid-template-columns: 1fr; gap: 24px; text-align: center; margin-bottom: 64px; }
     .product-row-reverse { direction: ltr; }
-    .product-image { max-width: 260px; height: 260px; margin: 0 auto; }
-    .product-name { font-size: 22px; }
-    .hero-title { letter-spacing: -2px; }
+    .product-image { max-width: 280px; height: 300px; margin: 0 auto; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .hero-title { letter-spacing: -3px; }
 }
 @media (max-width: 640px) {
     .prod-popup { padding: 0; }
     .prod-popup-inner { flex-direction: column; max-height: 100vh; }
     .prod-popup-left { width: 100%; height: 55vw; min-height: 180px; flex-shrink: 0; }
     .prod-popup-right { padding: 20px 16px 24px; gap: 14px; }
-    .prod-popup-name { font-size: 18px; }
 }
 </style>
 {% endblock %}
@@ -234,51 +316,83 @@ html { overflow-x: hidden; }
     <canvas id="introCanvas"></canvas>
 </div>
 
-<!-- ── EXPERIENCE ── -->
-<div id="expWrap">
+<!-- ── HERO ── -->
+<section class="hero" id="hero">
+    <div class="hero-noise"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-inner">
+        <div class="hero-eyebrow" id="heroEyebrow">SS 2026 Collection</div>
+        <h1 class="hero-title">
+            <span class="line"><span class="word">STORE</span></span>
+            <span class="line"><span class="word">BY SASHA</span></span>
+        </h1>
+        <div class="hero-tag" id="heroTag">Ограниченные серии &nbsp;·&nbsp; Ручная работа &nbsp;·&nbsp; Только для своих</div>
+    </div>
+    <div class="scroll-prompt" id="scrollPrompt">
+        <span>Листай вниз</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
 
-    <!-- S1: Hero title -->
-    <section class="exp-section" id="s1">
-        <div class="s1-inner">
-            <h1 class="hero-title">
-                <span class="line"><span class="word">STORE</span></span>
-                <span class="line"><span class="word">BY SASHA</span></span>
-            </h1>
-            <p class="hero-sub">Одежда которая говорит сама за себя</p>
-            <div class="scroll-hint" id="scrollHint">
-                <span class="scroll-hint-text">Листай вниз</span>
-                <div class="scroll-hint-line"></div>
-            </div>
-        </div>
-    </section>
+<!-- ── 3D CLOTH SECTION ── -->
+<section class="cloth-section" id="clothSection">
+    <canvas id="threeCanvas"></canvas>
+    <div class="cloth-label">
+        <span class="cloth-season">Весна — Лето 2026</span>
+        <div class="cloth-num">SS 26</div>
+    </div>
+</section>
 
-    <!-- S2: 3D cloth -->
-    <section class="exp-section" id="s2">
-        <canvas id="threeCanvas"></canvas>
-        <div class="s2-text">
-            <span class="s2-season">Весна — Лето 2026</span>
-            <div class="s2-title">SS 26</div>
-        </div>
-    </section>
-
-    <!-- S3: Text -->
-    <section class="exp-section" id="s3">
-        <div class="s3-inner">
-            <div class="s3-content">
-                <span class="s3-eyebrow">О коллекции</span>
-                <h2 class="s3-heading">Каждая вещь —<br>это история</h2>
-                <p class="s3-body">Ручная работа. Ограниченные серии.<br>Для тех кто понимает разницу.</p>
-                <a href="/catalog" class="s3-cta">Смотреть коллекцию</a>
-            </div>
-        </div>
-    </section>
+<!-- ── TICKER ── -->
+<div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+        <span class="ticker-item">Store by Sasha</span>
+        <span class="ticker-item ticker-dot">◆</span>
+        <span class="ticker-item">Весна — Лето 2026</span>
+        <span class="ticker-item ticker-dot">◆</span>
+        <span class="ticker-item">Ограниченная коллекция</span>
+        <span class="ticker-item ticker-dot">◆</span>
+        <span class="ticker-item">Ручная работа</span>
+        <span class="ticker-item ticker-dot">◆</span>
+        <span class="ticker-item">Store by Sasha</span>
+        <span class="ticker-item ticker-dot">◆</span>
+        <span class="ticker-item">Весна — Лето 2026</span>
+        <span class="ticker-item ticker-dot">◆</span>
+        <span class="ticker-item">Ограниченная коллекция</span>
+        <span class="ticker-item ticker-dot">◆</span>
+        <span class="ticker-item">Ручная работа</span>
+        <span class="ticker-item ticker-dot">◆</span>
+    </div>
 </div>
+
+<!-- ── MANIFEST ── -->
+<section class="manifest" id="manifest">
+    <div class="manifest-inner">
+        <span class="manifest-eyebrow">О нас</span>
+        <h2 class="manifest-title">
+            Каждая вещь —<br>
+            <em>это история</em>
+        </h2>
+        <p class="manifest-body">
+            Мы не делаем одежду для масс. Мы делаем её<br>
+            для людей которые чувствуют разницу.
+        </p>
+        <a href="/catalog" class="manifest-cta">
+            Смотреть коллекцию
+            <span class="manifest-cta-arrow">→</span>
+        </a>
+    </div>
+</section>
 
 <!-- ── PRODUCTS ── -->
 <div class="products-section">
-    <div class="products-container" id="productsGrid">
-        {% for i in range(1, 11) %}
-        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %}"
+    <div class="section-header">
+        <h2 class="section-title">Новинки</h2>
+        <a href="/catalog" class="section-link">Весь каталог</a>
+    </div>
+    <div id="productsGrid">
+        {% for i in range(1, 7) %}
+        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} prod-anim"
              data-product-id="{{ i }}">
             <div class="product-image-wrapper">
                 <div class="product-image"
@@ -295,14 +409,15 @@ html { overflow-x: hidden; }
                 </div>
             </div>
             <div class="product-info">
+                <div class="product-tag">{{ ['Хит продаж', 'Новинка', 'Лимит', 'Эксклюзив', 'Bestseller', 'New drop'][loop.index0 % 6] }}</div>
                 <h3 class="product-name">Шмотка {{ i }}</h3>
-                <p class="product-description">Стильная и удобная вещь для вашего гардероба.</p>
+                <p class="product-description">Стильная и удобная вещь для вашего гардероба. Высококачественный материал, современный крой.</p>
                 <div class="product-price">{{ 1500 + i * 100 }} ₽</div>
                 <button class="product-btn add-to-cart"
                         data-id="{{ i }}"
                         data-name="Шмотка {{ i }}"
                         data-price="{{ 1500 + i * 100 }}">
-                    Добавить в корзину
+                    В корзину
                 </button>
             </div>
         </div>
@@ -313,7 +428,7 @@ html { overflow-x: hidden; }
 <!-- ── PRODUCT POPUP ── -->
 <div class="prod-popup" id="prodPopup">
     <div class="prod-popup-inner">
-        <button class="prod-popup-close" id="prodPopupClose">&times;</button>
+        <button class="prod-popup-close" id="prodPopupClose">✕</button>
         <div class="prod-popup-left">
             <div class="prod-popup-main-img"><img id="popupMainImg" src="" alt=""></div>
             <div class="prod-popup-thumbs" id="popupThumbs"></div>
@@ -343,242 +458,253 @@ html { overflow-x: hidden; }
 {% endblock %}
 
 {% block extra_js %}
+<!-- GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<!-- Three.js UMD (no module import needed) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.166.0/build/three.min.js"></script>
 
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.166.0/build/three.module.js';
-
+<script>
 gsap.registerPlugin(ScrollTrigger);
 
-// ── SMOOTH SCROLL ──
-const lenis = new Lenis({
-    duration: 2.2,
-    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    smoothTouch: false,
-});
-function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-requestAnimationFrame(raf);
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add(time => lenis.raf(time * 1000));
-gsap.ticker.lagSmoothing(0);
+/* ────────────────────────────────────────
+   INTRO BLOB REVEAL
+──────────────────────────────────────── */
+(function () {
+    var overlay = document.getElementById('introOverlay');
+    var ic = document.getElementById('introCanvas');
+    var ctx = ic.getContext('2d');
+    ic.width  = window.innerWidth;
+    ic.height = window.innerHeight;
+    var cx = ic.width / 2, cy = ic.height / 2;
+    var maxR = Math.hypot(cx, cy) * 1.45;
+    var prog = 0;
+    var done = false;
+    var startTime = null;
+    var duration = 2400; // ms
 
-// ── INTRO BLOB ──
-const overlay = document.getElementById('introOverlay');
-const ic = document.getElementById('introCanvas');
-const ctx = ic.getContext('2d');
-ic.width  = window.innerWidth;
-ic.height = window.innerHeight;
-const ocx = ic.width / 2, ocy = ic.height / 2;
-const maxR = Math.hypot(ocx, ocy) * 1.4;
-const prog = { v: 0 };
+    function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
 
-function drawBlob() {
-    const r = prog.v * maxR;
-    ctx.clearRect(0, 0, ic.width, ic.height);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, ic.width, ic.height);
-    if (r < 1) return;
-    const t = Date.now() / 1000;
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    const N = 80;
-    for (let i = 0; i <= N; i++) {
-        const a = (i / N) * Math.PI * 2;
-        const jitter = (1 - prog.v) * (
-            Math.sin(a * 6 + t * 2.5) * 0.07 +
-            Math.cos(a * 11 + t * 1.8) * 0.04
-        );
-        const rr = r * (1 + jitter);
-        const x = ocx + Math.cos(a) * rr;
-        const y = ocy + Math.sin(a) * rr;
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    function drawFrame(ts) {
+        if (!startTime) startTime = ts;
+        var elapsed = ts - startTime;
+        prog = Math.min(1, elapsed / duration);
+        var ep = ease(prog);
+        var r = ep * maxR;
+
+        ctx.clearRect(0, 0, ic.width, ic.height);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, ic.width, ic.height);
+
+        if (r > 0) {
+            var t = ts / 1000;
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            var N = 72;
+            for (var i = 0; i <= N; i++) {
+                var a = (i / N) * Math.PI * 2;
+                var jitter = (1 - ep) * (
+                    Math.sin(a * 7  + t * 2.2) * 0.06 +
+                    Math.cos(a * 13 + t * 1.6) * 0.035 +
+                    Math.sin(a * 3  - t * 0.9) * 0.025
+                );
+                var rr = r * (1 + jitter);
+                var x = cx + Math.cos(a) * rr;
+                var y = cy + Math.sin(a) * rr;
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        if (prog < 1) {
+            requestAnimationFrame(drawFrame);
+        } else {
+            done = true;
+            overlay.style.display = 'none';
+            heroIn();
+        }
     }
-    ctx.closePath(); ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
-}
-
-// Keep redrawing for organic edges
-let blobDone = false;
-(function blobFrame() { if (!blobDone) { drawBlob(); requestAnimationFrame(blobFrame); } })();
-
-gsap.to(prog, {
-    v: 1, duration: 2.6, delay: 0.2,
-    ease: 'power2.inOut',
-    onUpdate: drawBlob,
-    onComplete: () => {
-        blobDone = true;
-        overlay.style.display = 'none';
-        heroIn();
-    }
-});
-
-// ── HERO TEXT IN ──
-function heroIn() {
-    gsap.timeline()
-        .to('.hero-title .word', {
-            translateY: '0%', duration: 1.6,
-            stagger: 0.15, ease: 'power4.out',
-        })
-        .to('.hero-sub', {
-            opacity: 1, y: 0, duration: 1.2, ease: 'power3.out'
-        }, '-=0.9')
-        .to('#scrollHint', {
-            opacity: 1, duration: 1, ease: 'power2.out'
-        }, '-=0.6');
-}
-
-// ── THREE.JS CLOTH ──
-const canvas3 = document.getElementById('threeCanvas');
-const renderer = new THREE.WebGLRenderer({ canvas: canvas3, antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-camera.position.set(0, 0, 5);
-
-// Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.25));
-const dirL = new THREE.DirectionalLight(0xffffff, 2.5);
-dirL.position.set(2, 4, 4); scene.add(dirL);
-const fillL = new THREE.PointLight(0x6688ff, 1.2, 20);
-fillL.position.set(-3, -2, 3); scene.add(fillL);
-const rimL = new THREE.DirectionalLight(0xffffff, 0.6);
-rimL.position.set(-2, 2, -4); scene.add(rimL);
-
-// Cloth mesh
-const SEG = 90;
-const geo = new THREE.PlaneGeometry(3.2, 4.0, SEG, SEG);
-const mat = new THREE.MeshPhongMaterial({
-    color: 0xffffff, specular: 0x222222,
-    shininess: 20, side: THREE.DoubleSide,
-});
-const cloth = new THREE.Mesh(geo, mat);
-scene.add(cloth);
-
-const origPos = geo.attributes.position.array.slice();
-let scrollProg = 0, t3 = 0;
-
-function resizeRenderer() {
-    const s = document.getElementById('s2');
-    renderer.setSize(s.clientWidth, s.clientHeight);
-    camera.aspect = s.clientWidth / s.clientHeight;
-    camera.updateProjectionMatrix();
-}
-resizeRenderer();
-window.addEventListener('resize', resizeRenderer);
-
-ScrollTrigger.create({
-    trigger: '#s2', start: 'top top', end: 'bottom top',
-    scrub: 2,
-    onUpdate: s => { scrollProg = s.progress; }
-});
-
-function tickCloth() {
-    const pos = geo.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-        const ox = origPos[i * 3];
-        const oy = origPos[i * 3 + 1];
-        // Breathing
-        const wave =
-            Math.sin(ox * 2.2 + t3 * 0.55) * 0.13 +
-            Math.cos(oy * 2.8 + t3 * 0.72) * 0.09 +
-            Math.sin((ox + oy) * 1.6 + t3 * 0.38) * 0.06 +
-            Math.sin(ox * 5   - t3 * 0.48) * 0.025;
-        // Scroll crumple
-        const crumple = scrollProg * (
-            Math.sin(oy * 3.5 + t3 * 0.9) * 0.5 +
-            Math.cos(ox * 2.8 + t3 * 0.6) * 0.35
-        );
-        pos.setZ(i, wave + crumple);
-        pos.setX(i, ox + Math.sin(oy * 1.8 + t3 * 0.3) * scrollProg * 0.18);
-    }
-    pos.needsUpdate = true;
-    geo.computeVertexNormals();
-    cloth.rotation.y = scrollProg * Math.PI * 0.7;
-    cloth.rotation.x = scrollProg * Math.PI * 0.18;
-}
-
-(function renderLoop() {
-    requestAnimationFrame(renderLoop);
-    t3 += 0.015;
-    tickCloth();
-    renderer.render(scene, camera);
+    requestAnimationFrame(drawFrame);
 })();
 
-// ── S2 TEXT PARALLAX ──
-gsap.to('.s2-title', {
-    scrollTrigger: { trigger: '#s2', start: 'top top', end: 'bottom top', scrub: true },
-    opacity: 0.25, y: -60, ease: 'none'
-});
+/* ────────────────────────────────────────
+   HERO TEXT IN
+──────────────────────────────────────── */
+function heroIn() {
+    gsap.timeline({ defaults: { ease: 'power4.out' } })
+        .to('.hero-title .word', {
+            translateY: '0%', duration: 1.5,
+            stagger: 0.12,
+        })
+        .to(['#heroEyebrow', '#heroTag'], {
+            opacity: 1, y: 0, duration: 1.1,
+            stagger: 0.18,
+        }, '-=0.9')
+        .to('#scrollPrompt', {
+            opacity: 1, duration: 1, ease: 'power2.out'
+        }, '-=0.5');
+}
 
-// ── S3 REVEAL ──
-const s3Els = ['.s3-eyebrow', '.s3-heading', '.s3-body', '.s3-cta'];
-s3Els.forEach((sel, i) => {
-    gsap.from(sel, {
-        scrollTrigger: { trigger: '#s3', start: 'top 70%' },
-        opacity: 0, y: 40 - i * 6,
-        duration: 1.2 + i * 0.1,
-        delay: i * 0.12,
-        ease: 'power3.out',
+/* ────────────────────────────────────────
+   THREE.JS CLOTH
+──────────────────────────────────────── */
+(function () {
+    if (typeof THREE === 'undefined') return;
+
+    var canvas3 = document.getElementById('threeCanvas');
+    var section = document.getElementById('clothSection');
+
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas3, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 1);
+
+    var scene  = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+    camera.position.set(0, 0, 5.5);
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+    var dir = new THREE.DirectionalLight(0xffffff, 3);
+    dir.position.set(2, 3, 4); scene.add(dir);
+    var fill = new THREE.PointLight(0x4466ff, 1.5, 18);
+    fill.position.set(-3, -1, 3); scene.add(fill);
+    var rim = new THREE.DirectionalLight(0xffffff, 0.5);
+    rim.position.set(-2, 2, -4); scene.add(rim);
+
+    // Cloth
+    var SEG = 80;
+    var geo  = new THREE.PlaneGeometry(3.0, 3.8, SEG, SEG);
+    var mat  = new THREE.MeshPhongMaterial({
+        color: 0xfafafa, specular: 0x333333,
+        shininess: 25, side: THREE.DoubleSide,
     });
-});
+    var cloth = new THREE.Mesh(geo, mat);
+    scene.add(cloth);
 
-// ── PRODUCTS SCROLL ──
-document.querySelectorAll('.product-row').forEach(row => {
+    var origPos = geo.attributes.position.array.slice();
+    var scrollProg = 0, t3 = 0;
+
+    function resize() {
+        var w = section.clientWidth, h = section.clientHeight;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    ScrollTrigger.create({
+        trigger: '#clothSection',
+        start: 'top top', end: 'bottom top',
+        scrub: 1.5,
+        onUpdate: function(s) { scrollProg = s.progress; }
+    });
+
+    function tick() {
+        requestAnimationFrame(tick);
+        t3 += 0.012;
+        var pos = geo.attributes.position;
+        for (var i = 0; i < pos.count; i++) {
+            var ox = origPos[i * 3];
+            var oy = origPos[i * 3 + 1];
+            var wave =
+                Math.sin(ox * 2.4 + t3 * 0.6)  * 0.12 +
+                Math.cos(oy * 2.9 + t3 * 0.75) * 0.09 +
+                Math.sin((ox + oy) * 1.7 + t3 * 0.4) * 0.055 +
+                Math.sin(ox * 4.5 - t3 * 0.5)  * 0.022;
+            var crumple = scrollProg * (
+                Math.sin(oy * 3.8 + t3 * 0.85) * 0.55 +
+                Math.cos(ox * 2.6 + t3 * 0.6)  * 0.38
+            );
+            pos.setZ(i, wave + crumple);
+            pos.setX(i, ox + Math.sin(oy * 1.9 + t3 * 0.28) * scrollProg * 0.22);
+        }
+        pos.needsUpdate = true;
+        geo.computeVertexNormals();
+        cloth.rotation.y = scrollProg * Math.PI * 0.65;
+        cloth.rotation.x = scrollProg * Math.PI * 0.15;
+        renderer.render(scene, camera);
+    }
+    tick();
+
+    // S2 num parallax
+    gsap.to('.cloth-num', {
+        scrollTrigger: { trigger: '#clothSection', start: 'top top', end: 'bottom top', scrub: true },
+        opacity: 0.12, y: -50, ease: 'none'
+    });
+})();
+
+/* ────────────────────────────────────────
+   SCROLL ANIMATIONS
+──────────────────────────────────────── */
+// Manifest
+gsap.from('.manifest-eyebrow', { scrollTrigger: { trigger: '#manifest', start: 'top 72%' }, opacity: 0, y: 30, duration: 1.1, ease: 'power3.out' });
+gsap.from('.manifest-title',   { scrollTrigger: { trigger: '#manifest', start: 'top 65%' }, opacity: 0, y: 44, duration: 1.3, ease: 'power3.out', delay: 0.1 });
+gsap.from('.manifest-body',    { scrollTrigger: { trigger: '#manifest', start: 'top 60%' }, opacity: 0, y: 30, duration: 1.1, ease: 'power3.out', delay: 0.2 });
+gsap.from('.manifest-cta',     { scrollTrigger: { trigger: '#manifest', start: 'top 55%' }, opacity: 0, y: 20, duration: 1.0, ease: 'power3.out', delay: 0.3 });
+
+// Products
+document.querySelectorAll('.prod-anim').forEach(function(row, i) {
     gsap.from(row, {
-        scrollTrigger: { trigger: row, start: 'top 88%' },
-        opacity: 0, y: 70,
-        duration: 1.4, ease: 'power3.out',
+        scrollTrigger: { trigger: row, start: 'top 86%' },
+        opacity: 0, y: 64,
+        duration: 1.3, ease: 'power3.out',
+        delay: (i % 2) * 0.08
     });
 });
 
-// ── LIKES ──
-let liked = JSON.parse(localStorage.getItem('liked_products') || '[]');
+// Section header
+gsap.from('.section-title', { scrollTrigger: { trigger: '.products-section', start: 'top 80%' }, opacity: 0, y: 30, duration: 1.0, ease: 'power3.out' });
+gsap.from('.section-link',  { scrollTrigger: { trigger: '.products-section', start: 'top 80%' }, opacity: 0, y: 20, duration: 0.9, ease: 'power3.out', delay: 0.1 });
+
+/* ────────────────────────────────────────
+   LIKES
+──────────────────────────────────────── */
+var liked = JSON.parse(localStorage.getItem('liked_products') || '[]');
 function syncLikes() {
-    document.querySelectorAll('.like-icon').forEach(b =>
-        b.classList.toggle('liked', liked.includes(b.dataset.id)));
+    document.querySelectorAll('.like-icon').forEach(function(b) {
+        b.classList.toggle('liked', liked.includes(b.dataset.id));
+    });
     if (window.updateLikesCount) window.updateLikesCount();
 }
-document.querySelectorAll('.like-icon').forEach(btn =>
-    btn.addEventListener('click', e => {
+document.querySelectorAll('.like-icon').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
         e.stopPropagation();
-        const id = btn.dataset.id;
-        liked = liked.includes(id) ? liked.filter(x => x !== id) : [...liked, id];
+        var id = btn.dataset.id;
+        liked = liked.includes(id) ? liked.filter(function(x) { return x !== id; }) : liked.concat([id]);
         btn.classList.toggle('liked', liked.includes(id));
         localStorage.setItem('liked_products', JSON.stringify(liked));
         if (window.updateLikesCount) window.updateLikesCount();
-    })
-);
+    });
+});
 syncLikes();
 
-// ── POPUP ──
-const IMGS = [
+/* ────────────────────────────────────────
+   POPUP
+──────────────────────────────────────── */
+var IMGS = [
     '/static/images/photo_2026-05-17_22.34.33.jpeg',
     '/static/images/photo_2026-05-17_22.34.46.jpeg'
 ];
 
 function openPopup(id, name, price) {
     document.getElementById('popupName').textContent = name;
-    document.getElementById('popupPrice').textContent =
-        Number(price).toLocaleString('ru') + ' р.';
+    document.getElementById('popupPrice').textContent = Number(price).toLocaleString('ru') + ' ₽';
     document.getElementById('popupMainImg').src = IMGS[0];
-    document.getElementById('popupThumbs').innerHTML = IMGS.map((src, i) =>
-        `<div class="prod-popup-thumb ${i===0?'active':''}" onclick="window._setThumb(this,'${src}')"><img src="${src}" alt=""></div>`
-    ).join('');
-    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('popupCartBtn').onclick = () => {
-        const sz = document.querySelector('.size-btn.active')?.dataset.size || '';
+    document.getElementById('popupThumbs').innerHTML = IMGS.map(function(src, i) {
+        return '<div class="prod-popup-thumb '+(i===0?'active':'')+'" onclick="window._setThumb(this,\''+src+'\')"><img src="'+src+'" alt=""></div>';
+    }).join('');
+    document.querySelectorAll('.size-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById('popupCartBtn').onclick = function() {
+        var sz = (document.querySelector('.size-btn.active') || {}).dataset && document.querySelector('.size-btn.active').dataset.size || '';
         addFromPopup(id, name, price, sz);
     };
-    document.getElementById('popupOrderBtn').onclick = async () => {
-        const sz = document.querySelector('.size-btn.active')?.dataset.size || '';
-        const fn = sz ? name + ' (' + sz + ')' : name;
-        await fetch('/api/cart/add', {
-            method: 'POST', headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ product_id: String(id)+(sz?'_'+sz:''), name: fn, price: Number(price) })
-        });
+    document.getElementById('popupOrderBtn').onclick = async function() {
+        var sz = document.querySelector('.size-btn.active') ? document.querySelector('.size-btn.active').dataset.size : '';
+        var fn = sz ? name + ' (' + sz + ')' : name;
+        await fetch('/api/cart/add', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ product_id: String(id)+(sz?'_'+sz:''), name: fn, price: Number(price) }) });
         location.href = '/order';
     };
     document.getElementById('prodPopup').classList.add('active');
@@ -587,7 +713,7 @@ function openPopup(id, name, price) {
 
 window._setThumb = function(el, src) {
     document.getElementById('popupMainImg').src = src;
-    document.querySelectorAll('.prod-popup-thumb').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.prod-popup-thumb').forEach(function(t) { t.classList.remove('active'); });
     el.classList.add('active');
 };
 
@@ -595,68 +721,75 @@ function closePopup() {
     document.getElementById('prodPopup').classList.remove('active');
     document.body.style.overflow = '';
 }
-
-document.getElementById('prodPopup').addEventListener('click', e => {
-    if (e.target === document.getElementById('prodPopup')) closePopup();
-});
+document.getElementById('prodPopup').addEventListener('click', function(e) { if (e.target === this) closePopup(); });
 document.getElementById('prodPopupClose').addEventListener('click', closePopup);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
-document.querySelectorAll('.size-btn').forEach(btn =>
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePopup(); });
+document.querySelectorAll('.size-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.size-btn').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
-    })
-);
-document.querySelectorAll('.product-image').forEach(c =>
-    c.addEventListener('click', e => {
+    });
+});
+document.querySelectorAll('.product-image').forEach(function(c) {
+    c.addEventListener('click', function(e) {
         if (e.target.closest('.like-icon')) return;
         openPopup(c.dataset.id, c.dataset.name, c.dataset.price);
-    })
-);
+    });
+});
 
 async function addFromPopup(id, name, price, sz) {
-    const fn = sz ? name + ' (' + sz + ')' : name;
-    const res = await fetch('/api/cart/add', {
+    var fn = sz ? name + ' (' + sz + ')' : name;
+    var res = await fetch('/api/cart/add', {
         method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ product_id: String(id)+(sz?'_'+sz:''), name: fn, price: Number(price) })
     });
-    const data = await res.json();
+    var data = await res.json();
     if (data.success) {
         closePopup();
         if (window.updateCartCount) window.updateCartCount();
         if (window.renderT706Cart) window.renderT706Cart();
         if (window.openCart) window.openCart();
+        showToast('Добавлено в корзину');
     }
 }
 
-// ── CART ──
-document.querySelectorAll('.add-to-cart').forEach(btn =>
-    btn.addEventListener('click', async e => {
+/* ────────────────────────────────────────
+   CART BUTTONS
+──────────────────────────────────────── */
+document.querySelectorAll('.add-to-cart').forEach(function(btn) {
+    btn.addEventListener('click', async function(e) {
         e.stopPropagation();
-        const res = await fetch('/api/cart/add', {
+        var res = await fetch('/api/cart/add', {
             method: 'POST', headers: {'Content-Type':'application/json'},
             body: JSON.stringify({ product_id: btn.dataset.id, name: btn.dataset.name, price: parseInt(btn.dataset.price) })
         });
-        const data = await res.json();
+        var data = await res.json();
         if (data.success) {
             if (window.updateCartCount) window.updateCartCount();
             if (window.renderT706Cart) window.renderT706Cart();
             if (window.openCart) window.openCart();
+            showToast('Добавлено в корзину');
         }
-    })
-);
+    });
+});
+
+function showToast(msg) {
+    var t = document.createElement('div');
+    t.className = 'toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function() { t.remove(); }, 2400);
+}
 
 async function updateCartCount() {
     try {
-        const r = await fetch('/api/cart/count');
-        const d = await r.json();
-        const el = document.getElementById('cart-count');
+        var r = await fetch('/api/cart/count');
+        var d = await r.json();
+        var el = document.getElementById('cart-count');
         if (el) el.textContent = d.count || 0;
-    } catch {}
+    } catch(e) {}
 }
 window.updateCartCount = updateCartCount;
 updateCartCount();
 setInterval(updateCartCount, 5000);
-
 </script>
 {% endblock %}
