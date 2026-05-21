@@ -102,7 +102,7 @@ body { background: #000; }
 
 /* ── THREE CANVAS SECTION ── */
 .cloth-section {
-    height: 150vh; background: #000;
+    height: 220vh; background: #000;
     position: relative;
 }
 #threeCanvas {
@@ -211,79 +211,48 @@ body { background: #000; }
 }
 .section-link:hover { color: #fff; border-color: #fff; }
 
-.product-row {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 64px; align-items: center; margin-bottom: 100px;
+/* product card grid */
+.pcards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
 }
-.product-row:last-child { margin-bottom: 0; }
-.product-row-reverse { direction: rtl; }
-.product-row-reverse .product-info { direction: ltr; }
-.product-image-wrapper { display: flex; justify-content: center; }
-.product-image {
-    position: relative; width: 100%;
-    max-width: 380px; height: 400px;
-    cursor: pointer; overflow: hidden;
+.pcard3d {
+    position: relative; cursor: pointer;
+    background: #050505;
 }
-.product-img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%; object-fit: cover;
-    transition: opacity 0.5s ease;
+.pcard3d-canvas {
+    width: 100%; aspect-ratio: 3/4;
+    display: block; background: #050505;
 }
-.front-img { opacity: 1; z-index: 1; }
-.back-img  { opacity: 0; z-index: 0; }
-.product-image:hover .front-img { opacity: 0; }
-.product-image:hover .back-img  { opacity: 1; }
-.like-icon {
-    position: absolute; top: 14px; right: 14px;
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.08);
-    cursor: pointer; z-index: 10;
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s, background 0.2s;
+.pcard3d-foot {
+    padding: 14px 8px 22px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: 1px solid #111;
 }
-.like-icon:hover { transform: scale(1.12); background: rgba(0,0,0,0.8); }
-.heart-svg { width: 20px; height: 20px; }
-.heart-svg path { fill: none; stroke: #fff; stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; }
-.like-icon.liked .heart-svg path { fill: #ff3b5c; stroke: #ff3b5c; }
-
-.product-tag {
-    font-size: 8px; letter-spacing: 4px;
-    text-transform: uppercase; color: #555;
-    font-family: 'Inter', sans-serif;
-    margin-bottom: 20px;
+.pcard3d-name {
+    font-size: 12px; color: #aaa;
+    font-family: 'Inter', sans-serif; font-weight: 400;
 }
-.product-name {
-    font-size: clamp(22px, 2.5vw, 32px);
-    font-weight: 600; color: #fff;
-    font-family: 'Inter', sans-serif;
-    margin-bottom: 16px; letter-spacing: -0.5px;
+.pcard3d-price {
+    font-size: 16px; color: #fff;
+    font-family: 'Cormorant', serif; font-weight: 400;
+    letter-spacing: -0.5px;
 }
-.product-description {
-    font-size: 13px; color: #666;
-    line-height: 1.8; margin-bottom: 24px;
-    font-family: 'Inter', sans-serif;
-}
-.product-price {
-    font-size: 28px; font-weight: 300;
-    color: #fff; margin-bottom: 28px;
-    font-family: 'Inter', sans-serif; letter-spacing: -1px;
-}
-.product-btn {
+.pcard3d-btn {
+    display: none; position: absolute;
+    bottom: 58px; left: 3px; right: 3px;
     background: #CA8A04; color: #000; border: none;
-    padding: 14px 36px; font-size: 10px; font-weight: 700;
-    letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 10px; font-size: 9px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
     cursor: pointer; font-family: 'Inter', sans-serif;
-    border-radius: 0; transition: background 0.2s, transform 0.15s;
-    display: inline-block;
+    z-index: 5; transition: background 0.2s;
 }
-.product-btn:hover { background: #d97706; transform: translateY(-1px); }
+.pcard3d:hover .pcard3d-btn { display: block; }
+.pcard3d-btn:hover { background: #d97706; }
 
-@media (max-width: 768px) {
-    .product-row { grid-template-columns: 1fr; gap: 24px; text-align: center; margin-bottom: 64px; }
-    .product-row-reverse { direction: ltr; }
-    .product-image { max-width: 280px; height: 300px; margin: 0 auto; }
-}
+@media (max-width: 860px) { .pcards-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 500px) { .pcards-grid { grid-template-columns: repeat(2,1fr); gap: 2px; } }
 
 /* ── POPUP ── */
 .prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; padding: 20px; }
@@ -417,37 +386,21 @@ body { background: #000; }
         <h2 class="section-title">Новинки</h2>
         <a href="/catalog" class="section-link">Весь каталог</a>
     </div>
-    <div id="productsGrid">
-        {% set tags = ['Хит продаж', 'Новинка', 'Лимит', 'Эксклюзив', 'Bestseller', 'New drop'] %}
-        {% for i in range(1, 7) %}
-        <div class="product-row {% if loop.index is even %}product-row-reverse{% endif %} prod-anim"
-             data-id="{{ i }}"
-             data-name="Шмотка {{ i }}"
-             data-price="{{ 1500 + i * 100 }}">
-            <div class="product-image-wrapper">
-                <div class="product-image"
-                     data-id="{{ i }}"
-                     data-name="Шмотка {{ i }}"
-                     data-price="{{ 1500 + i * 100 }}">
-                    <img src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="" class="product-img front-img">
-                    <img src="/static/images/photo_2026-05-17_22.34.46.jpeg" alt="" class="product-img back-img">
-                    <button class="like-icon" data-id="{{ i }}">
-                        <svg viewBox="0 0 24 24" class="heart-svg">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    </button>
-                </div>
+    <div class="pcards-grid" id="productsGrid">
+        {% for product in products %}
+        <div class="pcard3d"
+             data-id="{{ product.id }}"
+             data-name="{{ product.name }}"
+             data-price="{{ product.price }}">
+            <canvas class="pcard3d-canvas" id="pcard-canvas-{{ product.id }}"></canvas>
+            <div class="pcard3d-foot">
+                <span class="pcard3d-name">{{ product.name }}</span>
+                <span class="pcard3d-price">{{ product.price | int }} ₽</span>
             </div>
-            <div class="product-info">
-                <div class="product-tag">{{ tags[loop.index0 % 6] }}</div>
-                <h3 class="product-name">Шмотка {{ i }}</h3>
-                <p class="product-description">Стильная и удобная вещь для вашего гардероба. Высококачественный материал, современный крой.</p>
-                <div class="product-price">{{ 1500 + i * 100 }} ₽</div>
-                <button class="product-btn add-to-cart"
-                        data-id="{{ i }}"
-                        data-name="Шмотка {{ i }}"
-                        data-price="{{ 1500 + i * 100 }}">В корзину</button>
-            </div>
+            <button class="pcard3d-btn"
+                    data-id="{{ product.id }}"
+                    data-name="{{ product.name }}"
+                    data-price="{{ product.price }}">В корзину</button>
         </div>
         {% endfor %}
     </div>
@@ -593,13 +546,13 @@ gsap.from('.manifest-title',   { scrollTrigger: { trigger: '#manifest', start: '
 gsap.from('.manifest-body',    { scrollTrigger: { trigger: '#manifest', start: 'top 60%' }, opacity: 0, y: 30, duration: 1.1, ease: 'power3.out', delay: 0.2 });
 gsap.from('.manifest-cta',     { scrollTrigger: { trigger: '#manifest', start: 'top 55%' }, opacity: 0, y: 20, duration: 1.0, ease: 'power3.out', delay: 0.3 });
 
-// Products
-document.querySelectorAll('.prod-anim').forEach(function(row, i) {
-    gsap.from(row, {
-        scrollTrigger: { trigger: row, start: 'top 86%' },
-        opacity: 0, y: 64,
-        duration: 1.3, ease: 'power3.out',
-        delay: (i % 2) * 0.08
+// Products — animate each 3-D card
+document.querySelectorAll('.pcard3d').forEach(function(card, i) {
+    gsap.from(card, {
+        scrollTrigger: { trigger: card, start: 'top 92%' },
+        opacity: 0, y: 50,
+        duration: 1.1, ease: 'power3.out',
+        delay: (i % 3) * 0.07
     });
 });
 
@@ -608,7 +561,7 @@ gsap.from('.section-title', { scrollTrigger: { trigger: '.products-section', sta
 gsap.from('.section-link',  { scrollTrigger: { trigger: '.products-section', start: 'top 80%' }, opacity: 0, y: 20, duration: 0.9, ease: 'power3.out', delay: 0.1 });
 
 /* ────────────────────────────────────────
-   LIKES
+   LIKES  (legacy — no like icons on 3D cards)
 ──────────────────────────────────────── */
 var liked = JSON.parse(localStorage.getItem('liked_products') || '[]');
 function syncLikes() {
@@ -617,16 +570,6 @@ function syncLikes() {
     });
     if (window.updateLikesCount) window.updateLikesCount();
 }
-document.querySelectorAll('.like-icon').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var id = btn.dataset.id;
-        liked = liked.includes(id) ? liked.filter(function(x) { return x !== id; }) : liked.concat([id]);
-        btn.classList.toggle('liked', liked.includes(id));
-        localStorage.setItem('liked_products', JSON.stringify(liked));
-        if (window.updateLikesCount) window.updateLikesCount();
-    });
-});
 syncLikes();
 
 /* ────────────────────────────────────────
@@ -678,10 +621,11 @@ document.querySelectorAll('.size-btn').forEach(function(btn) {
         btn.classList.add('active');
     });
 });
-document.querySelectorAll('.product-image').forEach(function(c) {
-    c.addEventListener('click', function(e) {
-        if (e.target.closest('.like-icon')) return;
-        openPopup(c.dataset.id, c.dataset.name, c.dataset.price);
+// 3D product card → open popup
+document.querySelectorAll('.pcard3d').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+        if (e.target.closest('.pcard3d-btn')) return;
+        openPopup(card.dataset.id, card.dataset.name, card.dataset.price);
     });
 });
 
@@ -702,9 +646,9 @@ async function addFromPopup(id, name, price, sz) {
 }
 
 /* ────────────────────────────────────────
-   CART BUTTONS
+   CART BUTTONS (3D cards)
 ──────────────────────────────────────── */
-document.querySelectorAll('.add-to-cart').forEach(function(btn) {
+document.querySelectorAll('.pcard3d-btn').forEach(function(btn) {
     btn.addEventListener('click', async function(e) {
         e.stopPropagation();
         var res = await fetch('/api/cart/add', {
@@ -749,162 +693,254 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 /* ═══════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════ */
-function makeLights(scene) {
-  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  const k = new THREE.DirectionalLight(0xffffff, 5); k.position.set(3, 5, 5); scene.add(k);
-  const f = new THREE.DirectionalLight(0x8899ff, 1.2); f.position.set(-4, -1, 3); scene.add(f);
-  const r = new THREE.DirectionalLight(0xffffff, 1.1); r.position.set(-1, 3, -5); scene.add(r);
-  const b = new THREE.DirectionalLight(0xffffff, 0.4); b.position.set(0, -4, 2); scene.add(b);
+function addLights(scene) {
+  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+  const k = new THREE.DirectionalLight(0xffffff, 5.5); k.position.set(3, 5, 5);   scene.add(k);
+  const f = new THREE.DirectionalLight(0x8899ff, 1.6); f.position.set(-4,-1, 3);  scene.add(f);
+  const r = new THREE.DirectionalLight(0xffffff, 1.1); r.position.set(-1, 3,-5);  scene.add(r);
+  const b = new THREE.DirectionalLight(0xffffff, 0.5); b.position.set( 0,-4, 2);  scene.add(b);
 }
 
-function centerModel(grp) {
+function centerGroup(grp) {
   const box = new THREE.Box3().setFromObject(grp);
-  const ctr = box.getCenter(new THREE.Vector3());
-  const sz  = box.getSize(new THREE.Vector3());
-  grp.position.sub(ctr);
-  return Math.max(sz.x, sz.y, sz.z);
+  grp.position.sub(box.getCenter(new THREE.Vector3()));
+  return box.getSize(new THREE.Vector3());
 }
 
 /* ═══════════════════════════════════════════
    MAIN CLOTH SECTION
 ═══════════════════════════════════════════ */
-{
-  const canvas  = document.getElementById('threeCanvas');
-  const section = document.getElementById('clothSection');
+const mainCanvas   = document.getElementById('threeCanvas');
+const clothSection = document.getElementById('clothSection');
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 1);
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+const mainRenderer = new THREE.WebGLRenderer({ canvas: mainCanvas, antialias: true, alpha: false });
+mainRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+mainRenderer.setClearColor(0x000000, 1);
+mainRenderer.outputColorSpace = THREE.SRGBColorSpace;
+mainRenderer.toneMapping      = THREE.ACESFilmicToneMapping;
+mainRenderer.toneMappingExposure = 1.2;
 
-  const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
-  camera.position.set(0, 0, 7);
-  makeLights(scene);
+const mainScene  = new THREE.Scene();
+const mainCamera = new THREE.PerspectiveCamera(56, 1, 0.1, 100);
+mainCamera.position.set(0, 0, 6.5);
+addLights(mainScene);
 
-  /* Loading */
-  const loadEl = document.createElement('div');
-  loadEl.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;';
-  loadEl.innerHTML = '<div style="width:140px;height:1px;background:#111;overflow:hidden;"><div id="mlBar" style="height:100%;width:0%;background:#666;transition:width .2s;"></div></div>';
-  section.appendChild(loadEl);
+// Progress bar
+const loadEl = document.createElement('div');
+loadEl.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;';
+loadEl.innerHTML = '<div style="width:140px;height:1px;background:#111;overflow:hidden;"><div id="mlBar" style="height:100%;width:0%;background:#666;transition:width .2s;"></div></div>';
+clothSection.appendChild(loadEl);
 
-  let model = null, baseScale = 1;
-  let meshes = [], origPositions = [];
-  let mouseX = 0, mouseY = 0, tRY = 0, tRX = 0;
-  let scrollProg = 0, t = 0;
-  let isHover = false, hoverStrength = 0;
+let mainModel = null, mainBaseScale = 1, mainModelSz = new THREE.Vector3(1,1,1);
+let mainMeshes = [], mainOrigPos = [];
+let mouseX = 0, mouseY = 0, tgtRY = 0, tgtRX = 0;
+let scrollProg = 0, globalT = 0;
+let isHover = false, hoverStr = 0;
 
-  const loader = new GLTFLoader();
-  loader.load('/static/models/tshirt.glb',
-    (gltf) => {
-      model = new THREE.Group();
-      model.add(gltf.scene);
-      const maxDim = centerModel(model);
-      // Auto-fit: fill 88% of visible frustum height
-      const visH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-      baseScale = (visH * 0.88) / maxDim;
-      model.scale.setScalar(baseScale);
-      model.rotation.set(-0.08, 0.2, 0);
-      scene.add(model);
-      loadEl.remove();
-
-      /* Collect deformable meshes */
-      model.traverse(c => {
-        if (c.isMesh && c.geometry.attributes.position) {
-          const pos = c.geometry.attributes.position;
-          meshes.push(c);
-          origPositions.push(pos.array.slice());
-        }
-      });
-
-      gsap.from(canvas, { opacity: 0, duration: 1.2, ease: 'power2.out' });
-      onResize();
-    },
-    (xhr) => { if (xhr.total) { const b = document.getElementById('mlBar'); if(b) b.style.width = (xhr.loaded/xhr.total*100)+'%'; } },
-    (e) => { console.warn(e); loadEl.remove(); }
+function calcMainScale() {
+  const visH = 2 * mainCamera.position.z * Math.tan(THREE.MathUtils.degToRad(mainCamera.fov / 2));
+  const visW = visH * mainCamera.aspect;
+  // Fit both dimensions, slightly generous fill
+  mainBaseScale = Math.min(
+    visH * 0.84 / mainModelSz.y,
+    visW * 0.68 / mainModelSz.x
   );
+}
 
-  function onResize() {
-    const w = section.clientWidth, h = window.innerHeight;
-    renderer.setSize(w, h);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
+function resizeMain() {
+  const w = clothSection.clientWidth, h = window.innerHeight;
+  mainRenderer.setSize(w, h);
+  mainCamera.aspect = w / h;
+  mainCamera.updateProjectionMatrix();
+  if (mainModel) calcMainScale();
+}
+resizeMain();
+window.addEventListener('resize', resizeMain);
+
+window.addEventListener('mousemove', e => {
+  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+clothSection.addEventListener('mouseenter', () => isHover = true);
+clothSection.addEventListener('mouseleave', () => isHover = false);
+
+ScrollTrigger.create({
+  trigger: '#clothSection', start: 'top top', end: 'bottom top',
+  scrub: 1.5,
+  onUpdate: s => { scrollProg = s.progress; }
+});
+
+function deformMain() {
+  mainMeshes.forEach((mesh, mi) => {
+    const pos  = mesh.geometry.attributes.position;
+    const orig = mainOrigPos[mi];
+    const t    = globalT;
+    for (let i = 0; i < pos.count; i++) {
+      const ox = orig[i*3], oy = orig[i*3+1], oz = orig[i*3+2];
+
+      // Hover ripple — pronounced bend toward cursor
+      const hv = hoverStr * (
+        Math.sin(ox * 8  + mouseX * 4.5 + t * 2.4) * 0.10 +
+        Math.cos(oy * 6  + mouseY * 4.5 + t * 1.9) * 0.08 +
+        Math.sin((ox+oy)*5.5 + t * 1.6) * 0.055
+      );
+
+      // Scroll crumple — squared for dramatic late-scroll feel
+      const sp = scrollProg * scrollProg;
+      const cr = sp * (
+        Math.sin(ox * 7.5 + t * 1.7) * 0.60 +
+        Math.cos(oy * 5.5 - t * 1.4) * 0.50 +
+        Math.sin((ox-oy)*5.0 + t * 1.1) * 0.38 +
+        Math.cos((ox+oy)*3.5 - t * 0.9) * 0.28
+      );
+
+      pos.setXYZ(i,
+        ox + hv * 0.6 + cr * 0.22,
+        oy + hv       + cr * 0.18,
+        oz + hv * 0.4 + cr * 1.5
+      );
+    }
+    pos.needsUpdate = true;
+    mesh.geometry.computeVertexNormals();
+  });
+}
+
+(function mainTick() {
+  requestAnimationFrame(mainTick);
+  globalT += 0.013;
+  hoverStr += ((isHover ? 1 : 0) - hoverStr) * 0.075;
+
+  if (mainModel) {
+    tgtRY += (mouseX * 0.80 - tgtRY) * 0.048;
+    tgtRX += (-mouseY * 0.40 - tgtRX) * 0.048;
+
+    const floatY  = Math.sin(globalT * 0.37) * 0.28 + Math.sin(globalT * 0.80) * 0.10;
+    const breathe = 1 + Math.sin(globalT * 0.46) * 0.050 + Math.sin(globalT * 0.98) * 0.022;
+
+    mainModel.position.y  = floatY - scrollProg * 1.0;
+    mainModel.position.x  = Math.sin(globalT * 0.26) * 0.08;
+    mainModel.rotation.y  = 0.2 + tgtRY + scrollProg * Math.PI * 1.9;
+    mainModel.rotation.x  = -0.08 + tgtRX + scrollProg * 0.35;
+    mainModel.rotation.z  = Math.sin(globalT * 0.20) * 0.05 + scrollProg * 0.14;
+    mainModel.scale.setScalar(mainBaseScale * breathe * (1 - scrollProg * 0.14));
+
+    if (mainMeshes.length) deformMain();
   }
-  onResize();
-  window.addEventListener('resize', onResize);
 
-  /* Mouse */
-  window.addEventListener('mousemove', e => {
-    mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
-    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-  });
-  const sec = document.getElementById('clothSection');
-  sec.addEventListener('mouseenter', () => { isHover = true; });
-  sec.addEventListener('mouseleave', () => { isHover = false; });
+  mainRenderer.render(mainScene, mainCamera);
+})();
 
-  /* Scroll */
-  ScrollTrigger.create({
-    trigger: '#clothSection', start: 'top top', end: 'bottom top',
-    scrub: 1.8,
-    onUpdate: s => { scrollProg = s.progress; }
-  });
+/* ═══════════════════════════════════════════
+   LOAD GLB — shared source for all renderers
+═══════════════════════════════════════════ */
+new GLTFLoader().load(
+  '/static/models/tshirt.glb',
+  (gltf) => {
+    loadEl.remove();
 
-  /* Vertex deformation */
-  function deformMeshes() {
-    meshes.forEach((mesh, mi) => {
-      const pos  = mesh.geometry.attributes.position;
-      const orig = origPositions[mi];
-      for (let i = 0; i < pos.count; i++) {
-        const ox = orig[i*3], oy = orig[i*3+1], oz = orig[i*3+2];
+    // ── Main hero model ──
+    mainModel = new THREE.Group();
+    mainModel.add(gltf.scene.clone(true));
+    mainModelSz = centerGroup(mainModel);
+    mainModel.rotation.set(-0.08, 0.2, 0);
+    mainScene.add(mainModel);
+    calcMainScale();
 
-        /* Hover bend: gentle wave ripple */
-        const hWave = hoverStrength * (
-          Math.sin(ox * 4 + mouseX * 2 + t * 1.5) * 0.03 +
-          Math.cos(oy * 3 + mouseY * 2 + t * 1.2) * 0.025
-        );
-
-        /* Scroll crumple */
-        const crumple = scrollProg * (
-          Math.sin(ox * 5.0 + t * 1.4) * 0.28 +
-          Math.cos(oy * 4.0 - t * 1.1) * 0.22 +
-          Math.sin((ox - oy) * 3.0 + t * 0.9) * 0.15
-        );
-
-        pos.setXYZ(i, ox + crumple * 0.12, oy + crumple * 0.1, oz + hWave + crumple);
+    mainModel.traverse(c => {
+      if (c.isMesh && c.geometry.attributes.position) {
+        mainMeshes.push(c);
+        mainOrigPos.push(c.geometry.attributes.position.array.slice());
       }
-      pos.needsUpdate = true;
-      mesh.geometry.computeVertexNormals();
     });
-  }
 
-  /* Render loop */
-  (function tick() {
-    requestAnimationFrame(tick);
-    t += 0.012;
-    hoverStrength += (isHover ? 1 : 0 - hoverStrength) * 0.06;
+    gsap.from(mainCanvas, { opacity: 0, duration: 1.2, ease: 'power2.out' });
 
-    if (model) {
-      tRY += (mouseX * 0.55 - tRY) * 0.035;
-      tRX += (-mouseY * 0.28 - tRX) * 0.035;
+    // ── Product card models ──
+    initCards(gltf);
+  },
+  xhr => { if (xhr.total) { const b = document.getElementById('mlBar'); if(b) b.style.width = (xhr.loaded/xhr.total*100)+'%'; } },
+  e  => { console.warn('GLB load error', e); loadEl.remove(); }
+);
 
-      // Дыхание: плавный float + пульс масштаба
-      const floatY  = Math.sin(t * 0.45) * 0.18 + Math.sin(t * 0.9) * 0.06;
-      const breathe = 1 + Math.sin(t * 0.55) * 0.028 + Math.sin(t * 1.1) * 0.012;
+/* ═══════════════════════════════════════════
+   PRODUCT CARD 3D RENDERERS
+═══════════════════════════════════════════ */
+function initCards(gltf) {
+  document.querySelectorAll('.pcard3d-canvas').forEach((canvas, idx) => {
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    } catch(e) { return; }
 
-      model.position.y  = floatY - scrollProg * 0.6;
-      model.position.x  = Math.sin(t * 0.32) * 0.04; // лёгкое покачивание влево-вправо
-      model.rotation.y  = 0.2 + tRY + scrollProg * Math.PI * 1.4;
-      model.rotation.x  = -0.08 + tRX + scrollProg * 0.25;
-      model.rotation.z  = Math.sin(t * 0.26) * 0.03 + scrollProg * 0.1;
-      model.scale.setScalar(baseScale * breathe);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.setClearColor(0x050505, 1);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping      = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
 
-      if (meshes.length) deformMeshes();
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 0.75, 0.1, 100);
+    camera.position.set(0, 0, 5.5);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const kl = new THREE.DirectionalLight(0xffffff, 4.8); kl.position.set(2, 4, 4);  scene.add(kl);
+    const fl = new THREE.DirectionalLight(0x8899ff, 1.3); fl.position.set(-3,-1, 2); scene.add(fl);
+    const rl = new THREE.DirectionalLight(0xffffff, 0.9); rl.position.set( 0, 3,-4); scene.add(rl);
+
+    const cloned = gltf.scene.clone(true);
+    const sz = centerGroup(cloned);
+
+    function calcCardScale(aspect) {
+      const vH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const vW = vH * aspect;
+      return Math.min(vH * 0.78 / sz.y, vW * 0.72 / sz.x);
     }
 
-    renderer.render(scene, camera);
-  })();
+    let cardScale = calcCardScale(0.75);
+    cloned.scale.setScalar(cardScale);
+    scene.add(cloned);
+
+    function resize() {
+      const cw = canvas.clientWidth, ch = canvas.clientHeight;
+      if (cw > 0 && ch > 0) {
+        renderer.setSize(cw, ch);
+        camera.aspect = cw / ch;
+        camera.updateProjectionMatrix();
+        cardScale = calcCardScale(camera.aspect);
+      }
+    }
+    new ResizeObserver(resize).observe(canvas);
+    resize();
+
+    // Each card has slight unique start rotation
+    const baseRot = ((idx * 1.1) % (Math.PI * 2)) * 0.12 - 0.25;
+    let lt = idx * 1.3;
+    let hov = false, hovStr = 0, hMX = 0, hMY = 0;
+
+    const card = canvas.closest('.pcard3d');
+    if (card) {
+      card.addEventListener('mouseenter', () => hov = true);
+      card.addEventListener('mouseleave', () => { hov = false; hMX = 0; hMY = 0; });
+      card.addEventListener('mousemove',  e => {
+        const r = card.getBoundingClientRect();
+        hMX = ((e.clientX - r.left)  / r.width  - 0.5) * 2;
+        hMY = ((e.clientY - r.top)   / r.height - 0.5) * 2;
+      });
+    }
+
+    (function cardTick() {
+      requestAnimationFrame(cardTick);
+      lt += 0.011;
+      hovStr += ((hov ? 1 : 0) - hovStr) * 0.08;
+
+      cloned.rotation.y = baseRot + lt * 0.20 + hovStr * hMX * 0.55;
+      cloned.rotation.x = -0.12 + Math.sin(lt * 0.27) * 0.06 + hovStr * hMY * -0.28;
+      cloned.position.y = Math.sin(lt * 0.36 + idx * 0.9) * 0.06;
+      cloned.scale.setScalar(cardScale * (1 + Math.sin(lt * 0.44) * 0.020 + hovStr * 0.065));
+
+      renderer.render(scene, camera);
+    })();
+  });
 }
 
 </script>
