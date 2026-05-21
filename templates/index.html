@@ -772,7 +772,7 @@ function centerGroup(grp) {
   const SIM_FRAG = `
     precision highp float;
     uniform sampler2D uPrev;
-    uniform vec2 uMouse, uPrevMouse;
+    uniform vec2 uMouse, uVelocity;
     uniform float uDissipation, uAspect;
     varying vec2 vUv;
 
@@ -800,7 +800,7 @@ function centerGroup(grp) {
 
       vec2 asp = vec2(uAspect, 1.);
       vec2 p   = (vUv - uMouse) * asp;
-      vec2 dv  = (uMouse - uPrevMouse) * asp;
+      vec2 dv  = uVelocity * asp;
       float speed = length(dv);
 
       /* ── направление движения → вытянутый эллипс ── */
@@ -869,7 +869,7 @@ function centerGroup(grp) {
   const simUni = {
     uPrev:        { value: rts[1].texture },
     uMouse:       { value: new THREE.Vector2(-2,-2) },
-    uPrevMouse:   { value: new THREE.Vector2(-2,-2) },
+    uVelocity:    { value: new THREE.Vector2(0, 0) },
     uDissipation: { value: 0.993 },
     uAspect:      { value: 1.0 }
   };
@@ -918,31 +918,47 @@ function centerGroup(grp) {
   resizeHero();
   window.addEventListener('resize', resizeHero);
 
-  /* ── Mouse ── */
-  const mouse = new THREE.Vector2(-2,-2);
-  const prev  = new THREE.Vector2(-2,-2);
+  /* ── Mouse + инерция ── */
+  const mouse   = new THREE.Vector2(-2, -2);
+  const lastPos = new THREE.Vector2(-2, -2); // последняя позиция в герое
+  const vel     = new THREE.Vector2(0, 0);   // скорость с инерцией
+  const INERTIA = 0.88; // коэф. затухания за кадр (~60fps → ~0.5s хвост)
+
   let active = false;
 
   heroSection.addEventListener('mousemove', e => {
     const rc = heroSection.getBoundingClientRect();
-    mouse.set((e.clientX-rc.left)/rc.width, 1-(e.clientY-rc.top)/rc.height);
+    mouse.set((e.clientX - rc.left) / rc.width, 1 - (e.clientY - rc.top) / rc.height);
     active = true;
   });
-  heroSection.addEventListener('mouseleave', () => { active = false; mouse.set(-2,-2); });
+  // при уходе курсора НЕ сбрасываем позицию — инерция продолжается
+  heroSection.addEventListener('mouseleave', () => { active = false; });
 
   /* ── Render loop ── */
   function heroTick() {
     requestAnimationFrame(heroTick);
-    simUni.uPrev.value   = rts[ri].texture;
-    simUni.uMouse.value.copy(active ? mouse : new THREE.Vector2(-2,-2));
-    simUni.uPrevMouse.value.copy(prev);
+
+    if (active) {
+      // мышь движется: обновляем скорость через lerp → плавный разгон
+      const delta = new THREE.Vector2().subVectors(mouse, lastPos);
+      vel.lerp(delta, 0.38);
+      lastPos.copy(mouse);
+    } else {
+      // мышь остановилась / ушла: скорость плавно затухает
+      vel.multiplyScalar(INERTIA);
+      if (vel.length() < 0.00005) vel.set(0, 0);
+    }
+
+    simUni.uMouse.value.copy(lastPos);
+    simUni.uVelocity.value.copy(vel);
+    simUni.uPrev.value = rts[ri].texture;
+
     R.setRenderTarget(rts[1-ri]);
     R.render(simSc, cam);
     dispUni.uSim.value = rts[1-ri].texture;
     R.setRenderTarget(null);
     R.render(mainSc, cam);
     ri = 1 - ri;
-    prev.copy(active ? mouse : new THREE.Vector2(-2,-2));
   }
   heroTick();
 
