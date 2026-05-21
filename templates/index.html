@@ -875,15 +875,25 @@ function centerGroup(grp) {
   const DISP_FRAG = `
     precision highp float;
     uniform sampler2D uTex1, uSim;
+    uniform sampler2D uS0, uS1, uS2, uS3, uS4;
     uniform float uImgAR, uScreenAR;
+    uniform float uSlideIdx, uSlideBlend;
     varying vec2 vUv;
+
     vec2 coverUV(vec2 uv, float imgAR, float scrAR){
-      if(scrAR > imgAR){
-        return vec2(uv.x, (uv.y-.5)*(imgAR/scrAR)+.5);
-      } else {
-        return vec2((uv.x-.5)*(scrAR/imgAR)+.5, uv.y);
-      }
+      if(scrAR > imgAR) return vec2(uv.x, (uv.y-.5)*(imgAR/scrAR)+.5);
+      else              return vec2((uv.x-.5)*(scrAR/imgAR)+.5, uv.y);
     }
+
+    /* GLSL не индексирует сэмплеры — if-цепочка */
+    vec4 getSlide(vec2 uv, float i){
+      if(i < 0.5) return texture2D(uS0, uv);
+      if(i < 1.5) return texture2D(uS1, uv);
+      if(i < 2.5) return texture2D(uS2, uv);
+      if(i < 3.5) return texture2D(uS3, uv);
+      return             texture2D(uS4, uv);
+    }
+
     void main(){
       vec2 cuv = coverUV(vUv, uImgAR, uScreenAR);
       vec4 photo = texture2D(uTex1, cuv);
@@ -892,10 +902,17 @@ function centerGroup(grp) {
       float lum = dot(photo.rgb, vec3(0.299, 0.587, 0.114));
       photo.rgb = mix(photo.rgb, vec3(lum*1.28, lum*0.84, lum*0.50), 0.30);
 
-      /* ── под курсором: ч/б ── */
-      vec3 bw    = vec3(lum * 0.82);
-      float desat = smoothstep(0.02, 0.54, texture2D(uSim, vUv).r);
-      gl_FragColor = vec4(mix(photo.rgb, bw, desat), 1.0);
+      /* ── слайдшоу: кроссфейд между текущим и следующим ── */
+      float nextIdx = mod(uSlideIdx + 1.0, 5.0);
+      vec3 slideCol = mix(
+        getSlide(cuv, uSlideIdx).rgb,
+        getSlide(cuv, nextIdx).rgb,
+        uSlideBlend
+      );
+
+      /* ── под курсором: слайдшоу вместо ч/б ── */
+      float reveal = smoothstep(0.02, 0.54, texture2D(uSim, vUv).r);
+      gl_FragColor = vec4(mix(photo.rgb, slideCol, reveal), 1.0);
     }
   `;
 
@@ -924,32 +941,46 @@ function centerGroup(grp) {
   })));
 
   const dispUni = {
-    uTex1:     { value: null },
-    uTex2:     { value: null },
-    uSim:      { value: null },
-    uImgAR:    { value: 1.5 },
-    uScreenAR: { value: 1.78 }
+    uTex1:      { value: null },
+    uSim:       { value: null },
+    uS0:        { value: null },
+    uS1:        { value: null },
+    uS2:        { value: null },
+    uS3:        { value: null },
+    uS4:        { value: null },
+    uImgAR:     { value: 1.5 },
+    uScreenAR:  { value: 1.78 },
+    uSlideIdx:  { value: 0.0 },
+    uSlideBlend:{ value: 0.0 }
   };
   mainSc.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({
     uniforms: dispUni, vertexShader: VERT, fragmentShader: DISP_FRAG, depthTest: false
   })));
 
-  /* ── Textures (portrait photos, CORS) ── */
+  /* ── Textures ── */
   const tl = new THREE.TextureLoader();
   tl.crossOrigin = 'anonymous';
-  const PHOTOS = [
-    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1600&q=85&auto=format',
-    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1600&q=85&auto=format'
+
+  /* базовое фото (фон) */
+  tl.load('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1600&q=85&auto=format', tex => {
+    tex.minFilter = tex.magFilter = THREE.LinearFilter;
+    dispUni.uTex1.value  = tex;
+    dispUni.uImgAR.value = tex.image.naturalWidth / tex.image.naturalHeight || 1.5;
+  });
+
+  /* 5 фото слайдшоу (портреты) */
+  const SLIDE_URLS = [
+    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1200&q=80&auto=format',
+    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200&q=80&auto=format',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80&auto=format',
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1200&q=80&auto=format',
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200&q=80&auto=format'
   ];
-  PHOTOS.forEach((url, i) => {
+  const slideKeys = ['uS0','uS1','uS2','uS3','uS4'];
+  SLIDE_URLS.forEach((url, i) => {
     tl.load(url, tex => {
       tex.minFilter = tex.magFilter = THREE.LinearFilter;
-      if (i === 0) {
-        dispUni.uTex1.value = tex;
-        dispUni.uImgAR.value = tex.image.naturalWidth / tex.image.naturalHeight || 1.5;
-      } else {
-        dispUni.uTex2.value = tex;
-      }
+      dispUni[slideKeys[i]].value = tex;
     });
   });
 
@@ -972,11 +1003,16 @@ function centerGroup(grp) {
   const INERTIA   = 0.95;
 
   let active       = false;
-  let puddleOn     = false;   // курсор стоит — лужа активна
+  let puddleOn     = false;
   let puddleAge    = 0;
-  let puddleStr    = 0;       // плавное значение [0..1]
+  let puddleStr    = 0;
   let simTime      = 0;
   let stopTimer    = null;
+
+  /* слайдшоу */
+  let slideIdx   = 0;
+  let slideTimer = 0;
+  const SLIDE_DUR = 0.38; /* секунд на один слайд */
 
   heroSection.addEventListener('mousemove', e => {
     const rc = heroSection.getBoundingClientRect();
@@ -1026,6 +1062,15 @@ function centerGroup(grp) {
     const rate   = target > puddleStr ? 0.055 : 0.08;
     puddleStr   += (target - puddleStr) * rate;
     if (puddleStr < 0.001) puddleStr = 0;
+
+    /* слайдшоу */
+    slideTimer += 0.016;
+    if (slideTimer >= SLIDE_DUR) {
+      slideTimer -= SLIDE_DUR;
+      slideIdx = (slideIdx + 1) % 5;
+      dispUni.uSlideIdx.value = slideIdx;
+    }
+    dispUni.uSlideBlend.value = slideTimer / SLIDE_DUR;
 
     simUni.uTime.value        = simTime;
     simUni.uMouse.value.copy(lastPos);
