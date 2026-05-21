@@ -218,132 +218,65 @@ body { background: #000; }
 .pcard3d {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    min-height: 600px;
-    border-bottom: 1px solid #0d0d0d;
+    border-bottom: 1px solid #111;
     cursor: pointer;
-    overflow: hidden;
+    background: #000;
 }
 
 /* Even rows: model RIGHT, info LEFT */
 .pcard3d:nth-child(even) .prod-model { order: 2; }
 .pcard3d:nth-child(even) .prod-info  { order: 1; }
 
-/* ── 3D model side ── */
+/* ── 3D model side — прозрачный, без рамки ── */
 .prod-model {
     position: relative;
-    background: #080808;
-    /* explicit height so canvas always knows its true size */
     height: 620px;
+    background: transparent;
     will-change: transform, opacity;
 }
 .prod-canvas {
     display: block;
-    /* renderer.setSize sets px dimensions; CSS just keeps it in flow */
     width: 100% !important;
     height: 100% !important;
 }
 
-/* ── Info side ── */
+/* ── Info side — только название и цена ── */
 .prod-info {
     display: flex; flex-direction: column;
-    justify-content: center;
-    padding: 60px 64px;
-    background: #0b0b0b;
+    justify-content: flex-end;   /* прижато вниз */
+    padding: 0 64px 64px;
+    background: transparent;
     will-change: transform, opacity;
 }
 
-/* badge pill */
-.pcard-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: #EA580C; color: #fff;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 1px; text-transform: uppercase;
-    font-family: 'Inter', sans-serif;
-    padding: 7px 16px; border-radius: 999px;
-    width: fit-content; margin-bottom: 28px;
-}
-.pcard-badge-icon { font-size: 13px; }
-.pcard-badge:empty { display: none; }
-
 /* name */
 .pcard3d-name {
-    font-size: clamp(26px, 2.6vw, 40px);
-    font-weight: 700; color: #fff;
-    font-family: 'Inter', sans-serif;
-    line-height: 1.1; letter-spacing: -0.5px;
-    margin-bottom: 14px;
+    font-size: clamp(28px, 3vw, 48px);
+    font-weight: 400; color: #fff;
+    font-family: 'Cormorant', serif;
+    line-height: 1.05; letter-spacing: -0.5px;
+    margin-bottom: 10px;
 }
 
 /* price */
 .pcard3d-price {
-    font-size: clamp(30px, 3vw, 46px);
-    font-weight: 700; color: #fff;
+    font-size: clamp(18px, 1.8vw, 26px);
+    font-weight: 400; color: #888;
     font-family: 'Inter', sans-serif;
-    letter-spacing: -1px; margin-bottom: 32px;
+    letter-spacing: 0;
 }
-
-/* features */
-.pcard-features {
-    list-style: none; padding: 0; margin: 0 0 32px;
-    display: flex; flex-direction: column; gap: 12px;
-}
-.pcard-features li {
-    display: flex; align-items: center; gap: 12px;
-    font-size: 14px; color: #aaa;
-    font-family: 'Inter', sans-serif;
-}
-.pcard-features li::before {
-    content: '✓'; color: #EA580C;
-    font-weight: 700; font-size: 14px; flex-shrink: 0;
-}
-
-/* size row */
-.pcard-sizes { margin-bottom: 32px; }
-.pcard-sizes-label {
-    font-size: 9px; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase;
-    color: #444; font-family: 'Inter', sans-serif;
-    margin-bottom: 12px;
-}
-.pcard-size-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.pcard-size-btn {
-    min-width: 44px; height: 44px;
-    background: #151515; border: 1px solid #222;
-    color: #555; font-size: 12px;
-    cursor: pointer; font-family: 'Inter', sans-serif;
-    border-radius: 8px; padding: 0 10px;
-    transition: all 0.2s;
-}
-.pcard-size-btn:hover { border-color: #555; color: #ccc; }
-.pcard-size-btn.active { background: #EA580C; border-color: #EA580C; color: #fff; }
-
-/* CTA button */
-.pcard3d-btn {
-    display: flex; align-items: center; justify-content: center;
-    gap: 10px; width: 100%; max-width: 320px;
-    background: #EA580C; color: #fff; border: none;
-    padding: 17px 24px; font-size: 14px; font-weight: 700;
-    letter-spacing: 0.3px; border-radius: 12px;
-    cursor: pointer; font-family: 'Inter', sans-serif;
-    transition: background 0.2s, transform 0.15s;
-}
-.pcard3d-btn:hover { background: #c2410c; transform: translateY(-1px); }
-.pcard3d-btn:active { transform: translateY(0); }
-.pcard-btn-icon { font-size: 18px; }
 
 /* ── MOBILE ── */
 @media (max-width: 860px) {
-    .pcard3d { grid-template-columns: 1fr; min-height: auto; }
+    .pcard3d { grid-template-columns: 1fr; }
     .pcard3d:nth-child(even) .prod-model { order: 0; }
     .pcard3d:nth-child(even) .prod-info  { order: 1; }
     .prod-model { height: 380px; }
-    .prod-info { padding: 36px 24px 44px; }
+    .prod-info { padding: 24px 24px 36px; justify-content: flex-start; }
     .section-header { padding: 0 16px 24px; }
-    .pcard3d-btn { max-width: 100%; }
 }
 @media (max-width: 500px) {
     .prod-model { height: 300px; }
-    .prod-info { padding: 28px 16px 36px; }
 }
 
 /* ── POPUP ── */
@@ -494,41 +427,8 @@ body { background: #000; }
 
             <!-- Info side -->
             <div class="prod-info">
-                {% if product.badge %}
-                <div class="pcard-badge">
-                    <span class="pcard-badge-icon">🔥</span>
-                    {{ product.badge }}
-                </div>
-                {% endif %}
-
                 <div class="pcard3d-name">{{ product.name }}</div>
                 <div class="pcard3d-price">{{ product.price | int }} ₽</div>
-
-                <ul class="pcard-features">
-                    {% for feat in features_map.get(product.id, ['Ручная работа', 'Индивидуальный заказ', 'Быстрое изготовление']) %}
-                    <li>{{ feat }}</li>
-                    {% endfor %}
-                </ul>
-
-                <div class="pcard-sizes">
-                    <div class="pcard-sizes-label">Выбрать размер</div>
-                    <div class="pcard-size-row">
-                        <button class="pcard-size-btn" data-size="XS">XS</button>
-                        <button class="pcard-size-btn" data-size="S">S</button>
-                        <button class="pcard-size-btn active" data-size="M">M</button>
-                        <button class="pcard-size-btn" data-size="L">L</button>
-                        <button class="pcard-size-btn" data-size="XL">XL</button>
-                        <button class="pcard-size-btn" data-size="XXL">XXL</button>
-                    </div>
-                </div>
-
-                <button class="pcard3d-btn"
-                        data-id="{{ product.id }}"
-                        data-name="{{ product.name }}"
-                        data-price="{{ product.price }}">
-                    <span class="pcard-btn-icon">🛍</span>
-                    В корзину
-                </button>
             </div>
         </div>
         {% endfor %}
@@ -1300,8 +1200,8 @@ window.addEventListener('mousemove', e => {
     model.rotation.x  = Math.sin(globalT * 0.22 + i * 1.1) * 0.08 + myGlobal * 0.04;
     model.rotation.z  = Math.sin(globalT * 0.15 + i * 0.7) * 0.03;
 
-    // Float
-    model.position.y  = Math.sin(globalT * 0.45 + i * 0.9) * 0.15;
+    // Float (сдвинута вниз на 1.2 единицы)
+    model.position.y  = -1.2 + Math.sin(globalT * 0.45 + i * 0.9) * 0.15;
 
     // Breathe scale
     const breathe = 1 + Math.sin(globalT * 0.5 + i * 1.3) * 0.025;
