@@ -82,6 +82,23 @@ body { background: #000; }
 }
 @keyframes lineScroll { to { top: 100%; } }
 
+/* ── BREATHING ── */
+@keyframes breatheOpacity {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1;   }
+}
+@keyframes breatheScale {
+    0%, 100% { transform: translateX(-50%) scale(1);    }
+    50%       { transform: translateX(-50%) scale(1.04); }
+}
+.hero-sub-breathe {
+    animation: breatheOpacity 4s ease-in-out infinite;
+}
+.scroll-prompt {
+    animation: breatheScale 3.5s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
 /* ── THREE CANVAS SECTION ── */
 .cloth-section {
     height: 150vh; background: #000;
@@ -162,11 +179,11 @@ body { background: #000; }
 }
 .ticker-item {
     font-size: 9px; letter-spacing: 5px;
-    text-transform: uppercase; color: #555;
+    text-transform: uppercase; color: #fff;
     font-family: 'Inter', sans-serif;
     padding: 0 48px;
 }
-.ticker-dot { color: #444; }
+.ticker-dot { color: #CA8A04; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* ── PRODUCTS ── */
@@ -333,7 +350,7 @@ body { background: #000; }
             <span class="line"><span class="word">STORE</span></span>
             <span class="line"><span class="word">BY SASHA</span></span>
         </h1>
-        <div class="hero-tag" id="heroTag">Ограниченные серии &nbsp;·&nbsp; Ручная работа &nbsp;·&nbsp; Только для своих</div>
+        <div class="hero-tag hero-sub-breathe" id="heroTag">Ограниченные серии &nbsp;·&nbsp; Ручная работа &nbsp;·&nbsp; Только для своих</div>
     </div>
     <div class="scroll-prompt" id="scrollPrompt">
         <span>Листай вниз</span>
@@ -760,8 +777,8 @@ function centerModel(grp) {
   renderer.toneMappingExposure = 1.15;
 
   const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
-  camera.position.set(0, 0, 9);
+  const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+  camera.position.set(0, 0, 7);
   makeLights(scene);
 
   /* Loading */
@@ -782,7 +799,9 @@ function centerModel(grp) {
       model = new THREE.Group();
       model.add(gltf.scene);
       const maxDim = centerModel(model);
-      baseScale = 3.2 / maxDim;
+      // Auto-fit: fill 88% of visible frustum height
+      const visH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      baseScale = (visH * 0.88) / maxDim;
       model.scale.setScalar(baseScale);
       model.rotation.set(-0.08, 0.2, 0);
       scene.add(model);
@@ -864,13 +883,19 @@ function centerModel(grp) {
     hoverStrength += (isHover ? 1 : 0 - hoverStrength) * 0.06;
 
     if (model) {
-      tRY += (mouseX * 0.45 - tRY) * 0.04;
-      tRX += (-mouseY * 0.22 - tRX) * 0.04;
+      tRY += (mouseX * 0.55 - tRY) * 0.035;
+      tRX += (-mouseY * 0.28 - tRX) * 0.035;
 
-      model.position.y  = Math.sin(t * 0.5) * 0.07 - scrollProg * 0.5;
-      model.rotation.y  = 0.25 + tRY + scrollProg * Math.PI * 1.4;
-      model.rotation.x  = -0.1  + tRX + scrollProg * 0.25;
-      model.rotation.z  = Math.sin(t * 0.28) * 0.018 + scrollProg * 0.1;
+      // Дыхание: плавный float + пульс масштаба
+      const floatY  = Math.sin(t * 0.45) * 0.18 + Math.sin(t * 0.9) * 0.06;
+      const breathe = 1 + Math.sin(t * 0.55) * 0.028 + Math.sin(t * 1.1) * 0.012;
+
+      model.position.y  = floatY - scrollProg * 0.6;
+      model.position.x  = Math.sin(t * 0.32) * 0.04; // лёгкое покачивание влево-вправо
+      model.rotation.y  = 0.2 + tRY + scrollProg * Math.PI * 1.4;
+      model.rotation.x  = -0.08 + tRX + scrollProg * 0.25;
+      model.rotation.z  = Math.sin(t * 0.26) * 0.03 + scrollProg * 0.1;
+      model.scale.setScalar(baseScale * breathe);
 
       if (meshes.length) deformMeshes();
     }
