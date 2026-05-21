@@ -1072,6 +1072,9 @@ function centerGroup(grp) {
     }
     dispUni.uSlideBlend.value = slideTimer / SLIDE_DUR;
 
+    /* когда курсор ушёл — быстро чистим чернила */
+    simUni.uDissipation.value = active ? 0.993 : 0.86;
+
     simUni.uTime.value        = simTime;
     simUni.uMouse.value.copy(lastPos);
     simUni.uVelocity.value.copy(vel);
