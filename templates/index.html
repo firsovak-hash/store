@@ -14,26 +14,39 @@ body { background: #EEEAE3; }
 }
 #introCanvas { width: 100%; height: 100%; display: block; }
 
-/* ── HERO ── */
+/* ── HERO (тёмный editorial-блок с WebGL слайд-шоу) ── */
 .hero {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #EEEAE3 0%, #E4DFD3 100%);
+    min-height: 100vh; background: #000;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     position: relative; overflow: hidden;
 }
 
-/* WebGL canvas скрыт под светлую тему */
-#hero-gl { display: none; }
+/* WebGL canvas вернули */
+#hero-gl {
+    position: absolute; inset: 0;
+    width: 100% !important; height: 100% !important;
+    display: block; z-index: 1; pointer-events: none;
+}
+.hero::after {
+    content: ''; pointer-events: none;
+    position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.20) 0%,
+        rgba(0,0,0,0.05) 45%,
+        rgba(0,0,0,0.50) 100%
+    );
+}
 
 .hero-noise {
-    position: absolute; inset: 0; pointer-events: none; opacity: 0.04;
-    z-index: 3; mix-blend-mode: multiply;
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.035;
+    z-index: 3;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
 }
 .hero-lines {
     position: absolute; inset: 0; pointer-events: none; z-index: 3;
-    background-image: repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(0,0,0,0.025) 80px, rgba(0,0,0,0.025) 81px);
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px);
 }
 .hero-inner {
     position: relative; z-index: 4;
@@ -48,8 +61,8 @@ body { background: #EEEAE3; }
 }
 .hero-title {
     font-size: clamp(72px, 14vw, 180px);
-    font-weight: 500; letter-spacing: -4px;
-    color: #0F0F0F; font-family: 'Cormorant', serif;
+    font-weight: 600; letter-spacing: -4px;
+    color: #EEEAE3; font-family: 'Cormorant', serif;
     line-height: 0.86; text-align: center;
 }
 .hero-title .line { display: block; overflow: hidden; padding-bottom: 8px; }
@@ -59,7 +72,7 @@ body { background: #EEEAE3; }
 }
 .hero-tag {
     font-size: 9px; letter-spacing: 5px;
-    text-transform: uppercase; color: #666;
+    text-transform: uppercase; color: #999;
     font-family: 'Inter', sans-serif;
     margin-top: 44px; opacity: 0;
     transform: translateY(20px);
@@ -77,14 +90,14 @@ body { background: #EEEAE3; }
     font-family: 'Inter', sans-serif;
 }
 .scroll-line {
-    width: 1px; height: 64px; background: #CCC4B0;
+    width: 1px; height: 64px; background: #444;
     position: relative; overflow: hidden;
 }
 .scroll-line::after {
     content: '';
     position: absolute; top: -100%; left: 0;
     width: 100%; height: 100%;
-    background: linear-gradient(to bottom, transparent, #0F0F0F 50%, transparent);
+    background: linear-gradient(to bottom, transparent, #888 50%, transparent);
     animation: lineScroll 1.8s ease-in-out infinite;
 }
 @keyframes lineScroll { to { top: 100%; } }
@@ -317,10 +330,10 @@ body { background: #EEEAE3; }
 
 {% block content %}
 
-<!-- ── INTRO OVERLAY (отключено для светлой темы) ──
-<div id="introOverlay"><canvas id="introCanvas"></canvas></div>
--->
-<div id="introOverlay" style="display:none"><canvas id="introCanvas"></canvas></div>
+<!-- ── INTRO OVERLAY ── -->
+<div id="introOverlay">
+    <canvas id="introCanvas"></canvas>
+</div>
 
 <!-- ── HERO ── -->
 <section class="hero" id="hero">
@@ -473,10 +486,7 @@ gsap.registerPlugin(ScrollTrigger);
 /* ────────────────────────────────────────
    INTRO BLOB REVEAL
 ──────────────────────────────────────── */
-// Intro disabled in light theme — show hero immediately
-heroIn();
 (function () {
-    return; // intro отключено
     var overlay = document.getElementById('introOverlay');
     var ic = document.getElementById('introCanvas');
     var ctx = ic.getContext('2d');
