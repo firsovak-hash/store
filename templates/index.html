@@ -1270,7 +1270,7 @@ new GLTFLoader().load(
 );
 
 /* ═══════════════════════════════════════════
-   3D FILMSTRIP — кинолента-змейка
+   3D FILMSTRIP — плоская кинолента + карточки на перегибах
 ═══════════════════════════════════════════ */
 (function() {
   const canvas  = document.getElementById('filmStripCanvas');
@@ -1279,19 +1279,16 @@ new GLTFLoader().load(
 
   const CREAM = 0xEEEAE3;
   const DARK  = 0x0F0F0F;
-  const ORANGE = 0xFF4D00;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setClearColor(CREAM, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
 
   const scene  = new THREE.Scene();
-  scene.fog = new THREE.Fog(CREAM, 14, 32);
+  scene.fog = new THREE.Fog(CREAM, 18, 42);
 
-  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 120);
 
   function resizeFilm() {
     const w = window.innerWidth, h = window.innerHeight;
@@ -1302,190 +1299,278 @@ new GLTFLoader().load(
   resizeFilm();
   window.addEventListener('resize', resizeFilm);
 
-  // ── Lights ──
-  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
-  const dl = new THREE.DirectionalLight(0xffffff, 1.4);
-  dl.position.set(6, 10, 6);
+  // мягкое равномерное освещение — плёнка плоская, тени не нужны
+  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.35);
+  dl.position.set(0, 4, 10);
   scene.add(dl);
-  const dl2 = new THREE.DirectionalLight(ORANGE, 0.35);
-  dl2.position.set(-5, -2, 3);
-  scene.add(dl2);
-  const dl3 = new THREE.DirectionalLight(0xffffff, 0.4);
-  dl3.position.set(-3, 5, -5);
-  scene.add(dl3);
 
-  // ── 3D snake path: descends through depth, wiggles left/right and front/back ──
-  const pathPts = [];
-  const TOTAL_DEPTH = 28;
-  for (let i = 0; i <= 28; i++) {
-    const t = i / 28;
-    pathPts.push(new THREE.Vector3(
-      Math.sin(t * Math.PI * 3.2) * 5.5,
-      -t * TOTAL_DEPTH,
-      Math.sin(t * Math.PI * 2.3 + 0.7) * 7 - 3
+  // ── Путь: плоский в XY с лёгкой Z-вариацией, чтобы плёнка смотрела на нас ──
+  const pts = [];
+  for (let i = 0; i <= 30; i++) {
+    const t = i / 30;
+    pts.push(new THREE.Vector3(
+      Math.sin(t * Math.PI * 2.4) * 6.5,
+      -t * 30,
+      Math.sin(t * Math.PI * 1.6 + 0.3) * 1.4
     ));
   }
-  const curve = new THREE.CatmullRomCurve3(pathPts);
+  const curve = new THREE.CatmullRomCurve3(pts);
 
-  // ── Film strip ribbon (flat rectangle extruded along curve) ──
-  const stripShape = new THREE.Shape();
-  const W = 0.95, T = 0.04;
-  stripShape.moveTo(-W, -T);
-  stripShape.lineTo( W, -T);
-  stripShape.lineTo( W,  T);
-  stripShape.lineTo(-W,  T);
-  stripShape.lineTo(-W, -T);
-
-  const stripGeom = new THREE.ExtrudeGeometry(stripShape, {
-    steps: 400, extrudePath: curve, bevelEnabled: false
-  });
-  const stripMat = new THREE.MeshStandardMaterial({
-    color: DARK, roughness: 0.45, metalness: 0.25,
-    side: THREE.DoubleSide
-  });
-  const strip = new THREE.Mesh(stripGeom, stripMat);
-  scene.add(strip);
-
-  // Film perforations: small holes along both edges
-  const perfMat = new THREE.MeshStandardMaterial({
-    color: CREAM, roughness: 0.9, metalness: 0
-  });
-  const perfGeom = new THREE.BoxGeometry(0.12, 0.06, 0.18);
-  const PERF_COUNT = 70;
-  for (let i = 1; i < PERF_COUNT; i++) {
-    const t = i / PERF_COUNT;
-    const p = curve.getPointAt(t);
-    const tan = curve.getTangentAt(t).normalize();
-    const norm = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
-    [-1, 1].forEach(side => {
-      const m = new THREE.Mesh(perfGeom, perfMat);
-      m.position.copy(p).add(norm.clone().multiplyScalar(side * 0.78));
-      m.lookAt(p.clone().add(tan));
-      scene.add(m);
-    });
+  // ── Процедурная текстура киноплёнки (перфорации сверху-снизу) ──
+  function makeFilmTex() {
+    const c = document.createElement('canvas');
+    c.width = 128; c.height = 256;
+    const ctx = c.getContext('2d');
+    // фон ленты — чёрный
+    ctx.fillStyle = '#0F0F0F';
+    ctx.fillRect(0, 0, 128, 256);
+    // перфорации (cream-светлые прямоугольники по краям)
+    ctx.fillStyle = '#EEEAE3';
+    const pw = 18, ph = 28, gap = 14;
+    for (let y = 8; y < 256; y += ph + gap) {
+      ctx.fillRect(6, y, pw, ph);
+      ctx.fillRect(128 - 6 - pw, y, pw, ph);
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = THREE.ClampToEdgeWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
   }
 
-  // ── Photo cards — unfold at intervals ──
-  const CARD_PHOTOS = [
-    'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80&auto=format',
-    'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80&auto=format',
-    'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80&auto=format',
-    'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80&auto=format'
+  // ── Custom ribbon geometry: плоская лента в XY, "перпендикуляр в XY" ──
+  const SEGMENTS = 320;
+  const HALF_W = 1.6;
+  const positions = new Float32Array((SEGMENTS + 1) * 2 * 3);
+  const uvs       = new Float32Array((SEGMENTS + 1) * 2 * 2);
+  const idx = [];
+
+  for (let i = 0; i <= SEGMENTS; i++) {
+    const t = i / SEGMENTS;
+    const p = curve.getPointAt(t);
+    const tan = curve.getTangentAt(t);
+    // перпендикуляр в плоскости XY → лента всегда смотрит на +Z
+    const tanLen2D = Math.hypot(tan.x, tan.y) || 1;
+    const px = -tan.y / tanLen2D;
+    const py =  tan.x / tanLen2D;
+
+    const i6 = i * 6;
+    positions[i6]   = p.x + px * HALF_W; positions[i6+1] = p.y + py * HALF_W; positions[i6+2] = p.z;
+    positions[i6+3] = p.x - px * HALF_W; positions[i6+4] = p.y - py * HALF_W; positions[i6+5] = p.z;
+
+    const i4 = i * 4;
+    const v = t * SEGMENTS * 0.045; // тайлим текстуру по длине
+    uvs[i4]   = 0; uvs[i4+1] = v;
+    uvs[i4+2] = 1; uvs[i4+3] = v;
+  }
+  for (let i = 0; i < SEGMENTS; i++) {
+    const a = i*2, b = a+1, c = a+2, d = a+3;
+    idx.push(a, c, b, b, c, d);
+  }
+
+  const ribbonGeom = new THREE.BufferGeometry();
+  ribbonGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  ribbonGeom.setAttribute('uv',       new THREE.BufferAttribute(uvs, 2));
+  ribbonGeom.setIndex(idx);
+  ribbonGeom.computeVertexNormals();
+
+  const ribbonMat = new THREE.MeshBasicMaterial({
+    map: makeFilmTex(),
+    side: THREE.DoubleSide
+  });
+  scene.add(new THREE.Mesh(ribbonGeom, ribbonMat));
+
+  // ── Фото-кадры ВНУТРИ ленты (между перфорациями) ──
+  const FRAME_PHOTOS = [
+    'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80&auto=format',
+    'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80&auto=format',
+    'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80&auto=format',
+    'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&q=80&auto=format',
+    'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&q=80&auto=format',
+    'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80&auto=format',
+    'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&q=80&auto=format'
   ];
-  const CARD_PRICES = ['4 900 ₽', '6 200 ₽', '9 500 ₽', '12 500 ₽'];
-  const CARD_NAMES  = ['Худи', 'Карго-брюки', 'Бомбер', 'Куртка'];
+  const FRAME_COUNT = 14;
+  for (let i = 0; i < FRAME_COUNT; i++) {
+    const t = (i + 0.5) / FRAME_COUNT;
+    const p = curve.getPointAt(t);
+    const tan = curve.getTangentAt(t);
+    const angle = Math.atan2(tan.y, tan.x) - Math.PI / 2;
+    const photo = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.7, 1.1),
+      new THREE.MeshBasicMaterial({ color: 0x222 })
+    );
+    photo.position.set(p.x, p.y, p.z + 0.02);
+    photo.rotation.z = angle;
+    new THREE.TextureLoader().load(FRAME_PHOTOS[i % FRAME_PHOTOS.length], tex => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      photo.material.map = tex;
+      photo.material.color.set(0xffffff);
+      photo.material.needsUpdate = true;
+    });
+    scene.add(photo);
+  }
+
+  // ── Карточки на перегибах: фото + название + цена ──
+  const CARD_PHOTOS = [
+    'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=700&q=80&auto=format',
+    'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=700&q=80&auto=format',
+    'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=700&q=80&auto=format',
+    'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=700&q=80&auto=format'
+  ];
+  const CARD_LABELS = [
+    { name: 'Оверсайз худи', price: '4 900 ₽' },
+    { name: 'Карго-брюки',   price: '6 200 ₽' },
+    { name: 'Бомбер',        price: '9 500 ₽' },
+    { name: 'Куртка',        price: '12 500 ₽' }
+  ];
+
+  // Найдём перегибы (точки высокой кривизны)
+  const bendCandidates = [];
+  for (let s = 0.08; s < 0.95; s += 0.02) {
+    const p0 = curve.getPointAt(Math.max(0, s - 0.03));
+    const p1 = curve.getPointAt(s);
+    const p2 = curve.getPointAt(Math.min(1, s + 0.03));
+    const v1 = new THREE.Vector3().subVectors(p1, p0);
+    const v2 = new THREE.Vector3().subVectors(p2, p1);
+    bendCandidates.push({ t: s, curv: v1.angleTo(v2) });
+  }
+  bendCandidates.sort((a, b) => b.curv - a.curv);
+  // Выберем 4 ярких перегиба, разнесённых по длине
+  const bendSpots = [];
+  for (const c of bendCandidates) {
+    if (bendSpots.every(s => Math.abs(s.t - c.t) > 0.15)) bendSpots.push(c);
+    if (bendSpots.length >= 4) break;
+  }
+  bendSpots.sort((a, b) => a.t - b.t);
 
   const cards = [];
-  // Distributed along path; alternate sides
-  const cardSpots = [
-    { t: 0.18, side:  1 },
-    { t: 0.40, side: -1 },
-    { t: 0.62, side:  1 },
-    { t: 0.84, side: -1 }
-  ];
-
-  cardSpots.forEach((spot, i) => {
+  bendSpots.forEach((spot, i) => {
     const pt = curve.getPointAt(spot.t);
-    const tan = curve.getTangentAt(spot.t).normalize();
-    const perp = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
-    const cardPos = pt.clone().add(perp.multiplyScalar(spot.side * 4.2));
-    cardPos.y += 0.6;
+    const tan = curve.getTangentAt(spot.t);
+    // сторона: туда, куда «изгиб» отклоняется
+    const side = tan.x >= 0 ? 1 : -1;
 
     const group = new THREE.Group();
-    group.position.copy(cardPos);
+    const lockPos = new THREE.Vector3(pt.x + side * 3.2, pt.y + 0.2, pt.z + 2.5);
+    group.position.copy(lockPos);
 
-    // Card panel
-    const PW = 2.6, PH = 3.4;
-    const panelGeom = new THREE.PlaneGeometry(PW, PH);
-    const panelMat = new THREE.MeshStandardMaterial({
-      color: 0xF4EFE6, roughness: 0.7, side: THREE.DoubleSide
-    });
-    const panel = new THREE.Mesh(panelGeom, panelMat);
+    // cream-панель
+    const panelMat = new THREE.MeshBasicMaterial({ color: 0xF4EFE6, side: THREE.DoubleSide, transparent: true });
+    const panel = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 3.4), panelMat);
     group.add(panel);
 
-    // Photo inside (smaller than panel — margin)
-    const photoGeom = new THREE.PlaneGeometry(2.2, 2.55);
-    const photoMat = new THREE.MeshBasicMaterial({ color: 0xCCCCCC });
-    const photo = new THREE.Mesh(photoGeom, photoMat);
-    photo.position.set(0, 0.32, 0.02);
+    // фото (с отступом, выше центра)
+    const photoMat = new THREE.MeshBasicMaterial({ color: 0xCCCCCC, transparent: true });
+    const photo = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 2.45), photoMat);
+    photo.position.set(0, 0.35, 0.01);
     group.add(photo);
 
-    new THREE.TextureLoader().load(CARD_PHOTOS[i], tex => {
+    new THREE.TextureLoader().load(CARD_PHOTOS[i % CARD_PHOTOS.length], tex => {
       tex.colorSpace = THREE.SRGBColorSpace;
-      photoMat.map = tex; photoMat.color.set(0xffffff);
+      photoMat.map = tex;
+      photoMat.color.set(0xffffff);
       photoMat.needsUpdate = true;
     });
 
-    // Name + price (canvas → texture)
-    const txtCanvas = document.createElement('canvas');
-    txtCanvas.width = 1024; txtCanvas.height = 256;
-    const ctx = txtCanvas.getContext('2d');
-    ctx.fillStyle = '#0F0F0F';
-    ctx.font = '400 96px Cormorant, Georgia, serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(CARD_NAMES[i], 512, 80);
-    ctx.fillStyle = '#FF4D00';
-    ctx.font = '600 64px Inter, sans-serif';
-    ctx.fillText(CARD_PRICES[i], 512, 180);
-    const txtTex = new THREE.CanvasTexture(txtCanvas);
-    txtTex.colorSpace = THREE.SRGBColorSpace;
-    const txtGeom = new THREE.PlaneGeometry(2.2, 0.6);
-    const txtMat = new THREE.MeshBasicMaterial({ map: txtTex, transparent: true });
-    const txt = new THREE.Mesh(txtGeom, txtMat);
-    txt.position.set(0, -1.25, 0.03);
-    group.add(txt);
+    // название + цена через canvas-текстуру (внизу карточки)
+    const lbl = CARD_LABELS[i % CARD_LABELS.length];
+    const tc = document.createElement('canvas');
+    tc.width = 1024; tc.height = 280;
+    const tctx = tc.getContext('2d');
+    tctx.textAlign = 'center'; tctx.textBaseline = 'middle';
+    tctx.fillStyle = '#0F0F0F';
+    tctx.font = '400 86px Cormorant, Georgia, serif';
+    tctx.fillText(lbl.name, 512, 90);
+    tctx.fillStyle = '#FF4D00';
+    tctx.font = '600 62px Inter, sans-serif';
+    tctx.fillText(lbl.price, 512, 200);
+    const lblTex = new THREE.CanvasTexture(tc);
+    lblTex.colorSpace = THREE.SRGBColorSpace;
+    const lblMat = new THREE.MeshBasicMaterial({ map: lblTex, transparent: true });
+    const lblMesh = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 0.65), lblMat);
+    lblMesh.position.set(0, -1.27, 0.02);
+    group.add(lblMesh);
 
     group.scale.setScalar(0.001);
+    group.visible = false;
     scene.add(group);
-    cards.push({ group, t: spot.t });
+    cards.push({ group, t: spot.t, side, lockPos: lockPos.clone(), mats: [panelMat, photoMat, lblMat] });
   });
 
-  // ── Scroll progress driver ──
+  // ── Скролл ──
   let scrollProg = 0;
   ScrollTrigger.create({
-    trigger: section,
-    start: 'top top',
-    end: 'bottom bottom',
+    trigger: section, start: 'top top', end: 'bottom bottom',
     scrub: 1.2,
-    onUpdate: s => { scrollProg = s.progress; }
+    onUpdate: s => scrollProg = s.progress
   });
 
-  // ── Render loop ──
-  function tickFilm() {
-    requestAnimationFrame(tickFilm);
+  // ── Рендер ──
+  function tick() {
+    requestAnimationFrame(tick);
 
-    // Camera follows path with offset (above + behind current point)
+    // Камера летит вниз вдоль пути, смотрит почти прямо вперёд (на +Z к нам → -Z от ленты)
     const camT = Math.max(0.01, Math.min(0.97, scrollProg));
     const camPt = curve.getPointAt(camT);
-    const aheadT = Math.min(1, camT + 0.06);
-    const aheadPt = curve.getPointAt(aheadT);
+    const aheadPt = curve.getPointAt(Math.min(1, camT + 0.04));
 
-    camera.position.set(
-      camPt.x * 0.45,
-      camPt.y + 3.5,
-      camPt.z + 10
-    );
-    camera.lookAt(aheadPt.x * 0.6, aheadPt.y - 1.5, aheadPt.z - 3);
+    camera.position.set(camPt.x * 0.35, camPt.y + 1.5, 14);
+    camera.lookAt(aheadPt.x * 0.35, aheadPt.y - 1.5, 0);
 
-    // Cards unfold based on proximity to scroll position
+    // Карточки: прилёт → фиксация → сминание
     cards.forEach(card => {
-      const dist = Math.abs(scrollProg - card.t);
-      const WINDOW = 0.16;
-      const raw = Math.max(0, 1 - dist / WINDOW);
-      const eased = raw * raw * (3 - 2 * raw); // smoothstep
+      const signed = scrollProg - card.t;
+      const APPROACH_START = -0.12;
+      const LOCK_START     = -0.02;
+      const LOCK_END       =  0.04;
+      const CRUMPLE_END    =  0.16;
 
-      card.group.scale.setScalar(0.05 + eased * 1.05);
+      let scale = 0, opacity = 0, rotZ = 0, rotY = 0;
+      let px = card.lockPos.x, py = card.lockPos.y, pz = card.lockPos.z;
 
-      // Face camera (Y-axis only)
-      const dir = new THREE.Vector3().subVectors(camera.position, card.group.position);
-      const angle = Math.atan2(dir.x, dir.z);
-      card.group.rotation.y = angle + (1 - eased) * Math.PI * 0.6;
-      card.group.rotation.x = (1 - eased) * 0.4;
+      if (signed < APPROACH_START) {
+        card.group.visible = false;
+      } else if (signed < LOCK_START) {
+        // ПРИЛЁТ: вылетает из-за края экрана + поворот к пользователю
+        const t = (signed - APPROACH_START) / (LOCK_START - APPROACH_START);
+        const e = t * t * (3 - 2 * t);
+        scale = e;
+        opacity = e;
+        rotY = (1 - e) * Math.PI * 0.6 * card.side;
+        px = card.lockPos.x + card.side * 9 * (1 - e);
+        py = card.lockPos.y - 2 * (1 - e);
+        pz = card.lockPos.z - 4 * (1 - e);
+        card.group.visible = true;
+      } else if (signed < LOCK_END) {
+        // ФИКСАЦИЯ
+        scale = 1; opacity = 1;
+        card.group.visible = true;
+      } else if (signed < CRUMPLE_END) {
+        // СМИНАНИЕ: сжимается, крутится, падает
+        const t = (signed - LOCK_END) / (CRUMPLE_END - LOCK_END);
+        const e = t * t;
+        scale = 1 - e * 0.85;
+        opacity = 1 - e;
+        rotZ = e * Math.PI * 2.2 * card.side;
+        rotY = e * Math.PI * 0.8;
+        py = card.lockPos.y - e * 3.5;
+        px = card.lockPos.x + card.side * e * 1.5;
+        card.group.visible = opacity > 0.02;
+      } else {
+        card.group.visible = false;
+      }
+
+      card.group.position.set(px, py, pz);
+      card.group.scale.setScalar(Math.max(0.001, scale));
+      card.group.rotation.set(0, rotY, rotZ);
+      card.mats.forEach(m => { m.opacity = opacity; });
     });
 
     renderer.render(scene, camera);
   }
-  tickFilm();
+  tick();
 })();
 
 </script>
