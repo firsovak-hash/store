@@ -161,6 +161,39 @@ body { background: #EEEAE3; }
 .manifest-cta:hover { color: #0F0F0F; border-color: #0F0F0F; gap: 22px; }
 .manifest-cta-arrow { font-size: 14px; }
 
+/* ── 3D FILMSTRIP SECTION ── */
+.filmstrip-section {
+    height: 500vh;           /* 5 экранов скролла */
+    background: #EEEAE3;
+    position: relative;
+    overflow: visible;
+}
+#filmStripCanvas {
+    position: sticky; top: 0; left: 0;
+    width: 100% !important; height: 100vh !important;
+    display: block; z-index: 1;
+}
+.filmstrip-label {
+    position: absolute; top: 60px; left: 48px;
+    z-index: 5; pointer-events: none;
+}
+.filmstrip-label-eyebrow {
+    font-size: 9px; letter-spacing: 4px;
+    text-transform: uppercase; color: #FF4D00;
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    margin-bottom: 8px;
+}
+.filmstrip-label-title {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(28px, 3vw, 42px);
+    color: #0F0F0F; line-height: 1;
+    letter-spacing: -1px; font-weight: 400;
+}
+@media (max-width: 768px) {
+    .filmstrip-section { height: 380vh; }
+    .filmstrip-label { top: 30px; left: 20px; }
+}
+
 /* ── TICKER (тёмная плашка для контраста) ── */
 .ticker-wrap {
     overflow: hidden;
@@ -379,6 +412,15 @@ body { background: #EEEAE3; }
         <span class="ticker-item ticker-dot">◆</span>
     </div>
 </div>
+
+<!-- ── 3D FILMSTRIP SECTION ── -->
+<section class="filmstrip-section" id="filmStripSection">
+    <canvas id="filmStripCanvas"></canvas>
+    <div class="filmstrip-label">
+        <div class="filmstrip-label-eyebrow">Коллекция SS 2026</div>
+        <div class="filmstrip-label-title">Лукбук</div>
+    </div>
+</section>
 
 <!-- ── MANIFEST ── -->
 <section class="manifest" id="manifest">
@@ -1226,6 +1268,225 @@ new GLTFLoader().load(
   null,
   e => console.warn('GLB load error', e)
 );
+
+/* ═══════════════════════════════════════════
+   3D FILMSTRIP — кинолента-змейка
+═══════════════════════════════════════════ */
+(function() {
+  const canvas  = document.getElementById('filmStripCanvas');
+  const section = document.getElementById('filmStripSection');
+  if (!canvas || !section) return;
+
+  const CREAM = 0xEEEAE3;
+  const DARK  = 0x0F0F0F;
+  const ORANGE = 0xFF4D00;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(CREAM, 1);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  const scene  = new THREE.Scene();
+  scene.fog = new THREE.Fog(CREAM, 14, 32);
+
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+
+  function resizeFilm() {
+    const w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resizeFilm();
+  window.addEventListener('resize', resizeFilm);
+
+  // ── Lights ──
+  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+  const dl = new THREE.DirectionalLight(0xffffff, 1.4);
+  dl.position.set(6, 10, 6);
+  scene.add(dl);
+  const dl2 = new THREE.DirectionalLight(ORANGE, 0.35);
+  dl2.position.set(-5, -2, 3);
+  scene.add(dl2);
+  const dl3 = new THREE.DirectionalLight(0xffffff, 0.4);
+  dl3.position.set(-3, 5, -5);
+  scene.add(dl3);
+
+  // ── 3D snake path: descends through depth, wiggles left/right and front/back ──
+  const pathPts = [];
+  const TOTAL_DEPTH = 28;
+  for (let i = 0; i <= 28; i++) {
+    const t = i / 28;
+    pathPts.push(new THREE.Vector3(
+      Math.sin(t * Math.PI * 3.2) * 5.5,
+      -t * TOTAL_DEPTH,
+      Math.sin(t * Math.PI * 2.3 + 0.7) * 7 - 3
+    ));
+  }
+  const curve = new THREE.CatmullRomCurve3(pathPts);
+
+  // ── Film strip ribbon (flat rectangle extruded along curve) ──
+  const stripShape = new THREE.Shape();
+  const W = 0.95, T = 0.04;
+  stripShape.moveTo(-W, -T);
+  stripShape.lineTo( W, -T);
+  stripShape.lineTo( W,  T);
+  stripShape.lineTo(-W,  T);
+  stripShape.lineTo(-W, -T);
+
+  const stripGeom = new THREE.ExtrudeGeometry(stripShape, {
+    steps: 400, extrudePath: curve, bevelEnabled: false
+  });
+  const stripMat = new THREE.MeshStandardMaterial({
+    color: DARK, roughness: 0.45, metalness: 0.25,
+    side: THREE.DoubleSide
+  });
+  const strip = new THREE.Mesh(stripGeom, stripMat);
+  scene.add(strip);
+
+  // Film perforations: small holes along both edges
+  const perfMat = new THREE.MeshStandardMaterial({
+    color: CREAM, roughness: 0.9, metalness: 0
+  });
+  const perfGeom = new THREE.BoxGeometry(0.12, 0.06, 0.18);
+  const PERF_COUNT = 70;
+  for (let i = 1; i < PERF_COUNT; i++) {
+    const t = i / PERF_COUNT;
+    const p = curve.getPointAt(t);
+    const tan = curve.getTangentAt(t).normalize();
+    const norm = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
+    [-1, 1].forEach(side => {
+      const m = new THREE.Mesh(perfGeom, perfMat);
+      m.position.copy(p).add(norm.clone().multiplyScalar(side * 0.78));
+      m.lookAt(p.clone().add(tan));
+      scene.add(m);
+    });
+  }
+
+  // ── Photo cards — unfold at intervals ──
+  const CARD_PHOTOS = [
+    'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80&auto=format',
+    'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80&auto=format',
+    'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80&auto=format',
+    'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80&auto=format'
+  ];
+  const CARD_PRICES = ['4 900 ₽', '6 200 ₽', '9 500 ₽', '12 500 ₽'];
+  const CARD_NAMES  = ['Худи', 'Карго-брюки', 'Бомбер', 'Куртка'];
+
+  const cards = [];
+  // Distributed along path; alternate sides
+  const cardSpots = [
+    { t: 0.18, side:  1 },
+    { t: 0.40, side: -1 },
+    { t: 0.62, side:  1 },
+    { t: 0.84, side: -1 }
+  ];
+
+  cardSpots.forEach((spot, i) => {
+    const pt = curve.getPointAt(spot.t);
+    const tan = curve.getTangentAt(spot.t).normalize();
+    const perp = new THREE.Vector3(-tan.z, 0, tan.x).normalize();
+    const cardPos = pt.clone().add(perp.multiplyScalar(spot.side * 4.2));
+    cardPos.y += 0.6;
+
+    const group = new THREE.Group();
+    group.position.copy(cardPos);
+
+    // Card panel
+    const PW = 2.6, PH = 3.4;
+    const panelGeom = new THREE.PlaneGeometry(PW, PH);
+    const panelMat = new THREE.MeshStandardMaterial({
+      color: 0xF4EFE6, roughness: 0.7, side: THREE.DoubleSide
+    });
+    const panel = new THREE.Mesh(panelGeom, panelMat);
+    group.add(panel);
+
+    // Photo inside (smaller than panel — margin)
+    const photoGeom = new THREE.PlaneGeometry(2.2, 2.55);
+    const photoMat = new THREE.MeshBasicMaterial({ color: 0xCCCCCC });
+    const photo = new THREE.Mesh(photoGeom, photoMat);
+    photo.position.set(0, 0.32, 0.02);
+    group.add(photo);
+
+    new THREE.TextureLoader().load(CARD_PHOTOS[i], tex => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      photoMat.map = tex; photoMat.color.set(0xffffff);
+      photoMat.needsUpdate = true;
+    });
+
+    // Name + price (canvas → texture)
+    const txtCanvas = document.createElement('canvas');
+    txtCanvas.width = 1024; txtCanvas.height = 256;
+    const ctx = txtCanvas.getContext('2d');
+    ctx.fillStyle = '#0F0F0F';
+    ctx.font = '400 96px Cormorant, Georgia, serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(CARD_NAMES[i], 512, 80);
+    ctx.fillStyle = '#FF4D00';
+    ctx.font = '600 64px Inter, sans-serif';
+    ctx.fillText(CARD_PRICES[i], 512, 180);
+    const txtTex = new THREE.CanvasTexture(txtCanvas);
+    txtTex.colorSpace = THREE.SRGBColorSpace;
+    const txtGeom = new THREE.PlaneGeometry(2.2, 0.6);
+    const txtMat = new THREE.MeshBasicMaterial({ map: txtTex, transparent: true });
+    const txt = new THREE.Mesh(txtGeom, txtMat);
+    txt.position.set(0, -1.25, 0.03);
+    group.add(txt);
+
+    group.scale.setScalar(0.001);
+    scene.add(group);
+    cards.push({ group, t: spot.t });
+  });
+
+  // ── Scroll progress driver ──
+  let scrollProg = 0;
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 1.2,
+    onUpdate: s => { scrollProg = s.progress; }
+  });
+
+  // ── Render loop ──
+  function tickFilm() {
+    requestAnimationFrame(tickFilm);
+
+    // Camera follows path with offset (above + behind current point)
+    const camT = Math.max(0.01, Math.min(0.97, scrollProg));
+    const camPt = curve.getPointAt(camT);
+    const aheadT = Math.min(1, camT + 0.06);
+    const aheadPt = curve.getPointAt(aheadT);
+
+    camera.position.set(
+      camPt.x * 0.45,
+      camPt.y + 3.5,
+      camPt.z + 10
+    );
+    camera.lookAt(aheadPt.x * 0.6, aheadPt.y - 1.5, aheadPt.z - 3);
+
+    // Cards unfold based on proximity to scroll position
+    cards.forEach(card => {
+      const dist = Math.abs(scrollProg - card.t);
+      const WINDOW = 0.16;
+      const raw = Math.max(0, 1 - dist / WINDOW);
+      const eased = raw * raw * (3 - 2 * raw); // smoothstep
+
+      card.group.scale.setScalar(0.05 + eased * 1.05);
+
+      // Face camera (Y-axis only)
+      const dir = new THREE.Vector3().subVectors(camera.position, card.group.position);
+      const angle = Math.atan2(dir.x, dir.z);
+      card.group.rotation.y = angle + (1 - eased) * Math.PI * 0.6;
+      card.group.rotation.x = (1 - eased) * 0.4;
+    });
+
+    renderer.render(scene, camera);
+  }
+  tickFilm();
+})();
 
 </script>
 {% endblock %}
