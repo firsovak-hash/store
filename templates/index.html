@@ -5,65 +5,51 @@
 <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css">
 <style>
 html { overflow-x: hidden; scroll-behavior: auto; }
-body { background: #000; }
+body { background: #EEEAE3; }
 
 /* ── INTRO OVERLAY ── */
 #introOverlay {
     position: fixed; inset: 0; z-index: 9999;
-    background: #000; pointer-events: none;
+    background: #EEEAE3; pointer-events: none;
 }
 #introCanvas { width: 100%; height: 100%; display: block; }
 
 /* ── HERO ── */
 .hero {
-    min-height: 100vh; background: #000;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #EEEAE3 0%, #E4DFD3 100%);
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     position: relative; overflow: hidden;
 }
 
-/* ── HERO WEBGL CANVAS ── */
-#hero-gl {
-    position: absolute; inset: 0;
-    width: 100% !important; height: 100% !important;
-    display: block; z-index: 1; pointer-events: none;
-}
-/* dark gradient so text stays readable */
-.hero::after {
-    content: ''; pointer-events: none;
-    position: absolute; inset: 0; z-index: 2;
-    background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.20) 0%,
-        rgba(0,0,0,0.05) 45%,
-        rgba(0,0,0,0.50) 100%
-    );
-}
+/* WebGL canvas скрыт под светлую тему */
+#hero-gl { display: none; }
 
 .hero-noise {
-    position: absolute; inset: 0; pointer-events: none; opacity: 0.035;
-    z-index: 3;
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.04;
+    z-index: 3; mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
 }
 .hero-lines {
     position: absolute; inset: 0; pointer-events: none; z-index: 3;
-    background-image: repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px);
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(0,0,0,0.025) 80px, rgba(0,0,0,0.025) 81px);
 }
 .hero-inner {
     position: relative; z-index: 4;
     text-align: center; padding: 0 20px;
 }
 .hero-eyebrow {
-    font-size: 9px; letter-spacing: 6px;
-    text-transform: uppercase; color: #666;
-    font-family: 'Inter', sans-serif;
+    font-size: 10px; letter-spacing: 5px;
+    text-transform: uppercase; color: #FF4D00;
+    font-family: 'Inter', sans-serif; font-weight: 600;
     margin-bottom: 40px; opacity: 0;
     transform: translateY(20px);
 }
 .hero-title {
     font-size: clamp(72px, 14vw, 180px);
-    font-weight: 600; letter-spacing: -4px;
-    color: #fff; font-family: 'Cormorant', serif;
+    font-weight: 500; letter-spacing: -4px;
+    color: #0F0F0F; font-family: 'Cormorant', serif;
     line-height: 0.86; text-align: center;
 }
 .hero-title .line { display: block; overflow: hidden; padding-bottom: 8px; }
@@ -73,7 +59,7 @@ body { background: #000; }
 }
 .hero-tag {
     font-size: 9px; letter-spacing: 5px;
-    text-transform: uppercase; color: #555;
+    text-transform: uppercase; color: #666;
     font-family: 'Inter', sans-serif;
     margin-top: 44px; opacity: 0;
     transform: translateY(20px);
@@ -87,18 +73,18 @@ body { background: #000; }
 }
 .scroll-prompt span {
     font-size: 8px; letter-spacing: 4px;
-    text-transform: uppercase; color: #555;
+    text-transform: uppercase; color: #888;
     font-family: 'Inter', sans-serif;
 }
 .scroll-line {
-    width: 1px; height: 64px; background: #333;
+    width: 1px; height: 64px; background: #CCC4B0;
     position: relative; overflow: hidden;
 }
 .scroll-line::after {
     content: '';
     position: absolute; top: -100%; left: 0;
     width: 100%; height: 100%;
-    background: linear-gradient(to bottom, transparent, #555 50%, transparent);
+    background: linear-gradient(to bottom, transparent, #0F0F0F 50%, transparent);
     animation: lineScroll 1.8s ease-in-out infinite;
 }
 @keyframes lineScroll { to { top: 100%; } }
@@ -124,7 +110,7 @@ body { background: #000; }
 
 /* ── MANIFEST SECTION ── */
 .manifest {
-    min-height: 100vh; background: #000;
+    min-height: 100vh; background: #EEEAE3;
     display: flex; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
 }
@@ -133,40 +119,39 @@ body { background: #000; }
     text-align: center;
 }
 .manifest-eyebrow {
-    font-size: 8px; letter-spacing: 6px;
-    text-transform: uppercase; color: #555;
+    font-size: 9px; letter-spacing: 5px;
+    text-transform: uppercase; color: #888;
     font-family: 'Inter', sans-serif;
     margin-bottom: 44px; display: block;
 }
 .manifest-title {
     font-size: clamp(44px, 6vw, 84px);
-    font-weight: 400; color: #fff;
+    font-weight: 400; color: #0F0F0F;
     font-family: 'Cormorant', serif;
     line-height: 1.05; letter-spacing: -1px;
     margin-bottom: 32px;
 }
-.manifest-title em { font-style: italic; color: #CA8A04; }
+.manifest-title em { font-style: italic; color: #FF4D00; }
 .manifest-body {
-    font-size: 14px; color: #666;
+    font-size: 14px; color: #555;
     font-family: 'Inter', sans-serif;
     line-height: 2; margin-bottom: 56px;
 }
 .manifest-cta {
     display: inline-flex; align-items: center; gap: 16px;
-    color: #CA8A04; text-decoration: none;
+    color: #FF4D00; text-decoration: none;
     font-size: 10px; letter-spacing: 3px;
     text-transform: uppercase; font-family: 'Inter', sans-serif;
-    border-bottom: 1px solid #CA8A04; padding-bottom: 6px;
+    border-bottom: 1px solid #FF4D00; padding-bottom: 6px;
     transition: border-color 0.3s, gap 0.3s, color 0.3s;
 }
-.manifest-cta:hover { color: #fff; border-color: #fff; gap: 22px; }
+.manifest-cta:hover { color: #0F0F0F; border-color: #0F0F0F; gap: 22px; }
 .manifest-cta-arrow { font-size: 14px; }
 
-/* ── TICKER ── */
+/* ── TICKER (тёмная плашка для контраста) ── */
 .ticker-wrap {
-    overflow: hidden; border-top: 1px solid #0d0d0d;
-    border-bottom: 1px solid #0d0d0d;
-    background: #000; padding: 16px 0;
+    overflow: hidden;
+    background: #0F0F0F; padding: 16px 0;
 }
 .ticker-track {
     display: flex; gap: 0;
@@ -175,16 +160,16 @@ body { background: #000; }
 }
 .ticker-item {
     font-size: 9px; letter-spacing: 5px;
-    text-transform: uppercase; color: #fff;
+    text-transform: uppercase; color: #EEEAE3;
     font-family: 'Inter', sans-serif;
     padding: 0 48px;
 }
-.ticker-dot { color: #CA8A04; }
+.ticker-dot { color: #FF4D00; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* ── PRODUCTS ── */
 .products-section {
-    background: #000;
+    background: #EEEAE3;
     padding: 80px 0 140px;
 }
 .section-header {
@@ -192,23 +177,23 @@ body { background: #000; }
     display: flex; justify-content: space-between;
     align-items: flex-end;
     padding: 0 48px 32px;
-    border-bottom: 1px solid #111;
+    border-bottom: 1px solid #D9D3C5;
     margin-bottom: 0;
 }
 .section-title {
     font-size: clamp(32px, 4vw, 52px);
-    font-weight: 400; color: #fff;
+    font-weight: 400; color: #0F0F0F;
     font-family: 'Cormorant', serif;
     letter-spacing: -1px; line-height: 1;
 }
 .section-link {
     font-size: 9px; letter-spacing: 3px;
-    text-transform: uppercase; color: #555;
+    text-transform: uppercase; color: #666;
     font-family: 'Inter', sans-serif;
-    text-decoration: none; border-bottom: 1px solid #333;
+    text-decoration: none; border-bottom: 1px solid #999;
     padding-bottom: 3px; transition: color 0.2s, border-color 0.2s;
 }
-.section-link:hover { color: #fff; border-color: #fff; }
+.section-link:hover { color: #FF4D00; border-color: #FF4D00; }
 
 /* ── CHECKERBOARD ROWS ── */
 .pcards-grid {
@@ -218,10 +203,12 @@ body { background: #000; }
 .pcard3d {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    border-bottom: 1px solid #111;
+    border-bottom: 1px solid #D9D3C5;
     cursor: pointer;
-    background: #000;
+    background: #EEEAE3;
+    transition: background 0.3s;
 }
+.pcard3d:hover { background: #E4DFD3; }
 
 /* Even rows: model RIGHT, info LEFT */
 .pcard3d:nth-child(even) .prod-model { order: 2; }
@@ -243,7 +230,7 @@ body { background: #000; }
 /* ── Info side — только название и цена ── */
 .prod-info {
     display: flex; flex-direction: column;
-    justify-content: flex-end;   /* прижато вниз */
+    justify-content: flex-end;
     padding: 0 64px 64px;
     background: transparent;
     will-change: transform, opacity;
@@ -252,7 +239,7 @@ body { background: #000; }
 /* name */
 .pcard3d-name {
     font-size: clamp(28px, 3vw, 48px);
-    font-weight: 400; color: #fff;
+    font-weight: 400; color: #0F0F0F;
     font-family: 'Cormorant', serif;
     line-height: 1.05; letter-spacing: -0.5px;
     margin-bottom: 10px;
@@ -261,7 +248,7 @@ body { background: #000; }
 /* price */
 .pcard3d-price {
     font-size: clamp(18px, 1.8vw, 26px);
-    font-weight: 400; color: #888;
+    font-weight: 400; color: #777;
     font-family: 'Inter', sans-serif;
     letter-spacing: 0;
 }
@@ -280,35 +267,35 @@ body { background: #000; }
 }
 
 /* ── POPUP ── */
-.prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; padding: 20px; }
+.prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(15,15,15,0.55); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 20px; }
 .prod-popup.active { display: flex; }
-.prod-popup-inner { background: #0d0d0d; max-width: 900px; width: 100%; max-height: 92vh; display: flex; overflow: hidden; position: relative; border: 1px solid #1a1a1a; }
-.prod-popup-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); font-size: 18px; cursor: pointer; z-index: 10; color: #666; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.2s, background 0.2s; }
-.prod-popup-close:hover { color: #fff; background: rgba(255,255,255,0.12); }
-.prod-popup-left { width: 50%; flex-shrink: 0; background: #080808; display: flex; flex-direction: column; }
+.prod-popup-inner { background: #EEEAE3; max-width: 900px; width: 100%; max-height: 92vh; display: flex; overflow: hidden; position: relative; border: 1px solid #D9D3C5; }
+.prod-popup-close { position: absolute; top: 16px; right: 16px; background: rgba(15,15,15,0.06); border: 1px solid rgba(15,15,15,0.08); font-size: 18px; cursor: pointer; z-index: 10; color: #666; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.2s, background 0.2s; }
+.prod-popup-close:hover { color: #0F0F0F; background: rgba(15,15,15,0.12); }
+.prod-popup-left { width: 50%; flex-shrink: 0; background: #E4DFD3; display: flex; flex-direction: column; }
 .prod-popup-main-img { flex: 1; overflow: hidden; min-height: 320px; }
 .prod-popup-main-img img { width: 100%; height: 100%; object-fit: cover; }
-.prod-popup-thumbs { display: flex; gap: 6px; padding: 10px 12px; background: #111; overflow-x: auto; border-top: 1px solid #161616; }
+.prod-popup-thumbs { display: flex; gap: 6px; padding: 10px 12px; background: #DDD6C5; overflow-x: auto; border-top: 1px solid #C9C0AC; }
 .prod-popup-thumb { width: 56px; height: 56px; overflow: hidden; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: border-color 0.2s; }
-.prod-popup-thumb.active { border-color: #fff; }
+.prod-popup-thumb.active { border-color: #0F0F0F; }
 .prod-popup-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .prod-popup-right { flex: 1; padding: 44px 32px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; }
-.prod-popup-name { font-size: 22px; font-weight: 500; color: #fff; font-family: 'Inter', sans-serif; letter-spacing: -0.5px; }
-.prod-popup-price { font-size: 24px; font-weight: 300; color: #fff; font-family: 'Inter', sans-serif; }
-.prod-popup-label { font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #555; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
+.prod-popup-name { font-size: 22px; font-weight: 500; color: #0F0F0F; font-family: 'Inter', sans-serif; letter-spacing: -0.5px; }
+.prod-popup-price { font-size: 24px; font-weight: 300; color: #0F0F0F; font-family: 'Inter', sans-serif; }
+.prod-popup-label { font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #888; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
 .prod-popup-sizes { display: flex; gap: 8px; flex-wrap: wrap; }
-.size-btn { min-width: 44px; height: 40px; background: #111; border: 1px solid #1e1e1e; color: #444; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; padding: 0 12px; border-radius: 0; }
-.size-btn:hover { border-color: #555; color: #ccc; }
-.size-btn.active { background: #fff; color: #000; border-color: #fff; }
+.size-btn { min-width: 44px; height: 40px; background: transparent; border: 1px solid #CFC8B6; color: #666; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; padding: 0 12px; border-radius: 0; }
+.size-btn:hover { border-color: #0F0F0F; color: #0F0F0F; }
+.size-btn.active { background: #0F0F0F; color: #EEEAE3; border-color: #0F0F0F; }
 .prod-popup-btn-row { display: flex; flex-direction: column; gap: 10px; }
-.prod-popup-cart-btn { background: #CA8A04; color: #000; border: none; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-weight: 700; border-radius: 0; }
-.prod-popup-cart-btn:hover { background: #d97706; }
-.prod-popup-order-btn { background: transparent; color: #555; border: 1px solid #1a1a1a; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; width: 100%; border-radius: 0; }
-.prod-popup-order-btn:hover { border-color: #444; color: #ccc; }
-.prod-popup-descr { font-size: 12px; color: #666; line-height: 1.9; font-family: 'Inter', sans-serif; border-top: 1px solid #222; padding-top: 20px; }
+.prod-popup-cart-btn { background: #FF4D00; color: #fff; border: none; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; width: 100%; font-weight: 700; border-radius: 0; }
+.prod-popup-cart-btn:hover { background: #E04400; }
+.prod-popup-order-btn { background: transparent; color: #555; border: 1px solid #CFC8B6; padding: 15px; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; width: 100%; border-radius: 0; }
+.prod-popup-order-btn:hover { border-color: #0F0F0F; color: #0F0F0F; }
+.prod-popup-descr { font-size: 12px; color: #666; line-height: 1.9; font-family: 'Inter', sans-serif; border-top: 1px solid #D9D3C5; padding-top: 20px; }
 
 /* ── TOAST ── */
-.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 11px 26px; z-index: 9999; font-size: 11px; font-family: 'Inter', sans-serif; letter-spacing: 1px; animation: toastFade 2.4s forwards; }
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #0F0F0F; color: #EEEAE3; padding: 11px 26px; z-index: 9999; font-size: 11px; font-family: 'Inter', sans-serif; letter-spacing: 1px; animation: toastFade 2.4s forwards; }
 @keyframes toastFade { 0%,70%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(8px)} }
 
 /* ── MOBILE ── */
@@ -330,10 +317,10 @@ body { background: #000; }
 
 {% block content %}
 
-<!-- ── INTRO OVERLAY ── -->
-<div id="introOverlay">
-    <canvas id="introCanvas"></canvas>
-</div>
+<!-- ── INTRO OVERLAY (отключено для светлой темы) ──
+<div id="introOverlay"><canvas id="introCanvas"></canvas></div>
+-->
+<div id="introOverlay" style="display:none"><canvas id="introCanvas"></canvas></div>
 
 <!-- ── HERO ── -->
 <section class="hero" id="hero">
@@ -486,7 +473,10 @@ gsap.registerPlugin(ScrollTrigger);
 /* ────────────────────────────────────────
    INTRO BLOB REVEAL
 ──────────────────────────────────────── */
+// Intro disabled in light theme — show hero immediately
+heroIn();
 (function () {
+    return; // intro отключено
     var overlay = document.getElementById('introOverlay');
     var ic = document.getElementById('introCanvas');
     var ctx = ic.getContext('2d');
