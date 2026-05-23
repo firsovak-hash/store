@@ -1014,11 +1014,11 @@ function centerGroup(grp) {
   const tl = new THREE.TextureLoader();
   tl.crossOrigin = 'anonymous';
 
-  /* базовое фото (фон) */
-  tl.load('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1600&q=85&auto=format', tex => {
+  /* базовое фото — Никита с медалью */
+  tl.load('/static/images/nikit/photo-01.jpg', tex => {
     tex.minFilter = tex.magFilter = THREE.LinearFilter;
     dispUni.uTex1.value  = tex;
-    dispUni.uImgAR.value = tex.image.naturalWidth / tex.image.naturalHeight || 1.5;
+    dispUni.uImgAR.value = tex.image.naturalWidth / tex.image.naturalHeight || 1.78;
   });
 
   /* 5 фото слайдшоу — Никита, соревнования 2026 */
