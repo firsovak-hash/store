@@ -392,122 +392,6 @@ body { background: #000; }
     </div>
 </section>
 
-<!-- ── TICKER ── -->
-<div class="ticker-wrap">
-    <div class="ticker-track" id="tickerTrack">
-        <span class="ticker-item">Store by Sasha</span>
-        <span class="ticker-item ticker-dot">◆</span>
-        <span class="ticker-item">Весна — Лето 2026</span>
-        <span class="ticker-item ticker-dot">◆</span>
-        <span class="ticker-item">Ограниченная коллекция</span>
-        <span class="ticker-item ticker-dot">◆</span>
-        <span class="ticker-item">Ручная работа</span>
-        <span class="ticker-item ticker-dot">◆</span>
-        <span class="ticker-item">Store by Sasha</span>
-        <span class="ticker-item ticker-dot">◆</span>
-        <span class="ticker-item">Весна — Лето 2026</span>
-        <span class="ticker-item ticker-dot">◆</span>
-        <span class="ticker-item">Ограниченная коллекция</span>
-        <span class="ticker-item ticker-dot">◆</span>
-        <span class="ticker-item">Ручная работа</span>
-        <span class="ticker-item ticker-dot">◆</span>
-    </div>
-</div>
-
-<!-- ── 3D FILMSTRIP SECTION ── -->
-<section class="filmstrip-section" id="filmStripSection">
-    <canvas id="filmStripCanvas"></canvas>
-    <div class="filmstrip-label">
-        <div class="filmstrip-label-eyebrow">Коллекция SS 2026</div>
-        <div class="filmstrip-label-title">Лукбук</div>
-    </div>
-</section>
-
-<!-- ── MANIFEST ── -->
-<section class="manifest" id="manifest">
-    <div class="manifest-inner">
-        <span class="manifest-eyebrow">О нас</span>
-        <h2 class="manifest-title">
-            Каждая вещь —<br>
-            <em>это история</em>
-        </h2>
-        <p class="manifest-body">
-            Мы не делаем одежду для масс. Мы делаем её<br>
-            для людей которые чувствуют разницу.
-        </p>
-        <a href="/catalog" class="manifest-cta">
-            Смотреть коллекцию
-            <span class="manifest-cta-arrow">→</span>
-        </a>
-    </div>
-</section>
-
-<!-- ── PRODUCTS ── -->
-<div class="products-section">
-    <div class="section-header">
-        <h2 class="section-title">Новинки</h2>
-        <a href="/catalog" class="section-link">Весь каталог →</a>
-    </div>
-    <div class="pcards-grid" id="productsGrid">
-        {% set features_map = {
-            '1': ['Ручная роспись акрилом', 'Высота 8–10 см', 'Подарочная упаковка'],
-            '2': ['Точная передача питомца', 'Парная подставка', 'Срок 5–7 дней'],
-            '3': ['Любой вид спорта', 'Инвентарь в комплекте', 'Индивидуальная форма'],
-            '4': ['Максимальная детализация', 'Упаковка с магнитным замком', 'Приоритетное изготовление'],
-            '5': ['Крепление для ключей', 'Миниатюра 4–5 см', 'Прочное покрытие'],
-            '6': ['До 5 человек', 'Общая подставка с именами', 'Семейная композиция']
-        } %}
-        {% for product in products[:4] %}
-        <div class="pcard3d"
-             data-id="{{ product.id }}"
-             data-name="{{ product.name }}"
-             data-price="{{ product.price }}">
-
-            <!-- 3D model side -->
-            <div class="prod-model">
-                <canvas class="prod-canvas" data-prod-idx="{{ loop.index0 }}"></canvas>
-            </div>
-
-            <!-- Info side -->
-            <div class="prod-info">
-                <div class="pcard3d-name">{{ product.name }}</div>
-                <div class="pcard3d-price">{{ product.price | int }} ₽</div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- ── PRODUCT POPUP ── -->
-<div class="prod-popup" id="prodPopup">
-    <div class="prod-popup-inner">
-        <button class="prod-popup-close" id="prodPopupClose">✕</button>
-        <div class="prod-popup-left">
-            <div class="prod-popup-main-img"><img id="popupMainImg" src="" alt=""></div>
-            <div class="prod-popup-thumbs" id="popupThumbs"></div>
-        </div>
-        <div class="prod-popup-right">
-            <div class="prod-popup-name" id="popupName"></div>
-            <div class="prod-popup-price" id="popupPrice"></div>
-            <div>
-                <div class="prod-popup-label">Размер</div>
-                <div class="prod-popup-sizes">
-                    <button class="size-btn" data-size="XS">XS</button>
-                    <button class="size-btn" data-size="S">S</button>
-                    <button class="size-btn" data-size="M">M</button>
-                    <button class="size-btn" data-size="L">L</button>
-                    <button class="size-btn" data-size="XL">XL</button>
-                </div>
-            </div>
-            <div class="prod-popup-btn-row">
-                <button class="prod-popup-cart-btn" id="popupCartBtn">Добавить в корзину</button>
-                <button class="prod-popup-order-btn" id="popupOrderBtn">Оформить заказ</button>
-            </div>
-            <div class="prod-popup-descr">Стильная и удобная вещь для вашего гардероба. Высококачественный материал, современный крой. Состав: 100% хлопок.</div>
-        </div>
-    </div>
-</div>
-
 {% endblock %}
 
 {% block extra_js %}
@@ -694,9 +578,13 @@ function closePopup() {
     document.getElementById('prodPopup').classList.remove('active');
     document.body.style.overflow = '';
 }
-document.getElementById('prodPopup').addEventListener('click', function(e) { if (e.target === this) closePopup(); });
-document.getElementById('prodPopupClose').addEventListener('click', closePopup);
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePopup(); });
+var _popupEl = document.getElementById('prodPopup');
+if (_popupEl) {
+    _popupEl.addEventListener('click', function(e) { if (e.target === this) closePopup(); });
+    var _closeEl = document.getElementById('prodPopupClose');
+    if (_closeEl) _closeEl.addEventListener('click', closePopup);
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePopup(); });
+}
 document.querySelectorAll('.size-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.size-btn').forEach(function(b) { b.classList.remove('active'); });
