@@ -289,10 +289,10 @@
     
     <!-- ПРАВАЯ ЧАСТЬ: иконки -->
     <div class="nav-icons">
-        <a href="/likes" class="likes-icon">
+        <div class="likes-icon" id="navLikesBtn" style="cursor:pointer;">
             <i class="far fa-heart"></i>
             <span class="likes-count" id="likes-count">0</span>
-        </a>
+        </div>
         <div class="cart-icon" id="navCartBtn" style="cursor:pointer;">
             <i class="fas fa-bag-shopping"></i>
             <span class="cart-count" id="cart-count">0</span>
@@ -324,6 +324,18 @@
             <span id="t706Total">0 р.</span>
         </div>
         <button class="t706-checkout" onclick="location.href='/cart'">Оформить заказ</button>
+    </div>
+</div>
+
+<!-- ИЗБРАННОЕ: боковая панель в тёмной гамме -->
+<div class="likes-overlay" id="likesOverlay"></div>
+<div class="likes-panel" id="likesPanel">
+    <div class="likes-top">
+        <div class="likes-heading">Избранное</div>
+        <button class="likes-close" id="likesClose" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="likes-items" id="likesItems">
+        <div class="likes-empty">Пока пусто</div>
     </div>
 </div>
 
@@ -403,6 +415,109 @@
     transition: opacity .2s;
 }
 .t706-checkout:hover { opacity:.75; }
+
+/* ── ИЗБРАННОЕ: боковая панель, чёрная гамма ── */
+.likes-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 1999;
+    opacity: 0; visibility: hidden;
+    transition: .3s;
+}
+.likes-overlay.open { opacity: 1; visibility: visible; }
+
+.likes-panel {
+    position: fixed;
+    top: 0; right: -100%;
+    width: 420px; max-width: 100vw; height: 100%;
+    background: #0d0d0d;
+    border-left: 1px solid #1a1a1a;
+    z-index: 2000;
+    display: flex; flex-direction: column;
+    transition: right .35s ease;
+    box-shadow: -8px 0 32px rgba(0,0,0,0.7);
+}
+.likes-panel.open { right: 0; }
+
+.likes-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 28px;
+    border-bottom: 1px solid #1a1a1a;
+}
+.likes-heading {
+    font-family: 'Cormorant', serif;
+    font-size: 26px; font-weight: 400;
+    color: #fff; letter-spacing: -0.5px;
+}
+.likes-close {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    color: #888; font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.2s, background 0.2s;
+}
+.likes-close:hover { color: #fff; background: rgba(255,255,255,0.12); }
+
+.likes-items {
+    flex: 1; overflow-y: auto;
+    padding: 20px 28px 32px;
+    display: flex; flex-direction: column; gap: 16px;
+}
+.likes-empty {
+    text-align: center; padding: 60px 0;
+    color: #555; font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 1px; text-transform: uppercase;
+}
+
+.likes-item {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: 14px; align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #161616;
+}
+.likes-item-img {
+    width: 72px; height: 72px;
+    background: #161616;
+    overflow: hidden; flex-shrink: 0;
+}
+.likes-item-img img { width:100%; height:100%; object-fit:cover; }
+.likes-item-info { min-width: 0; }
+.likes-item-name {
+    font-size: 14px; color: #fff;
+    font-family: 'Inter', sans-serif; font-weight: 400;
+    margin-bottom: 4px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.likes-item-price {
+    font-size: 13px; color: #888;
+    font-family: 'Inter', sans-serif;
+}
+.likes-item-actions {
+    display: flex; flex-direction: column; gap: 6px;
+    align-items: flex-end;
+}
+.likes-item-add {
+    background: #FF4D00; color: #fff;
+    border: none; padding: 7px 14px;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: background 0.2s;
+    border-radius: 0;
+}
+.likes-item-add:hover { background: #E04400; }
+.likes-item-remove {
+    background: none; border: none;
+    color: #444; font-size: 18px;
+    cursor: pointer; padding: 0;
+    transition: color 0.2s;
+}
+.likes-item-remove:hover { color: #FF4D00; }
 </style>
 
 <div class="mobile-menu" id="mobileMenu">
@@ -534,13 +649,86 @@
         if (el) el.textContent = likes.length;
     }
 
+    // ── ИЗБРАННОЕ: боковая панель ──
+    const likesPanel   = document.getElementById('likesPanel');
+    const likesOverlay = document.getElementById('likesOverlay');
+    const navLikesBtn  = document.getElementById('navLikesBtn');
+
+    // справочник товаров для рендера карточки (имя/цена/картинка)
+    const LIKES_CATALOG = {
+        '1': { name: 'Оверсайз худи',    price: 4900 },
+        '2': { name: 'Карго-брюки',      price: 6200 },
+        '3': { name: 'Базовая футболка', price: 2800 },
+        '4': { name: 'Бомбер',           price: 9500 },
+        '5': { name: 'Широкие джинсы',   price: 7200 },
+        '6': { name: 'Трекинг-куртка',   price: 12500 }
+    };
+    const LIKES_FALLBACK_IMG = '/static/images/photo_2026-05-17_22.34.33.jpeg';
+
+    function openLikes() {
+        likesPanel.classList.add('open');
+        likesOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        renderLikesPanel();
+    }
+    function closeLikes() {
+        likesPanel.classList.remove('open');
+        likesOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    if (navLikesBtn)  navLikesBtn.addEventListener('click', openLikes);
+    document.getElementById('likesClose').addEventListener('click', closeLikes);
+    likesOverlay.addEventListener('click', closeLikes);
+
+    function renderLikesPanel() {
+        const liked = JSON.parse(localStorage.getItem('liked_products') || '[]');
+        const box = document.getElementById('likesItems');
+        if (!liked.length) { box.innerHTML = '<div class="likes-empty">Пока пусто</div>'; return; }
+
+        box.innerHTML = liked.map(id => {
+            const p = LIKES_CATALOG[id] || { name: 'Товар ' + id, price: 0 };
+            return `
+                <div class="likes-item">
+                    <div class="likes-item-img"><img src="${LIKES_FALLBACK_IMG}" alt=""></div>
+                    <div class="likes-item-info">
+                        <div class="likes-item-name">${p.name}</div>
+                        <div class="likes-item-price">${p.price.toLocaleString('ru')} ₽</div>
+                    </div>
+                    <div class="likes-item-actions">
+                        <button class="likes-item-add" onclick="likesAddToCart('${id}')">В корзину</button>
+                        <button class="likes-item-remove" onclick="likesRemove('${id}')" aria-label="Удалить">×</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.likesRemove = function(id) {
+        let liked = JSON.parse(localStorage.getItem('liked_products') || '[]');
+        liked = liked.filter(x => x !== id);
+        localStorage.setItem('liked_products', JSON.stringify(liked));
+        updateLikesCount();
+        renderLikesPanel();
+    };
+
+    window.likesAddToCart = async function(id) {
+        const p = LIKES_CATALOG[id] || { name: 'Товар ' + id, price: 0 };
+        await fetch('/api/cart/add', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ product_id: id, name: p.name, price: p.price })
+        });
+        updateCartCount(); renderT706Cart();
+    };
+
     updateCartCount();
     updateLikesCount();
     setInterval(updateCartCount, 3000);
     window.updateLikesCount = updateLikesCount;
     window.updateCartCount  = updateCartCount;
     window.openCart = openCart;
+    window.openLikes = openLikes;
     window.renderT706Cart = renderT706Cart;
+    window.renderLikesPanel = renderLikesPanel;
 </script>
 
 {% block extra_js %}{% endblock %}
