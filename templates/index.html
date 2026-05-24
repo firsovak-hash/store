@@ -903,20 +903,20 @@ function centerGroup(grp) {
   const tl = new THREE.TextureLoader();
   tl.crossOrigin = 'anonymous';
 
-  /* базовое фото — Никита с медалью */
-  tl.load('/static/images/nikit/photo-01.jpg', tex => {
+  /* базовое фото — студийный портрет */
+  tl.load('/static/images/studio/studio-2.jpg', tex => {
     tex.minFilter = tex.magFilter = THREE.LinearFilter;
     dispUni.uTex1.value  = tex;
     dispUni.uImgAR.value = tex.image.naturalWidth / tex.image.naturalHeight || 1.78;
   });
 
-  /* 5 фото слайдшоу — Никита, соревнования 2026 */
+  /* 5 фото слайдшоу — студийный портрет качка на белом фоне */
   const SLIDE_URLS = [
-    '/static/images/nikit/photo-01.jpg',
-    '/static/images/nikit/frame-8s.jpg',
-    '/static/images/nikit/frame-22s.jpg',
-    '/static/images/nikit/frame-35s.jpg',
-    '/static/images/nikit/frame-62s.jpg'
+    '/static/images/studio/studio-1.jpg',
+    '/static/images/studio/studio-2.jpg',
+    '/static/images/studio/studio-3.jpg',
+    '/static/images/studio/studio-4.jpg',
+    '/static/images/studio/studio-5.jpg'
   ];
   const slideKeys = ['uS0','uS1','uS2','uS3','uS4'];
   SLIDE_URLS.forEach((url, i) => {
