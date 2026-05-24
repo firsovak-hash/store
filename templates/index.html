@@ -799,8 +799,8 @@ function centerGroup(grp) {
 
         float blobD = d / max(warp, 0.12);
 
-        /* разлив сильнее и дольше */
-        float spread  = 1.0 - exp(-uPuddleAge * 1.9);
+        /* разлив быстрее — почти моментальный раскрой */
+        float spread  = 1.0 - exp(-uPuddleAge * 4.5);
 
         /* дыхание — больше амплитуда */
         float breathe = 1.0
@@ -851,12 +851,14 @@ function centerGroup(grp) {
       vec2 cuv = coverUV(vUv, uImgAR, uScreenAR);
       vec4 photo = texture2D(uTex1, cuv);
 
-      /* ── база: тёплая сепия + лёгкая виньетка ── */
+      /* ── база: персиково-карамельный тон под кожу + виньетка ── */
       float lum = dot(photo.rgb, vec3(0.299, 0.587, 0.114));
-      vec3 warm = vec3(lum * 1.32, lum * 0.86, lum * 0.54);
-      photo.rgb = mix(photo.rgb, warm, 0.55);
+      vec3 skinWarm = vec3(lum * 1.34, lum * 0.94, lum * 0.70);
+      photo.rgb = mix(photo.rgb, skinWarm, 0.72);
+      // добавим лёгкий персиковый оверлей (особенно в светах)
+      photo.rgb += vec3(0.05, 0.025, 0.005) * pow(lum, 1.2);
       float vignette = 1.0 - smoothstep(0.40, 1.05, length(vUv - 0.5) * 1.4);
-      photo.rgb *= 0.72 + 0.28 * vignette;
+      photo.rgb *= 0.74 + 0.26 * vignette;
 
       /* ── слайдшоу: кроссфейд между текущим и следующим, в ч/б ── */
       float nextIdx = mod(uSlideIdx + 1.0, 5.0);
@@ -980,13 +982,13 @@ function centerGroup(grp) {
     if (puddleOn) { puddleOn = false; puddleAge = 0; }
 
     stopTimer = setTimeout(() => {
-      /* курсор не двигался 55 мс — запускаем лужу немедленно */
+      /* курсор не двигался 25 мс — сразу запускаем лужу */
       if (active) {
         puddleOn = true;
         puddleAge = 0;
         puddlePos.copy(lastPos);
       }
-    }, 55);
+    }, 25);
   });
 
   heroSection.addEventListener('mouseleave', () => {
@@ -1013,9 +1015,9 @@ function centerGroup(grp) {
     /* возраст лужи тикает только пока активна */
     if (puddleOn && active) puddleAge += 0.016;
 
-    /* плавный fade in/out силы лужи */
+    /* быстрый fade in силы лужи */
     const target = (puddleOn && active) ? 1.0 : 0.0;
-    const rate   = target > puddleStr ? 0.055 : 0.08;
+    const rate   = target > puddleStr ? 0.18 : 0.08;
     puddleStr   += (target - puddleStr) * rate;
     if (puddleStr < 0.001) puddleStr = 0;
 
