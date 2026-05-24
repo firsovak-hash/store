@@ -773,39 +773,50 @@ function centerGroup(grp) {
                 + mainSplat * 2.8;
       c.r += ink;
 
-      /* ── клякса: органичный блоб, расплывается и дышит ── */
+      /* ── клякса: хаотичная, дышит и разбрасывается ── */
       if(uPuddleStr > 0.001){
         vec2 pp   = (vUv - uPuddleMouse) * asp;
         float d   = length(pp);
         float ang = atan(pp.y, pp.x);
 
-        /* угловые гармоники — больше выраженности, щупальца симбиота */
+        /* доп. шум для смещения центра волн → разные щупальца каждый кадр */
+        float nA = hash(vec2(floor(uTime*3.0), 1.7));
+        float nB = hash(vec2(floor(uTime*2.4), 5.3));
+        float nC = hash(vec2(floor(uTime*1.8), 9.1));
+
+        /* угловые гармоники — сильнее и с псевдошумом */
         float warp = 1.0
-          + sin(ang*2. + uTime*0.44) * 0.42
-          + sin(ang*3. - uTime*0.28) * 0.26
-          + cos(ang*4. + uTime*0.57) * 0.18
-          + sin(ang*6. - uTime*0.19) * 0.12
-          + cos(ang*9. + uTime*0.33) * 0.07
-          + sin(ang*13.- uTime*0.14) * 0.04;
-        float blobD = d / max(warp, 0.18);
+          + sin(ang*2. + uTime*0.55 + nA*6.28) * 0.62
+          + sin(ang*3. - uTime*0.38 + nB*6.28) * 0.40
+          + cos(ang*5. + uTime*0.72 + nC*6.28) * 0.30
+          + sin(ang*7. - uTime*0.24)           * 0.20
+          + cos(ang*11.+ uTime*0.48 + nA*6.28) * 0.12
+          + sin(ang*17.- uTime*0.20 + nB*6.28) * 0.07;
 
-        /* разливается медленнее — чтобы было видно как растёт */
-        float spread  = 1.0 - exp(-uPuddleAge * 1.6);
+        /* радиальные «выбросы» — псевдо-сгустки в случайных секторах */
+        float jet = sin(ang*4. + nA*30.0) * sin(ang*7. - nB*22.0);
+        warp += jet * 0.35 * (0.5 + 0.5 * sin(uTime*0.9));
 
-        /* дыхание симбиота: 3 частоты, большая амплитуда */
+        float blobD = d / max(warp, 0.12);
+
+        /* разлив сильнее и дольше */
+        float spread  = 1.0 - exp(-uPuddleAge * 1.9);
+
+        /* дыхание — больше амплитуда */
         float breathe = 1.0
-          + sin(uTime*0.78)*0.22
-          + sin(uTime*1.55)*0.11
-          + sin(uTime*2.40)*0.05;
+          + sin(uTime*0.78)*0.30
+          + sin(uTime*1.55)*0.16
+          + sin(uTime*2.40)*0.08
+          + sin(uTime*4.10)*0.04;
 
-        /* почти весь экран в максимуме */
-        float blobR = 0.68 * spread * breathe;
+        /* увеличенный максимум */
+        float blobR = 0.78 * spread * breathe;
 
         /* мягкий живой край */
-        float blob = smoothstep(blobR, blobR * 0.52, blobD);
+        float blob = smoothstep(blobR, blobR * 0.48, blobD);
 
-        /* чернила тоже дышат — пульсирует видимость */
-        float inkRate = 0.0055 * (0.52 + 0.48 * sin(uTime*0.78));
+        /* пульсация чернил */
+        float inkRate = 0.0075 * (0.45 + 0.55 * sin(uTime*0.78 + nA*3.0));
         c.r += blob * uPuddleStr * inkRate;
       }
 
@@ -840,19 +851,22 @@ function centerGroup(grp) {
       vec2 cuv = coverUV(vUv, uImgAR, uScreenAR);
       vec4 photo = texture2D(uTex1, cuv);
 
-      /* ── база: лёгкое затемнение по краям для читабельности текста ── */
-      float vignette = 1.0 - smoothstep(0.4, 1.05, length(vUv - 0.5) * 1.4);
-      photo.rgb *= 0.65 + 0.35 * vignette;
+      /* ── база: тёплая сепия + лёгкая виньетка ── */
+      float lum = dot(photo.rgb, vec3(0.299, 0.587, 0.114));
+      vec3 warm = vec3(lum * 1.32, lum * 0.86, lum * 0.54);
+      photo.rgb = mix(photo.rgb, warm, 0.55);
+      float vignette = 1.0 - smoothstep(0.40, 1.05, length(vUv - 0.5) * 1.4);
+      photo.rgb *= 0.72 + 0.28 * vignette;
 
-      /* ── слайдшоу: кроссфейд между текущим и следующим ── */
+      /* ── слайдшоу: кроссфейд между текущим и следующим, в ч/б ── */
       float nextIdx = mod(uSlideIdx + 1.0, 5.0);
-      vec3 slideCol = mix(
-        getSlide(cuv, uSlideIdx).rgb,
-        getSlide(cuv, nextIdx).rgb,
-        uSlideBlend
-      );
+      vec3 a = getSlide(cuv, uSlideIdx).rgb;
+      vec3 b = getSlide(cuv, nextIdx).rgb;
+      vec3 slideCol = mix(a, b, uSlideBlend);
+      float bw = dot(slideCol, vec3(0.299, 0.587, 0.114));
+      slideCol = vec3(bw);
 
-      /* ── под курсором: яркая цветная версия слайдшоу (без затемнения) ── */
+      /* ── под курсором: ч/б ── */
       float reveal = smoothstep(0.02, 0.54, texture2D(uSim, vUv).r);
       gl_FragColor = vec4(mix(photo.rgb, slideCol, reveal), 1.0);
     }
@@ -1004,6 +1018,24 @@ function centerGroup(grp) {
     const rate   = target > puddleStr ? 0.055 : 0.08;
     puddleStr   += (target - puddleStr) * rate;
     if (puddleStr < 0.001) puddleStr = 0;
+
+    /* ── ДРЕЙФ ЛУЖИ: даже когда курсор замер, центр блуждает в случайные стороны ── */
+    if (puddleOn && active) {
+      // многочастотные синусы + псевдошум → каждый раз новые направления
+      const t = simTime;
+      const driftX = (
+        Math.sin(t * 0.73) * 0.55 +
+        Math.sin(t * 1.31 + 1.7) * 0.32 +
+        Math.sin(t * 2.17 + 4.1) * 0.18
+      ) * 0.085;
+      const driftY = (
+        Math.cos(t * 0.81) * 0.55 +
+        Math.cos(t * 1.49 + 2.3) * 0.32 +
+        Math.cos(t * 2.29 + 0.9) * 0.18
+      ) * 0.075;
+      const tgt = new THREE.Vector2(lastPos.x + driftX, lastPos.y + driftY);
+      puddlePos.lerp(tgt, 0.07);
+    }
 
     /* слайдшоу */
     slideTimer += 0.016;
