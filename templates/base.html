@@ -19,12 +19,12 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: #EEEAE3;
-            color: #0F0F0F;
+            background: #000000;
+            color: #fff;
             line-height: 1.5;
         }
 
-        /* ШАПКА — СТЕКЛЯННАЯ СВЕТЛАЯ ПЛАШКА */
+        /* ШАПКА — СТЕКЛЯННАЯ ЧЁРНАЯ ПЛАШКА */
         .navbar {
             position: fixed;
             top: 0;
@@ -35,10 +35,10 @@
             align-items: center;
             justify-content: space-between;
             z-index: 100;
-            background: rgba(238, 234, 227, 0.82);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid #D9D3C5;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         
         /* ЛЕВАЯ ЧАСТЬ: логотип + силуэт (силуэт справа от лого) */
@@ -56,7 +56,7 @@
         .logo-brand {
             font-size: 22px;
             font-weight: 600;
-            color: #0F0F0F;
+            color: white;
             letter-spacing: 2px;
             display: block;
             font-family: 'Cormorant', serif;
@@ -66,7 +66,7 @@
         .logo-by {
             font-size: 9px;
             font-weight: 400;
-            color: #888;
+            color: rgba(255, 255, 255, 0.4);
             letter-spacing: 3px;
             display: block;
             text-transform: uppercase;
@@ -82,7 +82,6 @@
             height: 100%;
             width: auto;
             display: block;
-            filter: invert(1);  /* белый силуэт → чёрный для светлой темы */
         }
         
         /* МЕНЮ — ПО ЦЕНТРУ */
@@ -95,7 +94,7 @@
         }
         
         .nav-links a {
-            color: #555;
+            color: rgba(255,255,255,0.7);
             text-decoration: none;
             font-weight: 400;
             font-size: 11px;
@@ -106,7 +105,7 @@
             font-family: 'Inter', sans-serif;
         }
 
-        .nav-links a:hover { color: #FF4D00; }
+        .nav-links a:hover { color: #fff; }
 
         /* ПРАВАЯ ЧАСТЬ: иконки */
         .nav-icons {
@@ -116,20 +115,18 @@
         }
 
         .nav-icons a, .cart-icon {
-            color: #0F0F0F;
+            color: white;
             text-decoration: none;
             font-size: 20px;
             position: relative;
-            transition: color 0.2s;
         }
-        .nav-icons a:hover, .cart-icon:hover { color: #FF4D00; }
 
         .cart-count, .likes-count {
             position: absolute;
             top: -10px;
             right: -14px;
-            background: #0F0F0F;
-            color: #EEEAE3;
+            background: white;
+            color: black;
             font-size: 10px;
             font-weight: 600;
             padding: 2px 6px;
@@ -141,7 +138,7 @@
         .burger {
             display: none;
             cursor: pointer;
-            color: #0F0F0F;
+            color: white;
             font-size: 24px;
         }
 
@@ -152,8 +149,7 @@
             width: 70%;
             max-width: 280px;
             height: 100%;
-            background: #EEEAE3;
-            border-left: 1px solid #D9D3C5;
+            background: #111;
             z-index: 1001;
             padding: 80px 24px 24px;
             transition: 0.3s;
@@ -166,11 +162,10 @@
         .mobile-menu a {
             display: block;
             padding: 14px 0;
-            color: #0F0F0F;
+            color: white;
             text-decoration: none;
-            border-bottom: 1px solid #D9D3C5;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .mobile-menu a:hover { color: #FF4D00; }
         
         .menu-overlay {
             position: fixed;
@@ -196,8 +191,7 @@
         }
         
         .footer {
-            background: #0F0F0F;
-            color: #999;
+            background: #111;
             padding: 60px 40px 30px;
             margin-top: 60px;
         }
@@ -211,34 +205,30 @@
         }
 
         .footer-column h4 {
-            color: #EEEAE3;
+            color: white;
             margin-bottom: 16px;
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-size: 16px;
         }
 
         .footer-column a {
             display: block;
-            color: #777;
+            color: rgba(255,255,255,0.6);
             text-decoration: none;
             margin-bottom: 8px;
-            font-size: 13px;
-            transition: color 0.2s;
+            font-size: 14px;
         }
 
         .footer-column a:hover {
-            color: #FF4D00;
+            color: white;
         }
 
         .footer-bottom {
             text-align: center;
             padding-top: 40px;
             margin-top: 40px;
-            border-top: 1px solid #1F1F1F;
-            color: #555;
-            font-size: 11px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.4);
+            font-size: 12px;
         }
         
         @media (max-width: 768px) {

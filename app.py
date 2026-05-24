@@ -5,6 +5,8 @@ import os
 
 app = Flask(__name__)
 app.secret_key = 'секретный-ключ-для-корзины-поменяй-потом'  # ОБЯЗАТЕЛЬНО для session
+app.config['TEMPLATES_AUTO_RELOAD'] = True  # Jinja подхватывает правки шаблонов без рестарта
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # static не кэшируется на сервере
 CORS(app)  # Разрешаем запросы с Тильды
 
 # GLB mime type
