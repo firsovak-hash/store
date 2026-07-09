@@ -1142,20 +1142,22 @@ body { background: var(--tg-theme-bg-color, #000); }
     #tgGreeting {
         position: fixed; inset: 0; z-index: 99999; background: #000;
         display: none; align-items: center; justify-content: center;
-        padding: 24px; opacity: 0; transition: opacity .5s ease; overflow: hidden;
+        padding: 40px 28px; opacity: 0; transition: opacity .5s ease;
+        box-sizing: border-box;
     }
     #tgGreeting.show { display: flex; opacity: 1; }
     #tgGreeting.hide { opacity: 0; }
-    .tg-greeting-inner { max-width: 92%; text-align: center; }
+    .tg-greeting-inner { width: 100%; max-width: 640px; text-align: center; }
     #tgGreetingText {
         font-family: 'Caveat', cursive; color: #fff; font-weight: 600;
-        font-size: clamp(40px, 13vw, 88px); line-height: 1.05;
-        white-space: nowrap; letter-spacing: .5px;
-        animation: tgWrite 1.35s .15s cubic-bezier(.22,.61,.36,1) both;
+        font-size: clamp(36px, 9vw, 66px); line-height: 1.2;
+        letter-spacing: .5px; padding: 6px 4px;
+        overflow-wrap: break-word; word-break: break-word;
+        animation: tgWrite 1.35s .1s cubic-bezier(.22,.61,.36,1) both;
     }
     @keyframes tgWrite {
-        from { clip-path: inset(0 100% 0 0); opacity: .25; }
-        to   { clip-path: inset(0 0 0 0);   opacity: 1; }
+        from { clip-path: inset(0 100% -20% 0); opacity: .25; }
+        to   { clip-path: inset(0 -5% -20% 0); opacity: 1; }
     }
     @media (prefers-reduced-motion: reduce) {
         #tgGreetingText { animation: none; }
@@ -1164,37 +1166,39 @@ body { background: var(--tg-theme-bg-color, #000); }
 <script>
 (function () {
     var tg = window.Telegram && window.Telegram.WebApp;
-    var initData = window.__TG_INIT || (tg && tg.initData) || '';
-    if (!initData) return;  // вне Telegram — ни верификации, ни приветствия
+    if (!tg) return;  // вне Telegram — ничего
 
-    fetch('/api/tg/verify', { method: 'POST', headers: { 'X-Telegram-Init-Data': initData } })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) {
-            if (!d || !d.ok) return;
-            window.STORE_USER = d.user;
-            window.STORE_PROFILE = d.profile;
-            try { document.dispatchEvent(new CustomEvent('store:profile', { detail: d })); } catch (e) {}
-
-            var greeted = false;
-            try { greeted = localStorage.getItem('greeted_' + d.user.id) === '1'; } catch (e) {}
-            if (d.first_visit && !greeted) {
-                showGreeting(d.user);
-                try { localStorage.setItem('greeted_' + d.user.id, '1'); } catch (e) {}
-            }
-        })
-        .catch(function () {});
-
-    function showGreeting(user) {
-        var name = user.first_name || (user.username ? '@' + user.username : '') || 'друг';
-        var ov = document.getElementById('tgGreeting');
-        var txt = document.getElementById('tgGreetingText');
-        if (!ov || !txt) return;
-        txt.textContent = 'Привет, ' + name + '!';
-        ov.classList.add('show');
-        try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
-        setTimeout(function () { ov.classList.add('hide'); }, 2600);
-        setTimeout(function () { ov.classList.remove('show', 'hide'); ov.style.display = 'none'; }, 3300);
+    // 1) Серверная верификация (профиль/префилл заказа) — отдельно, не блокирует приветствие
+    var initData = window.__TG_INIT || tg.initData || '';
+    if (initData) {
+        fetch('/api/tg/verify', { method: 'POST', headers: { 'X-Telegram-Init-Data': initData } })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+                if (!d || !d.ok) return;
+                window.STORE_USER = d.user;
+                window.STORE_PROFILE = d.profile;
+                try { document.dispatchEvent(new CustomEvent('store:profile', { detail: d })); } catch (e) {}
+            })
+            .catch(function () {});
     }
+
+    // 2) Приветствие — по локальному флагу устройства (для имени подпись не нужна).
+    //    Ключ v2 — чтобы показалось заново даже если старый флаг успел записаться.
+    var u = (tg.initDataUnsafe && tg.initDataUnsafe.user) || null;
+    if (!u) return;
+    var key = 'greeted_v2_' + u.id;
+    try { if (localStorage.getItem(key) === '1') return; } catch (e) {}
+    try { localStorage.setItem(key, '1'); } catch (e) {}
+
+    var name = u.first_name || (u.username ? '@' + u.username : '') || 'друг';
+    var ov = document.getElementById('tgGreeting');
+    var txt = document.getElementById('tgGreetingText');
+    if (!ov || !txt) return;
+    txt.textContent = 'Привет, ' + name + '!';
+    requestAnimationFrame(function () { ov.classList.add('show'); });
+    try { tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
+    setTimeout(function () { ov.classList.add('hide'); }, 2700);
+    setTimeout(function () { ov.classList.remove('show', 'hide'); ov.style.display = 'none'; }, 3400);
 })();
 </script>
 
