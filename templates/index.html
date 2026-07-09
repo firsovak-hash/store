@@ -14,29 +14,40 @@ body { background: #000; }
 }
 #introCanvas { width: 100%; height: 100%; display: block; }
 
-/* ── HERO (тёмный editorial-блок с WebGL слайд-шоу) ── */
+/* ── HERO: слайд-шоу вейпшопа ── */
 .hero {
     min-height: 100vh; background: #000;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    display: flex; align-items: flex-end;
     position: relative; overflow: hidden;
 }
 
-/* WebGL canvas вернули */
-#hero-gl {
+/* Слайды-плейсхолдеры «Фото N» */
+.slideshow { position: absolute; inset: 0; z-index: 1; }
+.slide {
     position: absolute; inset: 0;
-    width: 100% !important; height: 100% !important;
-    display: block; z-index: 1; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 1s ease;
 }
+.slide.is-active { opacity: 1; }
+.slide:nth-child(1) { background: radial-gradient(120% 120% at 30% 20%, #1c1c1c, #050505); }
+.slide:nth-child(2) { background: radial-gradient(120% 120% at 70% 25%, #201a16, #050505); }
+.slide:nth-child(3) { background: radial-gradient(120% 120% at 40% 70%, #14181f, #050505); }
+.slide:nth-child(4) { background: radial-gradient(120% 120% at 65% 60%, #1d1420, #050505); }
+.slide:nth-child(5) { background: radial-gradient(120% 120% at 50% 45%, #101a18, #050505); }
+.slide-label {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(40px, 12vw, 96px); font-weight: 500;
+    letter-spacing: 2px; color: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.10);
+    padding: 22px 44px; border-radius: 14px; text-transform: uppercase;
+}
+
+/* скрим снизу — для читаемости текста поверх слайдов */
 .hero::after {
     content: ''; pointer-events: none;
     position: absolute; inset: 0; z-index: 2;
-    background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.20) 0%,
-        rgba(0,0,0,0.05) 45%,
-        rgba(0,0,0,0.50) 100%
-    );
+    background: linear-gradient(to top,
+        rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.4) 34%, rgba(0,0,0,0) 62%);
 }
 
 .hero-noise {
@@ -44,81 +55,53 @@ body { background: #000; }
     z-index: 3;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
 }
-.hero-lines {
-    position: absolute; inset: 0; pointer-events: none; z-index: 3;
-    background-image: repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.015) 80px, rgba(255,255,255,0.015) 81px);
-}
-.hero-inner {
+/* Текст-оверлей поверх слайдов */
+.hero-overlay {
     position: relative; z-index: 4;
-    text-align: center; padding: 0 20px;
+    width: 100%; max-width: 720px;
+    padding: 0 24px calc(130px + env(safe-area-inset-bottom));
 }
 .hero-eyebrow {
-    font-size: 9px; letter-spacing: 6px;
-    text-transform: uppercase; color: #666;
-    font-family: 'Inter', sans-serif;
-    margin-bottom: 40px; opacity: 0;
-    transform: translateY(20px);
+    font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
+    color: rgba(255,255,255,.55); font-family: 'Inter', sans-serif;
+    margin-bottom: 16px;
 }
-.hero-title {
-    font-size: clamp(72px, 14vw, 180px);
-    font-weight: 600; letter-spacing: -4px;
-    color: #fff; font-family: 'Cormorant', serif;
-    line-height: 0.86; text-align: center;
+.hero-heading {
+    font-family: 'Cormorant', serif; color: #fff;
+    font-size: clamp(38px, 10vw, 66px); font-weight: 600;
+    line-height: 1.02; letter-spacing: -1px; margin-bottom: 16px;
 }
-.hero-title .line { display: block; overflow: hidden; padding-bottom: 8px; }
-.hero-title .word {
-    display: inline-block;
-    transform: translateY(115%);
+.hero-text {
+    font-family: 'Inter', sans-serif; color: rgba(255,255,255,.72);
+    font-size: 15px; line-height: 1.6; max-width: 460px; margin-bottom: 28px;
 }
-.hero-tag {
-    font-size: 9px; letter-spacing: 5px;
-    text-transform: uppercase; color: #555;
-    font-family: 'Inter', sans-serif;
-    margin-top: 44px; opacity: 0;
-    transform: translateY(20px);
+.hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #fff; color: #000; text-decoration: none;
+    font-family: 'Inter', sans-serif; font-weight: 700;
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    padding: 16px 34px; border-radius: 40px;
+    animation: ctaPulse 2.2s infinite; will-change: box-shadow;
+    transition: transform .18s ease;
 }
-.scroll-prompt {
-    position: absolute; bottom: 44px; left: 50%;
-    transform: translateX(-50%);
-    display: flex; flex-direction: column;
-    align-items: center; gap: 14px;
-    opacity: 0; z-index: 2;
+.hero-cta:active { transform: scale(.97); }
+@keyframes ctaPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255,255,255,.5); }
+    70%  { box-shadow: 0 0 0 18px rgba(255,255,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
 }
-.scroll-prompt span {
-    font-size: 8px; letter-spacing: 4px;
-    text-transform: uppercase; color: #555;
-    font-family: 'Inter', sans-serif;
-}
-.scroll-line {
-    width: 1px; height: 64px; background: #333;
-    position: relative; overflow: hidden;
-}
-.scroll-line::after {
-    content: '';
-    position: absolute; top: -100%; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(to bottom, transparent, #555 50%, transparent);
-    animation: lineScroll 1.8s ease-in-out infinite;
-}
-@keyframes lineScroll { to { top: 100%; } }
 
-/* ── BREATHING ── */
-@keyframes breatheOpacity {
-    0%, 100% { opacity: 0.5; }
-    50%       { opacity: 1;   }
+/* Индикаторы слайдов */
+.slide-dots {
+    position: absolute; z-index: 4;
+    bottom: calc(96px + env(safe-area-inset-bottom)); left: 24px;
+    display: flex; gap: 8px;
 }
-@keyframes breatheScale {
-    0%, 100% { transform: scale(1);    }
-    50%       { transform: scale(1.05); }
+.slide-dots .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,.28); transition: all .35s ease;
 }
-.hero-sub-breathe {
-    animation: breatheOpacity 4s ease-in-out infinite;
-}
-.scroll-prompt-inner {
-    animation: breatheScale 3.5s ease-in-out infinite;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 14px;
-}
+.slide-dots .dot.is-active { background: #fff; width: 22px; border-radius: 3px; }
 
 
 /* ── MANIFEST SECTION ── */
@@ -369,14 +352,49 @@ body { background: #000; }
     <canvas id="introCanvas"></canvas>
 </div>
 
-<!-- ── HERO ── -->
+<!-- ── HERO: слайд-шоу ── -->
 <section class="hero" id="hero">
-    <!-- WebGL fluid reveal canvas -->
-    <canvas id="hero-gl"></canvas>
+    <div class="slideshow" id="slideshow">
+        <div class="slide is-active"><span class="slide-label">Фото 1</span></div>
+        <div class="slide"><span class="slide-label">Фото 2</span></div>
+        <div class="slide"><span class="slide-label">Фото 3</span></div>
+        <div class="slide"><span class="slide-label">Фото 4</span></div>
+        <div class="slide"><span class="slide-label">Фото 5</span></div>
+    </div>
 
     <div class="hero-noise"></div>
-    <div class="hero-lines"></div>
+
+    <div class="hero-overlay">
+        <div class="hero-eyebrow">Vape Shop</div>
+        <h1 class="hero-heading">Пар, вкус<br>и ничего лишнего</h1>
+        <p class="hero-text">Жидкости, под-системы и картриджи проверенных брендов. Честные цены и быстрая доставка — весь вейпшоп в пару касаний.</p>
+        <a href="/catalog" class="hero-cta">В каталог →</a>
+    </div>
+
+    <div class="slide-dots" id="slideDots">
+        <span class="dot is-active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
 </section>
+
+<script>
+(function () {
+    var slides = document.querySelectorAll('#slideshow .slide');
+    var dots = document.querySelectorAll('#slideDots .dot');
+    if (slides.length < 2) return;
+    var i = 0;
+    setInterval(function () {
+        slides[i].classList.remove('is-active');
+        if (dots[i]) dots[i].classList.remove('is-active');
+        i = (i + 1) % slides.length;
+        slides[i].classList.add('is-active');
+        if (dots[i]) dots[i].classList.add('is-active');
+    }, 3200);
+})();
+</script>
 
 {% endblock %}
 
