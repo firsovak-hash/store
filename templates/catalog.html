@@ -3,11 +3,49 @@
 {% block title %}Каталог{% endblock %}
 
 {% block extra_css %}
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
 <style>
     body { background: #000; }
 
     /* ── PAGE ── */
     .catalog-page { background: #000; padding: 0 0 120px; min-height: 100vh; }
+
+    /* ── MOSAIC COLOR TREATMENT ── */
+    /* Первая фото — в цвете с тёплым оранжевым тоном */
+    .hp-mosaic__item:nth-child(1) .hp-mosaic__image {
+        filter: brightness(0.92) saturate(1.25) sepia(14%) hue-rotate(-8deg);
+        transition: transform 0.55s ease, filter 0.4s ease;
+    }
+    .hp-mosaic__item:nth-child(1):hover .hp-mosaic__image {
+        transform: scale(1.04);
+        filter: brightness(1.02) saturate(1.3) sepia(10%) hue-rotate(-8deg);
+    }
+    /* Остальные — ч/б, цвет при наведении */
+    .hp-mosaic__item:nth-child(n+2) .hp-mosaic__image {
+        filter: grayscale(1) brightness(0.82);
+        transition: transform 0.55s ease, filter 0.5s ease;
+    }
+    .hp-mosaic__item:nth-child(n+2):hover .hp-mosaic__image {
+        transform: scale(1.04);
+        filter: grayscale(0) brightness(1);
+    }
+
+    /* ── GALLERY IMAGE COLOR TREATMENT ── */
+    /* Первая фото карточки — тёплый цвет */
+    .t754__gimg[data-idx="0"] {
+        filter: brightness(0.9) saturate(1.2) sepia(10%) hue-rotate(-6deg);
+    }
+    /* Остальные — ч/б */
+    .t754__gimg:not([data-idx="0"]) {
+        filter: grayscale(1) brightness(0.85);
+    }
 
     .catalog-section-title {
         font-size: 12px; font-weight: 500; letter-spacing: 4px;
@@ -15,54 +53,48 @@
         padding: 60px 20px 50px; font-family: 'Inter', sans-serif;
     }
 
-    /* ── COLLAGE ── */
-    .hp-mosaic { background: #000; padding: 0 40px 60px; }
-    .hp-mosaic__wrapper { max-width: 1200px; margin: 0 auto; }
+    /* ── COLLAGE (2 + 1 pyramid) ── */
+    .hp-mosaic { background: #000; padding: 0 16px 40px; }
+    .hp-mosaic__wrapper { max-width: 400px; margin: 0 auto; }
     .hp-mosaic__grid {
         display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        grid-auto-rows: 180px;
-        gap: 8px;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
     }
 
     .hp-mosaic__item {
-        position: relative; overflow: hidden; border-radius: 3px;
+        position: relative; overflow: hidden; border-radius: 12px;
+        aspect-ratio: 3 / 4;
     }
     .hp-mosaic__item:hover { z-index: 2; }
 
-    .hp-mosaic__item:nth-child(1) { grid-column: 1 / 5;  grid-row: 1 / 4; }
-    .hp-mosaic__item:nth-child(2) { grid-column: 5 / 9;  grid-row: 1 / 4; }
-    .hp-mosaic__item:nth-child(3) { grid-column: 9 / 13; grid-row: 1 / 4; }
-    .hp-mosaic__item:nth-child(4) { grid-column: 1 / 13; grid-row: 4 / 6; }
+    .hp-mosaic__item:nth-child(3) {
+        grid-column: 1 / -1;
+        max-width: 60%;
+        justify-self: center;
+        aspect-ratio: 4 / 3;
+    }
 
     .hp-mosaic__cat-label {
         position: absolute; bottom: 0; left: 0; right: 0;
-        padding: 60px 20px 22px;
-        background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.72) 100%);
-        display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+        padding: 48px 14px 14px;
+        background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.75) 100%);
+        display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
         pointer-events: none;
     }
     .hp-mosaic__cat-label > * { pointer-events: auto; }
     .hp-mosaic__cat-name {
-        font-size: 17px; font-weight: 600; letter-spacing: 2.5px;
+        font-size: 14px; font-weight: 600; letter-spacing: 2px;
         text-transform: uppercase; color: #fff; font-family: 'Inter', sans-serif;
     }
     .hp-mosaic__cat-btn {
         background: transparent; border: 1px solid rgba(255,255,255,0.5);
-        color: #fff; padding: 7px 16px; font-size: 10px;
+        color: #fff; padding: 6px 14px; font-size: 9px;
         letter-spacing: 1.5px; text-transform: uppercase;
         cursor: pointer; border-radius: 2px; font-family: 'Inter', sans-serif;
         transition: background 0.2s, border-color 0.2s;
     }
     .hp-mosaic__cat-btn:hover { background: rgba(255,255,255,0.18); border-color: #fff; }
-
-    .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-label {
-        top: 0; right: auto; width: 40%; flex-direction: column;
-        align-items: flex-start; justify-content: center;
-        padding: 0 0 0 48px;
-        background: linear-gradient(90deg, rgba(0,0,0,0.62) 0%, transparent 100%);
-    }
-    .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-name { font-size: 26px; }
 
     .hp-mosaic__image {
         width: 100%; height: 100%; object-fit: cover; display: block;
@@ -71,33 +103,10 @@
     }
     .hp-mosaic__item:hover .hp-mosaic__image { transform: scale(1.04); filter: brightness(1); }
 
-    @media (max-width: 860px) {
-        .hp-mosaic { padding: 0 16px 32px; }
-        .hp-mosaic__grid { grid-auto-rows: 160px; gap: 6px; }
-        .hp-mosaic__item:nth-child(1),
-        .hp-mosaic__item:nth-child(2),
-        .hp-mosaic__item:nth-child(3) { grid-column: span 4; grid-row: 1 / 3; }
-        .hp-mosaic__item:nth-child(4) { grid-column: 1 / -1; grid-row: 3 / 5; }
-        .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-label { width: 55%; padding-left: 32px; }
-        .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-name { font-size: 20px; }
-    }
-    @media (max-width: 600px) {
-        .hp-mosaic { padding: 0 10px 24px; }
-        .hp-mosaic__grid { grid-auto-rows: 200px; gap: 5px; }
-        .hp-mosaic__item:nth-child(1),
-        .hp-mosaic__item:nth-child(2),
-        .hp-mosaic__item:nth-child(3) { grid-column: span 4; grid-row: span 1; }
-        .hp-mosaic__item:nth-child(4) { grid-column: 1 / -1; grid-row: span 1; }
-        .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-label { width: 100%; padding: 60px 16px 20px; background: linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.72) 100%); flex-direction: column; align-items: flex-start; justify-content: flex-end; top: auto; }
-        .hp-mosaic__item:nth-child(4) .hp-mosaic__cat-name { font-size: 16px; }
-        .hp-mosaic__cat-name { font-size: 13px; letter-spacing: 1.5px; }
-        .hp-mosaic__cat-btn { padding: 5px 12px; font-size: 9px; }
-    }
     @media (max-width: 420px) {
-        .hp-mosaic__item:nth-child(1),
-        .hp-mosaic__item:nth-child(2),
-        .hp-mosaic__item:nth-child(3) { grid-column: 1 / -1; grid-row: span 1; }
-        .hp-mosaic__grid { grid-auto-rows: 180px; }
+        .hp-mosaic__grid { gap: 8px; }
+        .hp-mosaic__cat-name { font-size: 12px; letter-spacing: 1.5px; }
+        .hp-mosaic__cat-btn { padding: 5px 10px; font-size: 8px; }
     }
 
     /* ── CATEGORY TABS ── */
@@ -133,10 +142,34 @@
         position: absolute; inset: 0; width: 100%; height: 100%;
         object-fit: cover; transition: opacity 0.35s ease;
     }
-    .t754__img--front { opacity: 1; z-index: 1; }
-    .t754__img--back  { opacity: 0; z-index: 0; }
-    .t754__imgwrapper:hover .t754__img--front { opacity: 0; }
-    .t754__imgwrapper:hover .t754__img--back  { opacity: 1; }
+    .t754__gimg { opacity: 0; z-index: 0; }
+    .t754__gimg.active { opacity: 1; z-index: 1; }
+
+    .t754__arrow {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        width: 32px; height: 32px; border-radius: 50%;
+        background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+        color: #fff; border: none; cursor: pointer;
+        font-size: 20px; line-height: 1; padding: 0 0 2px;
+        display: flex; align-items: center; justify-content: center;
+        z-index: 11; opacity: 0; transition: opacity .2s, background .2s;
+    }
+    .t754__arrow--prev { left: 10px; }
+    .t754__arrow--next { right: 10px; }
+    .t754__imgwrapper:hover .t754__arrow { opacity: 1; }
+    .t754__arrow:hover { background: rgba(0,0,0,0.85); }
+
+    .t754__dots {
+        position: absolute; bottom: 12px; left: 50%;
+        transform: translateX(-50%); z-index: 11;
+        display: flex; gap: 6px;
+    }
+    .t754__dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: rgba(255,255,255,0.4);
+        transition: background .2s, transform .2s;
+    }
+    .t754__dot.active { background: #fff; transform: scale(1.3); }
 
     .t754__like {
         position: absolute; top: 10px; right: 10px;
@@ -230,29 +263,72 @@
     }
     @keyframes toastFade { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
 
-    /* ── PRODUCT POPUP ── */
-    .prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; padding: 20px; }
-    .prod-popup.active { display: flex; }
-    .prod-popup-inner { background: #fff; max-width: 880px; width: 100%; max-height: 90vh; border-radius: 6px; display: flex; overflow: hidden; position: relative; }
-    .prod-popup-close { position: absolute; top: 14px; right: 14px; background: none; border: none; font-size: 28px; cursor: pointer; z-index: 10; color: #000; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
-    .prod-popup-close:hover { opacity: 0.5; }
-    .prod-popup-left { width: 50%; flex-shrink: 0; background: #f5f5f5; display: flex; flex-direction: column; }
-    .prod-popup-main-img { flex: 1; overflow: hidden; }
-    .prod-popup-main-img img { width: 100%; height: 100%; object-fit: cover; }
-    .prod-popup-thumbs { display: flex; gap: 8px; padding: 12px; background: #fff; overflow-x: auto; }
-    .prod-popup-thumb { width: 60px; height: 60px; border-radius: 4px; overflow: hidden; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: border-color 0.2s; }
-    .prod-popup-thumb.active { border-color: #000; }
+    /* ── PRODUCT POPUP (fullscreen, dark) ── */
+    .prod-popup { display: none; position: fixed; inset: 0; z-index: 5000; background: #0a0a0a; overflow: hidden; }
+    .prod-popup.active { display: flex; flex-direction: column; }
+    .prod-popup-inner {
+        flex: 1; display: grid; grid-template-columns: 1.15fr 1fr;
+        width: 100%; height: 100vh; overflow: hidden; position: relative;
+        transform-origin: 100% 0%;
+    }
+    .prod-popup.active .prod-popup-inner { animation: prodPopupOpen .7s cubic-bezier(.18,.9,.28,1) both; }
+    .prod-popup.active .prod-popup-bg     { animation: prodPopupBg .45s ease-out both; }
+    .prod-popup-bg { position: absolute; inset: 0; background: #0a0a0a; z-index: -1; }
+
+    @keyframes prodPopupBg {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+    /* origin top-right: правый-верхний угол карточки прибит к правому-верхнему углу окна.
+       старт: rotate(90deg) разворачивает карточку вниз от точки, так что её левый-верхний
+       угол уходит в правый-нижний угол экрана. Развёртывание возвращает rotate к 0. */
+    @keyframes prodPopupOpen {
+        0% {
+            transform: rotate(90deg) scale(0.92);
+            opacity: 0;
+        }
+        15% { opacity: 1; }
+        100% {
+            transform: rotate(0deg) scale(1);
+            opacity: 1;
+        }
+    }
+    .prod-popup-close { position: absolute; top: 22px; right: 26px; background: transparent; border: 1px solid #2a2a2a; border-radius: 50%; width: 40px; height: 40px; font-size: 16px; cursor: pointer; z-index: 20; color: #aaa; display: flex; align-items: center; justify-content: center; transition: color .2s, border-color .2s; }
+    .prod-popup-close:hover { color: #fff; border-color: #fff; }
+
+    .prod-popup-left { background: #111; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    .prod-popup-view-tabs { position: absolute; top: 22px; left: 26px; z-index: 15; display: flex; gap: 0; border: 1px solid #2a2a2a; }
+    .prod-popup-view-tab { background: transparent; border: none; color: #888; padding: 9px 18px; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Inter', sans-serif; cursor: pointer; transition: background .2s, color .2s; font-weight: 500; }
+    .prod-popup-view-tab.active { background: #fff; color: #000; }
+
+    .prod-popup-stage { flex: 1; position: relative; overflow: hidden; }
+    .prod-popup-main-img { position: absolute; inset: 0; }
+    .prod-popup-main-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .prod-popup-3d { position: absolute; inset: 0; display: none; background: radial-gradient(circle at 50% 45%, #1a1a1a 0%, #0a0a0a 75%); }
+    .prod-popup-3d.active { display: block; }
+    .prod-popup-3d canvas { display: block; width: 100% !important; height: 100% !important; }
+    .prod-popup-3d-hint { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); color: #555; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-family: 'Inter', sans-serif; pointer-events: none; }
+    .prod-popup-main-img.active ~ .prod-popup-3d:not(.active) { display: none; }
+
+    .prod-popup-thumbs { display: flex; gap: 10px; padding: 16px 24px; background: #0d0d0d; overflow-x: auto; border-top: 1px solid #1a1a1a; }
+    .prod-popup-thumb { width: 64px; height: 80px; overflow: hidden; cursor: pointer; flex-shrink: 0; border: 1px solid transparent; opacity: .55; transition: opacity .2s, border-color .2s; }
+    .prod-popup-thumb.active { border-color: #fff; opacity: 1; }
+    .prod-popup-thumb:hover { opacity: 1; }
     .prod-popup-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .prod-popup-right { flex: 1; padding: 44px 32px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
-    .prod-popup-name { font-size: 22px; font-weight: 400; color: #000; font-family: 'Inter', sans-serif; }
-    .prod-popup-price { font-size: 22px; font-weight: 500; color: #000; font-family: 'Inter', sans-serif; }
-    .prod-popup-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #9e9e9e; margin-bottom: 10px; font-family: 'Inter', sans-serif; }
+
+    .prod-popup-right { padding: 90px 64px 48px; overflow-y: auto; display: flex; flex-direction: column; gap: 28px; background: #0a0a0a; }
+    .prod-popup-cat { font-size: 10px; color: #666; letter-spacing: 2.5px; text-transform: uppercase; font-family: 'Inter', sans-serif; }
+    .prod-popup-name { font-family: 'Cormorant', serif; font-size: 42px; font-weight: 400; color: #fff; letter-spacing: -0.5px; line-height: 1.05; margin-top: -8px; }
+    .prod-popup-price { font-size: 18px; font-weight: 500; color: #fff; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; }
+    .prod-popup-divider { height: 1px; background: #1a1a1a; margin: 4px 0; }
+    .prod-popup-label { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
     .prod-popup-sizes { display: flex; gap: 8px; flex-wrap: wrap; }
-    .size-btn { min-width: 44px; height: 40px; background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s; font-family: 'Inter', sans-serif; padding: 0 12px; }
-    .size-btn:hover, .size-btn.active { background: #000; color: #fff; border-color: #000; }
-    .prod-popup-cart-btn { background: #000; color: #fff; border: none; padding: 14px 28px; font-size: 14px; letter-spacing: 0.5px; border-radius: 4px; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.2s; width: 100%; }
-    .prod-popup-cart-btn:hover { opacity: 0.75; }
-    .prod-popup-descr { font-size: 14px; color: #555; line-height: 1.7; font-family: 'Inter', sans-serif; }
+    .size-btn { min-width: 46px; height: 42px; background: transparent; border: 1px solid #2a2a2a; color: #ccc; font-size: 12px; font-weight: 500; cursor: pointer; transition: background .2s, border-color .2s, color .2s; font-family: 'Inter', sans-serif; padding: 0 14px; letter-spacing: 0.5px; }
+    .size-btn:hover { border-color: #fff; color: #fff; }
+    .size-btn.active { background: #fff; color: #000; border-color: #fff; }
+    .prod-popup-cart-btn { background: #fff; color: #000; border: none; padding: 17px 28px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: background .2s, color .2s; width: 100%; }
+    .prod-popup-cart-btn:hover { background: #ddd; }
+    .prod-popup-descr { font-size: 13px; color: #888; line-height: 1.8; font-family: 'Inter', sans-serif; }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
@@ -270,17 +346,16 @@
         .catalog-section-title { padding: 40px 16px 30px; font-size: 11px; }
     }
     @media (max-width: 380px) {
-        .t754__parent { grid-template-columns: 1fr; }
+        .t754__parent { grid-template-columns: repeat(2, 1fr); gap: 20px 10px; }
     }
-    @media (max-width: 640px) {
-        .prod-popup { padding: 0; }
-        .prod-popup-inner { flex-direction: column; max-height: 100vh; border-radius: 0; }
-        .prod-popup-left { width: 100%; height: 52vw; min-height: 180px; flex-shrink: 0; }
-        .prod-popup-main-img { height: 100%; }
-        .prod-popup-right { padding: 16px 16px 24px; gap: 14px; overflow-y: auto; }
-        .prod-popup-name { font-size: 18px; }
-        .prod-popup-price { font-size: 18px; }
-        .prod-popup-close { top: 10px; right: 10px; font-size: 32px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); color: #fff; border-radius: 50%; }
+    @media (max-width: 900px) {
+        .prod-popup-inner { grid-template-columns: 1fr; grid-template-rows: 55vh 1fr; height: 100vh; overflow-y: auto; }
+        .prod-popup-left { height: 100%; }
+        .prod-popup-right { padding: 36px 24px 48px; gap: 20px; }
+        .prod-popup-name { font-size: 30px; }
+        .prod-popup-price { font-size: 16px; }
+        .prod-popup-close { top: 14px; right: 14px; }
+        .prod-popup-view-tabs { top: 14px; left: 14px; }
     }
 </style>
 {% endblock %}
@@ -294,10 +369,9 @@
         <div class="hp-mosaic__wrapper">
             <div class="hp-mosaic__grid">
                 {% set collage = [
-                    ('images/F5E7DA07-C765-4964-AB7B-839DDB607723_1_105_c.jpeg', 'Футболки', 'tshirts'),
-                    ('images/_ (1).jpeg',      'Кофты',    'hoodies'),
-                    ('images/horizontal.jpeg', 'Шорты',    'shorts'),
-                    ('images/★.jpeg',          'Поло',     'polo'),
+                    ('images/product_main.jpg', 'Жидкости',    'liquids'),
+                    ('images/product_2.jpg',    'Под-системы', 'pods'),
+                    ('images/product_3.jpg',    'Картриджи',   'cartridges'),
                 ] %}
                 {% for img, label, cat in collage %}
                 <div class="hp-mosaic__item">
@@ -315,57 +389,61 @@
     <!-- Category Tabs -->
     <div class="cat-tabs">
         <button class="cat-tab active" data-cat="all">Все</button>
-        <button class="cat-tab" data-cat="tshirts">Футболки</button>
-        <button class="cat-tab" data-cat="hoodies">Кофты</button>
-        <button class="cat-tab" data-cat="polo">Поло</button>
-        <button class="cat-tab" data-cat="shorts">Шорты</button>
+        <button class="cat-tab" data-cat="liquids">Жидкости</button>
+        <button class="cat-tab" data-cat="pods">Под-системы</button>
+        <button class="cat-tab" data-cat="cartridges">Картриджи</button>
     </div>
 
     <!-- Products (13 items) -->
     {% set products = [
-        ('Футболка Basic',   1600, 'tshirts', 1,  True),
-        ('Футболка Oversize',1800, 'tshirts', 2,  False),
-        ('Футболка Stripe',  1700, 'tshirts', 3,  False),
-        ('Кофта Hoodie',     2500, 'hoodies', 4,  False),
-        ('Кофта Zip',        2800, 'hoodies', 5,  False),
-        ('Свитшот Premium',  2300, 'hoodies', 6,  False),
-        ('Поло Classic',     2200, 'polo',    7,  False),
-        ('Поло Slim Fit',    2400, 'polo',    8,  False),
-        ('Поло Sport',       2600, 'polo',    9,  False),
-        ('Шорты Basic',      1900, 'shorts',  10, False),
-        ('Шорты Wide Leg',   2100, 'shorts',  11, False),
-        ('Шорты Cargo',      2300, 'shorts',  12, False),
-        ('Шорты Sport',      2000, 'shorts',  13, False),
+        ('Жидкость Mango Ice',   450, 'liquids',    1,  True),
+        ('Жидкость Berry Mix',   400, 'liquids',    2,  False),
+        ('Жидкость Tobacco',     380, 'liquids',    3,  False),
+        ('Жидкость Mint Fresh',  420, 'liquids',    4,  False),
+        ('Pod-система Caliburn', 2200, 'pods',       5,  False),
+        ('Pod-система Xros',     1900, 'pods',       6,  False),
+        ('Pod-система Luxe',     2800, 'pods',       7,  False),
+        ('Картридж Caliburn',    350, 'cartridges',  8,  False),
+        ('Картридж Xros',        300, 'cartridges',  9,  False),
+        ('Картридж Luxe',        400, 'cartridges', 10,  False),
+        ('Картридж Nord',        320, 'cartridges', 11,  False),
     ] %}
     <div class="t754">
         <div class="t754__parent" id="productsGrid">
             {% for name, price, cat, pid, is_new in products %}
+            {% set gallery = [
+                '/static/images/product_main.jpg',
+                '/static/images/product_2.jpg',
+                '/static/images/product_3.jpg',
+                '/static/images/product_4.jpg'
+            ] %}
             <div class="t754__col js-catalog-item" data-category="{{ cat }}">
-                <div class="t754__imgwrapper" style="cursor:pointer"
+                <div class="t754__imgwrapper t754__gallery" style="cursor:pointer" data-idx="0"
                      onclick="openProdPopup('{{ pid }}','{{ name }}',{{ price }})">
                     {% if is_new %}<div class="t754__markwrapper"><div class="t754__mark">NEW</div></div>{% endif %}
-                    <img class="t754__img t754__img--front" src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="">
-                    <img class="t754__img t754__img--back" src="/static/images/photo_2026-05-17_22.34.46.jpeg" alt="">
+                    {% for src in gallery %}
+                    <img class="t754__img t754__gimg {% if loop.first %}active{% endif %}" data-idx="{{ loop.index0 }}" src="{{ src }}" alt="">
+                    {% endfor %}
                     <button class="t754__like" data-id="{{ pid }}"
                             onclick="event.stopPropagation(); catalogToggleLike(this, '{{ pid }}')">
                         <svg viewBox="0 0 24 24" class="heart-svg" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
                     </button>
+                    <button class="t754__arrow t754__arrow--prev"
+                            onclick="event.stopPropagation(); catalogGalleryNav(this, -1)" aria-label="Назад">‹</button>
+                    <button class="t754__arrow t754__arrow--next"
+                            onclick="event.stopPropagation(); catalogGalleryNav(this, 1)" aria-label="Вперёд">›</button>
+                    <div class="t754__dots">
+                        {% for src in gallery %}<span class="t754__dot {% if loop.first %}active{% endif %}"></span>{% endfor %}
+                    </div>
                 </div>
                 <div class="t754__textwrapper">
                     <div class="t754__title">{{ name }}</div>
-                    <div class="t754__descr">Стильная и удобная вещь</div>
                     <div class="t754__price-wrapper">
                         <div class="t754__price-value">{{ price }}</div>
                         <div class="t754__price-currency">р.</div>
                     </div>
-                    <button class="t754__btn js-add-to-cart"
-                            data-id="{{ pid }}"
-                            data-name="{{ name }}"
-                            data-price="{{ price }}">
-                        В корзину
-                    </button>
                 </div>
             </div>
             {% endfor %}
@@ -403,17 +481,28 @@
     </div>
 </div>
 
-<!-- Product Popup -->
+<!-- Product Popup (fullscreen) -->
 <div class="prod-popup" id="prodPopup">
     <div class="prod-popup-inner">
-        <button class="prod-popup-close" id="prodPopupClose">&times;</button>
+        <button class="prod-popup-close" id="prodPopupClose">✕</button>
         <div class="prod-popup-left">
-            <div class="prod-popup-main-img"><img id="popupMainImg" src="" alt=""></div>
+            <div class="prod-popup-view-tabs">
+                <button class="prod-popup-view-tab active" data-view="photo">Фото</button>
+                <button class="prod-popup-view-tab" data-view="3d">3D</button>
+            </div>
+            <div class="prod-popup-stage">
+                <div class="prod-popup-main-img active" id="popupMainImgWrap"><img id="popupMainImg" src="" alt=""></div>
+                <div class="prod-popup-3d" id="popup3d">
+                    <div class="prod-popup-3d-hint">потяните, чтобы повернуть</div>
+                </div>
+            </div>
             <div class="prod-popup-thumbs" id="popupThumbs"></div>
         </div>
         <div class="prod-popup-right">
+            <div class="prod-popup-cat" id="popupCat">Новая коллекция</div>
             <div class="prod-popup-name" id="popupName"></div>
             <div class="prod-popup-price" id="popupPrice"></div>
+            <div class="prod-popup-divider"></div>
             <div>
                 <div class="prod-popup-label">Размер</div>
                 <div class="prod-popup-sizes">
@@ -425,7 +514,7 @@
                 </div>
             </div>
             <button class="prod-popup-cart-btn" id="popupCartBtn">Добавить в корзину</button>
-            <div class="prod-popup-descr">Стильная и удобная вещь для вашего гардероба. Отличное качество и современный дизайн. Состав: 100% хлопок.</div>
+            <div class="prod-popup-descr">Стильная и удобная вещь для вашего гардероба. Плотный хлопок, аккуратный крой, отшито небольшим тиражом. Состав: 100% хлопок, 220 г/м².</div>
         </div>
     </div>
 </div>
@@ -497,24 +586,25 @@
     function openCart()  { cartPanel.classList.add('open'); cartOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; renderCart(); }
     function closeCart() { cartPanel.classList.remove('open'); cartOverlay.classList.remove('open'); document.body.style.overflow = ''; }
 
-    document.getElementById('cartIconBtn').addEventListener('click', openCart);
+    // Плавающая кнопка открывает ЕДИНУЮ корзину из base.html (как на скрине)
+    document.getElementById('cartIconBtn').addEventListener('click', () => {
+        if (window.openCart) { window.openCart(); }
+        else { openCart(); }
+    });
     document.getElementById('cartClose').addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
-    // === ADD TO CART (grid buttons) ===
-    document.querySelectorAll('.js-add-to-cart').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const { id, name, price } = btn.dataset;
-            try {
-                const res = await fetch('/api/cart/add', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ product_id: id, name, price: parseInt(price) })
-                });
-                const data = await res.json();
-                if (data.success) { updateAllCounters(); renderCart(); openCart(); }
-            } catch {}
-        });
-    });
+    // === GALLERY NAV (catalog cards) ===
+    window.catalogGalleryNav = function(btn, dir) {
+        const wrap = btn.closest('.t754__gallery');
+        const imgs = wrap.querySelectorAll('.t754__gimg');
+        const dots = wrap.querySelectorAll('.t754__dot');
+        let idx = parseInt(wrap.dataset.idx || '0', 10);
+        idx = (idx + dir + imgs.length) % imgs.length;
+        wrap.dataset.idx = idx;
+        imgs.forEach((im, i) => im.classList.toggle('active', i === idx));
+        dots.forEach((d,  i) => d.classList.toggle('active',  i === idx));
+    };
 
     // === RENDER CART PANEL ===
     async function renderCart() {
@@ -611,8 +701,10 @@
 
     // === PRODUCT POPUP ===
     const POPUP_IMGS = [
-        '/static/images/photo_2026-05-17_22.34.33.jpeg',
-        '/static/images/photo_2026-05-17_22.34.46.jpeg'
+        '/static/images/product_main.jpg',
+        '/static/images/product_2.jpg',
+        '/static/images/product_3.jpg',
+        '/static/images/product_4.jpg'
     ];
 
     function openProdPopup(id, name, price) {
@@ -629,13 +721,141 @@
         };
         document.getElementById('prodPopup').classList.add('active');
         document.body.style.overflow = 'hidden';
+        switchPopupView('photo');
     }
 
     function setPopupImg(thumb, src) {
         document.getElementById('popupMainImg').src = src;
         document.querySelectorAll('.prod-popup-thumb').forEach(t => t.classList.remove('active'));
         thumb.classList.add('active');
+        switchPopupView('photo');
     }
+
+    // === 3D VIEWER (lazy) ===
+    let _three = null, _3dInited = false, _3dRenderer = null, _3dScene = null,
+        _3dCamera = null, _3dMesh = null, _3dRaf = null, _3dDrag = false,
+        _3dRotY = 0, _3dRotX = 0, _3dTargetRotY = 0, _3dTargetRotX = 0,
+        _3dLastX = 0, _3dLastY = 0;
+
+    async function ensureThree() {
+        if (_three) return _three;
+        // динамический импорт Three.js (importmap-less)
+        const THREE = await import('three');
+        const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+        _three = { THREE, GLTFLoader };
+        return _three;
+    }
+
+    async function init3D() {
+        if (_3dInited) return;
+        const host = document.getElementById('popup3d');
+        const { THREE, GLTFLoader } = await ensureThree();
+
+        const W = host.clientWidth, H = host.clientHeight;
+        _3dScene  = new THREE.Scene();
+        _3dCamera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
+        _3dCamera.position.set(0, 0, 5);
+
+        _3dRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        _3dRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        _3dRenderer.setSize(W, H);
+        _3dRenderer.setClearColor(0x000000, 0);
+        host.appendChild(_3dRenderer.domElement);
+
+        // свет — студия в чёрной гамме
+        _3dScene.add(new THREE.AmbientLight(0xffffff, 0.55));
+        const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(3, 4, 5); _3dScene.add(key);
+        const rim = new THREE.DirectionalLight(0xaaaaff, 0.8); rim.position.set(-4, 2, -3); _3dScene.add(rim);
+
+        // загрузка GLB
+        const loader = new GLTFLoader();
+        loader.load('/static/models/tshirt.glb', gltf => {
+            const obj = gltf.scene;
+            // нормализация: вписать в куб ~2
+            const box = new THREE.Box3().setFromObject(obj);
+            const size = new THREE.Vector3(); box.getSize(size);
+            const center = new THREE.Vector3(); box.getCenter(center);
+            const scale = 2.4 / Math.max(size.x, size.y, size.z);
+            obj.scale.setScalar(scale);
+            obj.position.sub(center.multiplyScalar(scale));
+            obj.traverse(n => {
+                if (n.isMesh && n.material) {
+                    n.material = new THREE.MeshStandardMaterial({
+                        color: 0xe8e8e8, roughness: 0.78, metalness: 0.05
+                    });
+                }
+            });
+            _3dMesh = obj;
+            _3dScene.add(obj);
+        }, undefined, () => {
+            // фоллбэк, если GLB не нашёлся — параметрическая «футболка»
+            const geom = new THREE.BoxGeometry(1.6, 1.9, 0.18);
+            const mat = new THREE.MeshStandardMaterial({ color: 0xe8e8e8, roughness: 0.8 });
+            _3dMesh = new THREE.Mesh(geom, mat);
+            _3dScene.add(_3dMesh);
+        });
+
+        // drag-to-rotate
+        host.addEventListener('pointerdown', e => {
+            _3dDrag = true; _3dLastX = e.clientX; _3dLastY = e.clientY;
+            host.setPointerCapture(e.pointerId);
+        });
+        host.addEventListener('pointermove', e => {
+            if (!_3dDrag) return;
+            const dx = e.clientX - _3dLastX, dy = e.clientY - _3dLastY;
+            _3dTargetRotY += dx * 0.01;
+            _3dTargetRotX += dy * 0.01;
+            _3dTargetRotX = Math.max(-0.9, Math.min(0.9, _3dTargetRotX));
+            _3dLastX = e.clientX; _3dLastY = e.clientY;
+        });
+        const endDrag = () => { _3dDrag = false; };
+        host.addEventListener('pointerup', endDrag);
+        host.addEventListener('pointercancel', endDrag);
+        host.addEventListener('pointerleave', endDrag);
+
+        const ro = new ResizeObserver(() => {
+            const w = host.clientWidth, h = host.clientHeight;
+            if (!w || !h) return;
+            _3dRenderer.setSize(w, h);
+            _3dCamera.aspect = w / h;
+            _3dCamera.updateProjectionMatrix();
+        });
+        ro.observe(host);
+
+        function animate() {
+            _3dRaf = requestAnimationFrame(animate);
+            if (_3dMesh) {
+                if (!_3dDrag) _3dTargetRotY += 0.004; // авто-вращение
+                _3dRotY += (_3dTargetRotY - _3dRotY) * 0.12;
+                _3dRotX += (_3dTargetRotX - _3dRotX) * 0.12;
+                _3dMesh.rotation.y = _3dRotY;
+                _3dMesh.rotation.x = _3dRotX;
+            }
+            _3dRenderer.render(_3dScene, _3dCamera);
+        }
+        animate();
+        _3dInited = true;
+    }
+
+    function switchPopupView(view) {
+        const wrap = document.getElementById('popupMainImgWrap');
+        const v3d  = document.getElementById('popup3d');
+        document.querySelectorAll('.prod-popup-view-tab').forEach(b => {
+            b.classList.toggle('active', b.dataset.view === view);
+        });
+        if (view === '3d') {
+            wrap.style.display = 'none';
+            v3d.classList.add('active');
+            init3D().catch(()=>{});
+        } else {
+            v3d.classList.remove('active');
+            wrap.style.display = '';
+        }
+    }
+
+    document.querySelectorAll('.prod-popup-view-tab').forEach(btn => {
+        btn.addEventListener('click', () => switchPopupView(btn.dataset.view));
+    });
 
     function closeProdPopup() {
         document.getElementById('prodPopup').classList.remove('active');
@@ -650,7 +870,12 @@
                 body: JSON.stringify({ product_id: String(id)+(size?'_'+size:''), name: fullName, price: Number(price) })
             });
             const data = await res.json();
-            if (data.success) { closeProdPopup(); updateAllCounters(); renderCart(); openCart(); }
+            if (data.success) {
+                closeProdPopup();
+                if (window.updateCartCount) window.updateCartCount(); else updateAllCounters();
+                if (window.renderT706Cart) window.renderT706Cart();
+                showToast('Добавлено в корзину');
+            }
         } catch {}
     }
 

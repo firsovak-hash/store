@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Доставка и оплата{% endblock %}
+{% block extra_css %}
+<style>
+.legal-page { max-width: 760px; margin: 0 auto; padding: 60px 40px 120px; font-family: 'Inter', sans-serif; }
+.legal-page h1 { font-family: 'Cormorant', serif; font-size: 38px; font-weight: 400; color: #fff; margin-bottom: 12px; letter-spacing: -0.5px; }
+.legal-page .legal-date { font-size: 11px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 48px; }
+.legal-page h2 { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #fff; margin: 36px 0 14px; }
+.legal-page p { font-size: 14px; line-height: 1.9; color: #888; margin-bottom: 14px; }
+.legal-page ul { padding-left: 20px; margin-bottom: 14px; }
+.legal-page ul li { font-size: 14px; line-height: 1.9; color: #888; margin-bottom: 6px; }
+.legal-page a { color: #ccc; }
+.legal-divider { height: 1px; background: #1a1a1a; margin: 40px 0; }
+.delivery-card {
+    border: 1px solid #1a1a1a; padding: 24px 28px; margin-bottom: 16px;
+    display: grid; grid-template-columns: 1fr auto; gap: 8px 20px; align-items: start;
+}
+.delivery-card-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.delivery-card-desc { font-size: 13px; color: #666; line-height: 1.6; }
+.delivery-card-price { font-size: 15px; font-weight: 600; color: #fff; white-space: nowrap; }
+.delivery-card-time { font-size: 11px; color: #555; text-align: right; white-space: nowrap; margin-top: 2px; }
+.pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.pay-card { border: 1px solid #1a1a1a; padding: 20px 22px; }
+.pay-card-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+.pay-card-desc { font-size: 12px; color: #666; line-height: 1.6; }
+@media (max-width: 600px) {
+    .legal-page { padding: 40px 20px 80px; }
+    .legal-page h1 { font-size: 28px; }
+    .delivery-card { grid-template-columns: 1fr; }
+    .delivery-card-time { text-align: left; }
+    .pay-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="legal-page">
+    <h1>Доставка и оплата</h1>
+    <div class="legal-date">Актуально для заказов с 2025 года</div>
+
+    <h2>Способы доставки</h2>
+
+    <div class="delivery-card">
+        <div>
+            <div class="delivery-card-title">Почта России / СДЭК</div>
+            <div class="delivery-card-desc">Доставка по всей России. Трек-номер отправляется после отправки посылки.</div>
+        </div>
+        <div style="text-align:right">
+            <div class="delivery-card-price">от 350 р.</div>
+            <div class="delivery-card-time">5–14 дней</div>
+        </div>
+    </div>
+
+    <div class="delivery-card">
+        <div>
+            <div class="delivery-card-title">СДЭК до пункта выдачи</div>
+            <div class="delivery-card-desc">Быстрее, чем Почта России. Более 4000 пунктов выдачи по России.</div>
+        </div>
+        <div style="text-align:right">
+            <div class="delivery-card-price">от 250 р.</div>
+            <div class="delivery-card-time">3–7 дней</div>
+        </div>
+    </div>
+
+    <div class="delivery-card">
+        <div>
+            <div class="delivery-card-title">Самовывоз (Москва)</div>
+            <div class="delivery-card-desc">Адрес и время согласовывается в Telegram после оформления заказа.</div>
+        </div>
+        <div style="text-align:right">
+            <div class="delivery-card-price">Бесплатно</div>
+            <div class="delivery-card-time">По договорённости</div>
+        </div>
+    </div>
+
+    <p style="margin-top:8px">Стоимость доставки рассчитывается автоматически при оформлении заказа. Бесплатная доставка при заказе от <strong style="color:#fff">5000 р.</strong></p>
+
+    <div class="legal-divider"></div>
+
+    <h2>Сроки обработки</h2>
+    <p>Заказы обрабатываются в течение <strong style="color:#fff">1–2 рабочих дней</strong>. После передачи посылки в службу доставки вам придёт уведомление с трек-номером в Telegram или на email. Упаковка бережная — каждая вещь складывается в крафтовый пакет.</p>
+
+    <div class="legal-divider"></div>
+
+    <h2>Способы оплаты</h2>
+    <div class="pay-grid">
+        <div class="pay-card">
+            <div class="pay-card-title">Банковская карта</div>
+            <div class="pay-card-desc">Visa, Mastercard, МИР. Оплата через защищённую форму на сайте.</div>
+        </div>
+        <div class="pay-card">
+            <div class="pay-card-title">Перевод на карту</div>
+            <div class="pay-card-desc">Реквизиты высылаются в Telegram после подтверждения заказа.</div>
+        </div>
+        <div class="pay-card">
+            <div class="pay-card-title">Наложенный платёж</div>
+            <div class="pay-card-desc">Оплата при получении. Доступно для доставки Почтой России и СДЭК.</div>
+        </div>
+        <div class="pay-card">
+            <div class="pay-card-title">СБП (Система быстрых платежей)</div>
+            <div class="pay-card-desc">Оплата по номеру телефона. Быстро, без комиссии.</div>
+        </div>
+    </div>
+
+    <p>Все платежи защищены. Мы не храним данные ваших карт.</p>
+
+    <div class="legal-divider"></div>
+    <p style="font-size:12px; color:#444;">Вопросы по доставке: <a href="https://t.me/fuffa_puff" style="color:#666;">Telegram @fuffa_puff</a></p>
+</div>
+{% endblock %}

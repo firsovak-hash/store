@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Политика конфиденциальности{% endblock %}
+{% block extra_css %}
+<style>
+.legal-page { max-width: 760px; margin: 0 auto; padding: 60px 40px 120px; color: #ccc; font-family: 'Inter', sans-serif; }
+.legal-page h1 { font-family: 'Cormorant', serif; font-size: 38px; font-weight: 400; color: #fff; margin-bottom: 12px; letter-spacing: -0.5px; }
+.legal-page .legal-date { font-size: 11px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 48px; }
+.legal-page h2 { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #fff; margin: 36px 0 14px; }
+.legal-page p { font-size: 14px; line-height: 1.9; color: #888; margin-bottom: 14px; }
+.legal-page ul { padding-left: 20px; margin-bottom: 14px; }
+.legal-page ul li { font-size: 14px; line-height: 1.9; color: #888; margin-bottom: 6px; }
+.legal-page a { color: #ccc; }
+.legal-divider { height: 1px; background: #1a1a1a; margin: 40px 0; }
+@media (max-width: 600px) { .legal-page { padding: 40px 20px 80px; } .legal-page h1 { font-size: 28px; } }
+</style>
+{% endblock %}
+{% block content %}
+<div class="legal-page">
+    <h1>Политика конфиденциальности</h1>
+    <div class="legal-date">Актуальна с 1 января 2025 года</div>
+
+    <p>Настоящая Политика конфиденциальности описывает, как магазин <strong style="color:#fff">STORE by Sasha</strong> собирает, использует и защищает информацию, которую вы предоставляете при использовании нашего сайта.</p>
+
+    <div class="legal-divider"></div>
+
+    <h2>1. Какие данные мы собираем</h2>
+    <p>При оформлении заказа мы можем запрашивать следующую информацию:</p>
+    <ul>
+        <li>Имя и фамилия</li>
+        <li>Контактный телефон</li>
+        <li>Адрес электронной почты</li>
+        <li>Адрес доставки</li>
+    </ul>
+    <p>Мы также автоматически собираем технические данные: IP-адрес, тип браузера, страницы, которые вы посещаете. Это необходимо для корректной работы сайта.</p>
+
+    <h2>2. Как мы используем ваши данные</h2>
+    <p>Собранная информация используется исключительно для:</p>
+    <ul>
+        <li>Обработки и выполнения заказов</li>
+        <li>Связи с вами по вопросам вашего заказа</li>
+        <li>Улучшения работы сайта и сервиса</li>
+        <li>Отправки уведомлений о статусе заказа (если вы дали согласие)</li>
+    </ul>
+    <p>Мы не продаём и не передаём ваши персональные данные третьим лицам без вашего согласия, за исключением случаев, предусмотренных законодательством РФ.</p>
+
+    <h2>3. Защита данных</h2>
+    <p>Мы принимаем все необходимые меры для защиты ваших персональных данных от несанкционированного доступа, изменения, раскрытия или уничтожения. Доступ к вашим данным имеет ограниченный круг сотрудников, обязанных соблюдать конфиденциальность.</p>
+
+    <h2>4. Файлы cookie</h2>
+    <p>Наш сайт использует файлы cookie для хранения содержимого корзины и улучшения пользовательского опыта. Cookie не содержат личных данных и не передаются третьим лицам. Вы можете отключить cookie в настройках браузера, однако это может повлиять на работу некоторых функций сайта.</p>
+
+    <h2>5. Ваши права</h2>
+    <p>В соответствии с Федеральным законом № 152-ФЗ «О персональных данных» вы вправе:</p>
+    <ul>
+        <li>Запросить информацию о хранящихся у нас ваших данных</li>
+        <li>Потребовать изменения или удаления ваших данных</li>
+        <li>Отозвать согласие на обработку персональных данных</li>
+    </ul>
+    <p>Для реализации ваших прав свяжитесь с нами через Telegram: <a href="https://t.me/fuffa_puff">@fuffa_puff</a></p>
+
+    <h2>6. Изменения политики</h2>
+    <p>Мы оставляем за собой право вносить изменения в настоящую Политику конфиденциальности. Актуальная версия всегда доступна на этой странице. Продолжение использования сайта означает ваше согласие с обновлённой политикой.</p>
+
+    <div class="legal-divider"></div>
+    <p style="font-size:12px; color:#444;">По всем вопросам: <a href="https://t.me/fuffa_puff" style="color:#666;">Telegram @fuffa_puff</a> · <a href="mailto:store@example.com" style="color:#666;">email</a></p>
+</div>
+{% endblock %}

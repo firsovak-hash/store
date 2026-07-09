@@ -376,20 +376,6 @@ body { background: #000; }
 
     <div class="hero-noise"></div>
     <div class="hero-lines"></div>
-    <div class="hero-inner">
-        <div class="hero-eyebrow" id="heroEyebrow">SS 2026 Collection</div>
-        <h1 class="hero-title">
-            <span class="line"><span class="word">STORE</span></span>
-            <span class="line"><span class="word">BY SASHA</span></span>
-        </h1>
-        <div class="hero-tag hero-sub-breathe" id="heroTag">Ограниченные серии &nbsp;·&nbsp; Ручная работа &nbsp;·&nbsp; Только для своих</div>
-    </div>
-    <div class="scroll-prompt" id="scrollPrompt">
-        <div class="scroll-prompt-inner">
-            <span>Листай вниз</span>
-            <div class="scroll-line"></div>
-        </div>
-    </div>
 </section>
 
 {% endblock %}
@@ -477,17 +463,9 @@ gsap.registerPlugin(ScrollTrigger);
 ──────────────────────────────────────── */
 function heroIn() {
     gsap.timeline({ defaults: { ease: 'power4.out' } })
-        .to('.hero-title .word', {
-            translateY: '0%', duration: 1.5,
-            stagger: 0.12,
-        })
-        .to(['#heroEyebrow', '#heroTag'], {
-            opacity: 1, y: 0, duration: 1.1,
-            stagger: 0.18,
-        }, '-=0.9')
         .to('#scrollPrompt', {
             opacity: 1, duration: 1, ease: 'power2.out'
-        }, '-=0.5');
+        });
 }
 
 
@@ -542,8 +520,10 @@ syncLikes();
    POPUP
 ──────────────────────────────────────── */
 var IMGS = [
-    '/static/images/photo_2026-05-17_22.34.33.jpeg',
-    '/static/images/photo_2026-05-17_22.34.46.jpeg'
+    '/static/images/product_main.jpg',
+    '/static/images/product_2.jpg',
+    '/static/images/product_3.jpg',
+    '/static/images/product_4.jpg'
 ];
 
 function openPopup(id, name, price) {
@@ -620,7 +600,6 @@ async function addFromPopup(id, name, price, sz) {
         closePopup();
         if (window.updateCartCount) window.updateCartCount();
         if (window.renderT706Cart) window.renderT706Cart();
-        if (window.openCart) window.openCart();
         showToast('Добавлено в корзину');
     }
 }
@@ -643,7 +622,6 @@ document.querySelectorAll('.pcard3d-btn').forEach(function(btn) {
         if (data.success) {
             if (window.updateCartCount) window.updateCartCount();
             if (window.renderT706Cart) window.renderT706Cart();
-            if (window.openCart) window.openCart();
             showToast('Добавлено в корзину');
         }
     });
@@ -830,6 +808,7 @@ function centerGroup(grp) {
     uniform sampler2D uTex1, uSim;
     uniform sampler2D uS0, uS1, uS2, uS3, uS4;
     uniform float uImgAR, uScreenAR;
+    uniform float uS0AR, uS1AR, uS2AR;
     uniform float uSlideIdx, uSlideBlend;
     varying vec2 vUv;
 
@@ -838,13 +817,22 @@ function centerGroup(grp) {
       else              return vec2((uv.x-.5)*(scrAR/imgAR)+.5, uv.y);
     }
 
-    /* GLSL не индексирует сэмплеры — if-цепочка */
+    /* aspect ratio слайда по индексу */
+    float getSlideAR(float i){
+      if(i < 0.5) return uS0AR;
+      if(i < 1.5) return uS1AR;
+      return uS2AR;
+    }
+
+    /* GLSL не индексирует сэмплеры — if-цепочка.
+       uv пересчитывается под cover каждого слайда отдельно */
     vec4 getSlide(vec2 uv, float i){
-      if(i < 0.5) return texture2D(uS0, uv);
-      if(i < 1.5) return texture2D(uS1, uv);
-      if(i < 2.5) return texture2D(uS2, uv);
-      if(i < 3.5) return texture2D(uS3, uv);
-      return             texture2D(uS4, uv);
+      vec2 c = coverUV(uv, getSlideAR(i), uScreenAR);
+      if(i < 0.5) return texture2D(uS0, c);
+      if(i < 1.5) return texture2D(uS1, c);
+      if(i < 2.5) return texture2D(uS2, c);
+      if(i < 3.5) return texture2D(uS3, c);
+      return             texture2D(uS4, c);
     }
 
     void main(){
@@ -861,9 +849,9 @@ function centerGroup(grp) {
       photo.rgb *= 0.74 + 0.26 * vignette;
 
       /* ── слайдшоу: кроссфейд между текущим и следующим, в ч/б ── */
-      float nextIdx = mod(uSlideIdx + 1.0, 5.0);
-      vec3 a = getSlide(cuv, uSlideIdx).rgb;
-      vec3 b = getSlide(cuv, nextIdx).rgb;
+      float nextIdx = mod(uSlideIdx + 1.0, 3.0);
+      vec3 a = getSlide(vUv, uSlideIdx).rgb;
+      vec3 b = getSlide(vUv, nextIdx).rgb;
       vec3 slideCol = mix(a, b, uSlideBlend);
       float bw = dot(slideCol, vec3(0.299, 0.587, 0.114));
       slideCol = vec3(bw);
@@ -906,6 +894,9 @@ function centerGroup(grp) {
     uS2:        { value: null },
     uS3:        { value: null },
     uS4:        { value: null },
+    uS0AR:      { value: 1.5 },
+    uS1AR:      { value: 1.5 },
+    uS2AR:      { value: 1.5 },
     uImgAR:     { value: 1.5 },
     uScreenAR:  { value: 1.78 },
     uSlideIdx:  { value: 0.0 },
@@ -919,26 +910,26 @@ function centerGroup(grp) {
   const tl = new THREE.TextureLoader();
   tl.crossOrigin = 'anonymous';
 
-  /* базовое фото — студийный портрет */
-  tl.load('/static/images/studio/studio-2.jpg', tex => {
+  /* базовое фото — первая скачанная, в цвете (тёплый оранжевый тон в шейдере) */
+  tl.load('/static/images/product_main.jpg', tex => {
     tex.minFilter = tex.magFilter = THREE.LinearFilter;
     dispUni.uTex1.value  = tex;
     dispUni.uImgAR.value = tex.image.naturalWidth / tex.image.naturalHeight || 1.78;
   });
 
-  /* 5 фото слайдшоу — без studio-2 (он базовый) */
+  /* остальные фото — слайдшоу под курсором (рендерятся в ч/б) */
   const SLIDE_URLS = [
-    '/static/images/studio/studio-1.jpg',
-    '/static/images/studio/studio-3.jpg',
-    '/static/images/studio/studio-4.jpg',
-    '/static/images/studio/studio-5.jpg',
-    '/static/images/studio/studio-6.jpg'
+    '/static/images/product_2.jpg',
+    '/static/images/product_3.jpg',
+    '/static/images/product_4.jpg'
   ];
-  const slideKeys = ['uS0','uS1','uS2','uS3','uS4'];
+  const slideKeys = ['uS0','uS1','uS2'];
+  const slideARKeys = ['uS0AR','uS1AR','uS2AR'];
   SLIDE_URLS.forEach((url, i) => {
     tl.load(url, tex => {
       tex.minFilter = tex.magFilter = THREE.LinearFilter;
       dispUni[slideKeys[i]].value = tex;
+      dispUni[slideARKeys[i]].value = tex.image.naturalWidth / tex.image.naturalHeight || 1.5;
     });
   });
 
@@ -1053,7 +1044,7 @@ function centerGroup(grp) {
     slideTimer += 0.016;
     if (slideTimer >= SLIDE_DUR) {
       slideTimer -= SLIDE_DUR;
-      slideIdx = (slideIdx + 1) % 5;
+      slideIdx = (slideIdx + 1) % 3;
       dispUni.uSlideIdx.value = slideIdx;
     }
     dispUni.uSlideBlend.value = slideTimer / SLIDE_DUR;

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Обмен и возврат{% endblock %}
+{% block extra_css %}
+<style>
+.legal-page { max-width: 760px; margin: 0 auto; padding: 60px 40px 120px; font-family: 'Inter', sans-serif; }
+.legal-page h1 { font-family: 'Cormorant', serif; font-size: 38px; font-weight: 400; color: #fff; margin-bottom: 12px; letter-spacing: -0.5px; }
+.legal-page .legal-date { font-size: 11px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 48px; }
+.legal-page h2 { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #fff; margin: 36px 0 14px; }
+.legal-page p { font-size: 14px; line-height: 1.9; color: #888; margin-bottom: 14px; }
+.legal-page ul { padding-left: 20px; margin-bottom: 14px; }
+.legal-page ul li { font-size: 14px; line-height: 1.9; color: #888; margin-bottom: 6px; }
+.legal-page a { color: #ccc; }
+.legal-divider { height: 1px; background: #1a1a1a; margin: 40px 0; }
+.steps-list { counter-reset: steps; list-style: none; padding: 0; }
+.steps-list li { counter-increment: steps; display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; margin-bottom: 20px; }
+.steps-list li::before { content: counter(steps); font-size: 13px; font-weight: 600; color: #fff; background: #1a1a1a; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.steps-list .step-text { font-size: 14px; line-height: 1.8; color: #888; padding-top: 4px; }
+.note-box { border-left: 2px solid #333; padding: 16px 20px; margin: 24px 0; }
+.note-box p { margin: 0; font-size: 13px; color: #666; }
+@media (max-width: 600px) { .legal-page { padding: 40px 20px 80px; } .legal-page h1 { font-size: 28px; } }
+</style>
+{% endblock %}
+{% block content %}
+<div class="legal-page">
+    <h1>Обмен и возврат</h1>
+    <div class="legal-date">В соответствии с законом о защите прав потребителей</div>
+
+    <p>Мы хотим, чтобы вы были довольны каждой покупкой. Если что-то не подошло — мы решим это быстро и без лишних вопросов.</p>
+
+    <div class="legal-divider"></div>
+
+    <h2>Условия возврата</h2>
+    <p>Вы можете вернуть товар в течение <strong style="color:#fff">14 дней</strong> с момента получения при соблюдении следующих условий:</p>
+    <ul>
+        <li>Товар не был в употреблении, сохранён внешний вид</li>
+        <li>Сохранены все ярлыки и бирки</li>
+        <li>Сохранена оригинальная упаковка</li>
+        <li>Отсутствуют следы носки, стирки, парфюма</li>
+    </ul>
+
+    <div class="note-box">
+        <p>Товар надлежащего качества не подлежит возврату, если он был в носке, постиран или повреждён по вине покупателя.</p>
+    </div>
+
+    <h2>Обмен размера</h2>
+    <p>Если вам не подошёл размер — мы обменяем товар на другой. Обмен возможен при наличии нужного размера в наличии. Стоимость обратной пересылки несёт покупатель; пересылка нового размера — за наш счёт.</p>
+
+    <h2>Как оформить возврат</h2>
+    <ul class="steps-list">
+        <li><div class="step-text">Напишите нам в <a href="https://t.me/fuffa_puff">Telegram @fuffa_puff</a> с темой «Возврат» и укажите номер заказа.</div></li>
+        <li><div class="step-text">Мы подтвердим возврат и вышлем адрес для отправки посылки.</div></li>
+        <li><div class="step-text">Отправьте товар любой удобной службой доставки. Сохраните квитанцию об отправке.</div></li>
+        <li><div class="step-text">После получения и проверки товара мы вернём деньги в течение <strong style="color:#fff">3–5 рабочих дней</strong> на исходный способ оплаты.</div></li>
+    </ul>
+
+    <h2>Возврат бракованного товара</h2>
+    <p>Если товар имеет производственный дефект — мы оплачиваем обратную доставку и либо заменяем товар, либо возвращаем деньги в полном объёме. Для подтверждения брака сфотографируйте дефект и пришлите фото в Telegram.</p>
+
+    <h2>Сроки возврата средств</h2>
+    <ul>
+        <li>На банковскую карту — <strong style="color:#fff">3–10 рабочих дней</strong> (зависит от банка)</li>
+        <li>На СБП / по реквизитам — <strong style="color:#fff">1–3 рабочих дня</strong></li>
+        <li>Наложенный платёж — возврат наличными при встрече или переводом</li>
+    </ul>
+
+    <div class="legal-divider"></div>
+    <p style="font-size:12px; color:#444;">Вопросы: <a href="https://t.me/fuffa_puff" style="color:#666;">Telegram @fuffa_puff</a></p>
+</div>
+{% endblock %}

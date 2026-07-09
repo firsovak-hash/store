@@ -2,8 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>{% block title %}Sasha Store{% endblock %}</title>
+    <!-- Telegram Mini App SDK — грузим синхронно до остального, чтобы window.Telegram.WebApp был готов -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script type="module">
@@ -304,21 +306,50 @@
 </nav>
 
 <!-- t706 корзина-панель (Tilda style) -->
+<!-- НИЖНЯЯ ТАБ-ПАНЕЛЬ (навигация как в нативном приложении) -->
+<nav class="tabbar" id="tabbar">
+    <a href="/" class="tab" data-path="/">
+        <i class="fas fa-house"></i>
+        <span>Главная</span>
+    </a>
+    <a href="/catalog" class="tab" data-path="/catalog">
+        <i class="fas fa-grip"></i>
+        <span>Каталог</span>
+    </a>
+    <a href="/likes" class="tab" data-path="/likes" id="tabLikes">
+        <span class="tab-ico">
+            <i class="far fa-heart"></i>
+            <span class="tab-badge" id="tabLikesBadge" hidden>0</span>
+        </span>
+        <span>Избранное</span>
+    </a>
+    <a href="/cart" class="tab" data-path="/cart" id="tabCart">
+        <span class="tab-ico">
+            <i class="fas fa-bag-shopping"></i>
+            <span class="tab-badge" id="tabCartBadge" hidden>0</span>
+        </span>
+        <span>Корзина</span>
+    </a>
+</nav>
+
 <div class="t706-overlay" id="t706Overlay"></div>
 <div class="t706-panel" id="t706Panel">
     <div class="t706-top">
-        <div class="t706-heading">Корзина</div>
-        <button class="t706-close" id="t706Close" aria-label="Закрыть">✕</button>
+        <div class="t706-heading">Ваш заказ</div>
+        <div class="t706-top-actions">
+            <button class="t706-clear" id="t706Clear" aria-label="Очистить корзину">Очистить корзину</button>
+            <button class="t706-close" id="t706Close" aria-label="Закрыть">✕</button>
+        </div>
     </div>
     <div class="t706-items" id="t706Items">
         <div class="t706-empty">Корзина пуста</div>
     </div>
-    <div class="t706-bottom">
-        <div class="t706-total-row">
-            <span>Итого</span>
-            <span id="t706Total">0 р.</span>
+    <div class="t706-bottom" id="t706Bottom">
+        <div class="t706-sum-row">
+            <span class="t706-sum-label">Сумма:</span>
+            <span class="t706-sum-value" id="t706Total">0 р.</span>
         </div>
-        <button class="t706-checkout" onclick="location.href='/cart'">Оформить заказ</button>
+        <button class="t706-checkout" onclick="location.href='/order'">Перейти к оплате</button>
     </div>
 </div>
 
@@ -347,9 +378,9 @@
 .t706-panel {
     position: fixed;
     top: 0; right: -100%;
-    width: 420px; max-width: 100vw; height: 100%;
-    background: #0d0d0d;
-    border-left: 1px solid #1a1a1a;
+    width: 520px; max-width: 100vw; height: 100%;
+    background: #0a0a0a;
+    border-left: 1px solid #161616;
     z-index: 2000;
     display: flex; flex-direction: column;
     transition: right .35s ease;
@@ -359,83 +390,200 @@
 
 .t706-top {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 28px;
-    border-bottom: 1px solid #1a1a1a;
+    padding: 28px 28px 18px;
+    border-bottom: 1px solid transparent;
+    position: relative;
+}
+.t706-top::after {
+    content: ''; position: absolute; left: 40px; right: 40px; bottom: 0;
+    height: 1px; background: #1a1a1a;
 }
 .t706-heading {
-    font-family: 'Cormorant', serif;
-    font-size: 26px; font-weight: 400;
+    font-family: 'Inter', sans-serif;
+    font-size: 28px; font-weight: 700;
     color: #fff; letter-spacing: -0.5px;
 }
-.t706-close {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    width: 32px; height: 32px; border-radius: 50%;
-    color: #888; font-size: 14px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: color 0.2s, background 0.2s;
+
+.t706-top-actions {
+    display: flex; align-items: center; gap: 20px;
 }
-.t706-close:hover { color: #fff; background: rgba(255,255,255,0.12); }
+.t706-clear {
+    background: none; border: none;
+    color: #777; font-size: 13px;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    font-weight: 400; padding: 0;
+    transition: color 0.2s;
+}
+.t706-clear:hover { color: #fff; }
+.t706-clear.t706-clear_hidden { display: none; }
+
+.t706-close {
+    background: transparent; border: none;
+    width: 28px; height: 28px;
+    color: #fff; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.2s;
+    padding: 0; line-height: 1;
+}
+.t706-close:hover { opacity: 0.6; }
 
 .t706-items {
-    flex: 1; overflow-y: auto;
-    padding: 20px 28px 32px;
-    display: flex; flex-direction: column; gap: 18px;
+    flex: 0 1 auto; overflow-y: auto;
+    padding: 4px 28px 8px;
+    display: flex; flex-direction: column;
 }
 .t706-empty {
-    text-align: center; padding: 60px 0;
-    color: #555; font-size: 13px;
+    text-align: center; padding: 80px 20px;
+    color: #555; font-size: 12px;
     font-family: 'Inter', sans-serif;
-    letter-spacing: 1px; text-transform: uppercase;
+    letter-spacing: 2px; text-transform: uppercase;
 }
 
 .t706-item {
-    display: flex; gap: 14px; align-items: flex-start;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #161616;
+    display: grid;
+    grid-template-columns: 72px 1fr auto auto auto;
+    gap: 18px;
+    align-items: center;
+    padding: 22px 0;
+    position: relative;
 }
-.t706-item-img { width:72px; height:72px; background:#161616; flex-shrink:0; overflow:hidden; }
+.t706-item + .t706-item::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: #1a1a1a;
+}
+.t706-item-img {
+    width: 72px; height: 72px;
+    background: #161616;
+    overflow: hidden;
+    border-radius: 8px;
+}
 .t706-item-img img { width:100%; height:100%; object-fit:cover; }
-.t706-item-info { flex:1; min-width: 0; }
+
+.t706-item-info { min-width: 0; }
 .t706-item-name {
-    font-size:14px; color:#fff;
-    font-family:'Inter',sans-serif; font-weight:400;
-    margin-bottom:4px;
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-size: 14px; color: #fff;
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 4px;
 }
-.t706-item-price { font-size:13px; color:#888; font-family:'Inter',sans-serif; }
-.t706-item-qty { display:flex; align-items:center; gap:10px; margin-top:10px; }
+.t706-item-meta {
+    font-size: 12px; color: #888;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.4;
+}
+.t706-item-sku {
+    font-size: 10px; color: #555;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+}
+
+.t706-item-qty {
+    display: flex; align-items: center; gap: 12px;
+}
 .t706-item-qty button {
-    background:#161616; border:1px solid #222;
-    width:26px; height:26px; border-radius:50%;
-    font-size:14px; color:#ccc; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    background: transparent;
+    border: 1px solid #2a2a2a;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    font-size: 16px; color: #999; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.2s, border-color 0.2s;
+    padding: 0;
 }
-.t706-item-qty button:hover { background:#FF4D00; color:#fff; border-color:#FF4D00; }
-.t706-item-qty span { font-size:13px; min-width:20px; text-align:center; font-family:'Inter',sans-serif; color:#ccc; }
-.t706-item-remove { background:none; border:none; color:#444; cursor:pointer; font-size:18px; flex-shrink:0; transition: color 0.2s; }
-.t706-item-remove:hover { color:#FF4D00; }
+.t706-item-qty button:hover { color: #fff; border-color: #fff; }
+.t706-item-qty span {
+    font-size: 16px; min-width: 18px; text-align: center;
+    font-family: 'Inter', sans-serif; color: #fff;
+}
+
+.t706-item-price {
+    font-size: 13px; color: #fff;
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    white-space: nowrap;
+}
+
+.t706-item-remove {
+    background: transparent;
+    border: 1px solid #2a2a2a;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    color: #888; cursor: pointer;
+    font-size: 15px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.2s, border-color 0.2s;
+    padding: 0; flex-shrink: 0;
+}
+.t706-item-remove:hover { color: #fff; border-color: #fff; }
 
 .t706-bottom {
-    padding: 20px 28px 28px;
-    border-top: 1px solid #1a1a1a;
+    padding: 14px 28px 22px;
+    position: relative;
 }
-.t706-total-row {
-    display:flex; justify-content:space-between;
-    font-size:15px; font-weight:500;
-    margin-bottom:16px; font-family:'Inter',sans-serif; color:#fff;
-    letter-spacing: 0.5px;
+.t706-bottom::before {
+    content: ''; position: absolute;
+    top: 0; left: 28px; right: 28px; height: 1px;
+    background: #1a1a1a;
 }
+.t706-bottom.t706-bottom_hidden { display: none; }
+
+.t706-sum-row {
+    display: flex; justify-content: flex-end; align-items: baseline;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.t706-sum-label {
+    font-size: 19px; color: #fff;
+    font-family: 'Inter', sans-serif; font-weight: 700;
+}
+.t706-sum-value {
+    font-size: 19px; color: #fff;
+    font-family: 'Inter', sans-serif; font-weight: 700;
+}
+
 .t706-checkout {
-    width:100%; background:#FF4D00; color:#fff;
-    border:none; padding:14px;
-    font-size:11px; letter-spacing:2px; text-transform:uppercase; font-weight:700;
-    border-radius:0; cursor:pointer;
-    font-family:'Inter',sans-serif;
-    transition: background .2s;
+    width: 100%; background: #fff; color: #000;
+    border: none; padding: 13px;
+    font-size: 13px; font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 8px; cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background .2s, color .2s;
 }
-.t706-checkout:hover { background:#E04400; }
+.t706-checkout:hover { background: #ddd; }
+
+.t706-toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    background: #fff; color: #000;
+    padding: 12px 28px; font-size: 12px;
+    letter-spacing: 1px; text-transform: uppercase;
+    z-index: 3000;
+    animation: t706ToastFade 2.4s forwards;
+    font-family: 'Inter', sans-serif;
+}
+@keyframes t706ToastFade {
+    0%,75% { opacity:1; } 100% { opacity:0; }
+}
+
+@media (max-width: 600px) {
+    .t706-panel { width: 100vw; }
+    .t706-top, .t706-bottom { padding-left: 20px; padding-right: 20px; }
+    .t706-items { padding-left: 20px; padding-right: 20px; }
+    .t706-heading { font-size: 22px; }
+    .t706-clear { font-size: 12px; }
+    .t706-item {
+        grid-template-columns: 60px 1fr auto;
+        grid-template-rows: auto auto;
+        gap: 10px 14px;
+    }
+    .t706-item-img { width: 60px; height: 60px; grid-row: 1 / span 2; grid-column: 1; }
+    .t706-item-info { grid-column: 2; grid-row: 1; }
+    .t706-item-remove { grid-column: 3; grid-row: 1; align-self: start; }
+    .t706-item-qty { grid-column: 2; grid-row: 2; gap: 10px; }
+    .t706-item-price { grid-column: 3; grid-row: 2; align-self: center; }
+}
 
 /* ── ИЗБРАННОЕ: боковая панель, чёрная гамма ── */
 .likes-overlay {
@@ -523,22 +671,124 @@
     align-items: flex-end;
 }
 .likes-item-add {
-    background: #FF4D00; color: #fff;
+    background: #fff; color: #000;
     border: none; padding: 7px 14px;
     font-size: 9px; font-weight: 700;
     letter-spacing: 1.5px; text-transform: uppercase;
     cursor: pointer; font-family: 'Inter', sans-serif;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
     border-radius: 0;
 }
-.likes-item-add:hover { background: #E04400; }
+.likes-item-add:hover { background: #ddd; }
 .likes-item-remove {
     background: none; border: none;
     color: #444; font-size: 18px;
     cursor: pointer; padding: 0;
     transition: color 0.2s;
 }
-.likes-item-remove:hover { color: #FF4D00; }
+.likes-item-remove:hover { color: #fff; }
+</style>
+
+<!-- ═══ TELEGRAM MINI APP: слим-шапка + нижняя таб-панель ═══ -->
+<style>
+:root {
+    /* безопасные зоны Telegram (setViewport). Фолбэк — 0 */
+    --tg-top: var(--tg-content-safe-area-inset-top, env(safe-area-inset-top, 0px));
+    --tg-bottom: env(safe-area-inset-bottom, 0px);
+    --topbar-h: 52px;
+    --tabbar-h: 60px;
+}
+
+body { background: var(--tg-theme-bg-color, #000); }
+
+/* Слим-шапка: только бренд, по центру */
+.navbar {
+    padding: 8px 20px;
+    padding-top: calc(8px + var(--tg-top));
+    justify-content: center;
+    min-height: var(--topbar-h);
+    background: rgba(0,0,0,0.72);
+}
+/* прячем всё, что заменяет нижняя панель */
+.navbar .nav-links,
+.navbar .nav-icons,
+.navbar .burger { display: none !important; }
+
+.logo-wrapper { gap: 10px; }
+.silhouette { height: 26px; }
+.logo-brand { font-size: 17px; letter-spacing: 2px; }
+.logo-by   { font-size: 8px;  letter-spacing: 2.5px; }
+
+/* Контент: зазор под слим-шапку сверху и таб-панель снизу */
+.main-content {
+    padding-top: calc(var(--topbar-h) + var(--tg-top));
+    padding-bottom: calc(var(--tabbar-h) + var(--tg-bottom) + 8px);
+    min-height: auto;
+}
+
+/* Футер — над таб-панелью, компактнее */
+.footer { margin-top: 40px; padding-bottom: calc(30px + var(--tabbar-h) + var(--tg-bottom)); }
+
+/* ── Нижняя таб-панель ── */
+.tabbar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 1500;
+    display: flex;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: var(--tg-bottom);
+}
+.tab {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: var(--tabbar-h);
+    padding: 0;
+    color: rgba(255,255,255,0.42);
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.18s;
+}
+.tab i { font-size: 19px; line-height: 1; }
+.tab span:not(.tab-ico):not(.tab-badge) {
+    font-size: 10px;
+    letter-spacing: 0.3px;
+}
+.tab:active { color: #fff; }
+.tab.tab-active { color: #fff; }
+
+.tab-ico { position: relative; display: inline-flex; }
+.tab-badge {
+    position: absolute;
+    top: -7px; right: -11px;
+    min-width: 16px; height: 16px;
+    padding: 0 4px;
+    border-radius: 10px;
+    background: #fff; color: #000;
+    font-size: 10px; font-weight: 700;
+    line-height: 16px; text-align: center;
+}
+
+/* Плавающая Tilda-кнопка корзины больше не нужна — её роль у таб-панели */
+.t706__carticon { display: none !important; }
+
+/* Убираем ховер-подсветку меню на десктопе — она тут не нужна */
+@media (min-width: 769px) {
+    .mobile-menu, .menu-overlay { display: none; }
+    /* центр логотипа держим и на широком экране — это «приложение», не сайт */
+    .navbar { justify-content: center; }
+    .nav-links { display: none !important; }
+}
 </style>
 
 <div class="mobile-menu" id="mobileMenu">
@@ -562,9 +812,14 @@
             <a href="/about">О нас</a>
         </div>
         <div class="footer-column">
-            <h4>Помощь</h4>
-            <a href="/delivery">Доставка</a>
-            <a href="/payment">Оплата</a>
+            <h4>Покупателям</h4>
+            <a href="/delivery">Доставка и оплата</a>
+            <a href="/returns">Обмен и возврат</a>
+        </div>
+        <div class="footer-column">
+            <h4>Документы</h4>
+            <a href="/policy">Политика конфиденциальности</a>
+            <a href="/agreement">Пользовательское соглашение</a>
         </div>
         <div class="footer-column">
             <h4>Контакты</h4>
@@ -573,7 +828,7 @@
         </div>
     </div>
     <div class="footer-bottom">
-        © 2024 Магазин одежды. Все права защищены.
+        © 2025 Магазин одежды. Все права защищены.
     </div>
 </footer>
 
@@ -609,31 +864,68 @@
     document.getElementById('t706Close').addEventListener('click', closeCart);
     t706Overlay.addEventListener('click', closeCart);
 
+    // Очистка корзины
+    const t706ClearBtn = document.getElementById('t706Clear');
+    if (t706ClearBtn) t706ClearBtn.addEventListener('click', async () => {
+        try {
+            await fetch('/api/cart/clear', { method: 'POST' });
+        } catch {}
+        renderT706Cart();
+        updateCartCount();
+    });
+
+    function showT706Toast(msg) {
+        const t = document.createElement('div');
+        t.className = 't706-toast'; t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2400);
+    }
+
     async function renderT706Cart() {
         try {
             const [ir, tr] = await Promise.all([fetch('/api/cart/items'), fetch('/api/cart/total')]);
             const { items } = await ir.json();
             const { total } = await tr.json();
-            document.getElementById('t706Total').textContent = (total || 0).toLocaleString('ru') + ' р.';
+
+            const itemsCount = items.reduce((s, it) => s + (it.quantity || 1), 0);
+
+            // Сумма
+            const fmt = (n) => (n || 0).toLocaleString('ru') + ' р.';
+            const totEl = document.getElementById('t706Total');
+            if (totEl) totEl.textContent = fmt(total);
+
+            // Кнопка «Очистить» и нижний блок — скрыть когда пусто
+            const clearBtn = document.getElementById('t706Clear');
+            const bottom   = document.getElementById('t706Bottom');
+            if (clearBtn) clearBtn.classList.toggle('t706-clear_hidden', itemsCount === 0);
+            if (bottom)   bottom.classList.toggle('t706-bottom_hidden', itemsCount === 0);
+
             const box = document.getElementById('t706Items');
             if (!items.length) { box.innerHTML = '<div class="t706-empty">Корзина пуста</div>'; return; }
-            box.innerHTML = items.map(item => `
+            box.innerHTML = items.map(item => {
+                const sub = (item.price * (item.quantity || 1)).toLocaleString('ru') + ' р.';
+                const safeName = (item.name || '').replace(/'/g, "\\'");
+                const size = item.size || 'M';
+                const sku  = item.sku || `SKU-${item.id}-${size}`.toUpperCase();
+                return `
                 <div class="t706-item">
                     <div class="t706-item-img">
-                        <img src="/static/images/photo_2026-05-17_22.34.33.jpeg" alt="">
+                        <img src="/static/images/product_main.jpg" alt="">
                     </div>
                     <div class="t706-item-info">
                         <div class="t706-item-name">${item.name}</div>
-                        <div class="t706-item-price">${(item.price * (item.quantity||1)).toLocaleString('ru')} р.</div>
-                        <div class="t706-item-qty">
-                            <button onclick="t706ChangeQty('${item.id}','${item.name}',${item.price},-1)">−</button>
-                            <span>${item.quantity || 1}</span>
-                            <button onclick="t706ChangeQty('${item.id}','${item.name}',${item.price},1)">+</button>
-                        </div>
+                        <div class="t706-item-meta">Размер: ${size}</div>
+                        <div class="t706-item-sku">${sku}</div>
                     </div>
-                    <button class="t706-item-remove" onclick="t706Remove('${item.id}')">×</button>
-                </div>
-            `).join('');
+                    <div class="t706-item-qty">
+                        <button onclick="t706ChangeQty('${item.id}','${safeName}',${item.price},-1)" aria-label="Уменьшить">−</button>
+                        <span>${item.quantity || 1}</span>
+                        <button onclick="t706ChangeQty('${item.id}','${safeName}',${item.price},1)" aria-label="Увеличить">+</button>
+                    </div>
+                    <div class="t706-item-price">${sub}</div>
+                    <button class="t706-item-remove" onclick="t706Remove('${item.id}')" aria-label="Удалить">×</button>
+                </div>`;
+            }).join('');
         } catch {}
     }
 
@@ -661,13 +953,23 @@
             const r = await fetch('/api/cart/count');
             const { count } = await r.json();
             document.querySelectorAll('#cart-count, #cartFloatCount').forEach(el => { if(el) el.textContent = count || 0; });
+            setTabBadge('tabCartBadge', count);
         } catch {}
+    }
+
+    function setTabBadge(id, n) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const val = Number(n) || 0;
+        el.textContent = val > 99 ? '99+' : val;
+        el.hidden = val === 0;
     }
 
     function updateLikesCount() {
         const likes = JSON.parse(localStorage.getItem('liked_products') || '[]');
         const el = document.getElementById('likes-count');
         if (el) el.textContent = likes.length;
+        setTabBadge('tabLikesBadge', likes.length);
     }
 
     // ── ИЗБРАННОЕ: боковая панель ──
@@ -684,7 +986,7 @@
         '5': { name: 'Широкие джинсы',   price: 7200 },
         '6': { name: 'Трекинг-куртка',   price: 12500 }
     };
-    const LIKES_FALLBACK_IMG = '/static/images/photo_2026-05-17_22.34.33.jpeg';
+    const LIKES_FALLBACK_IMG = '/static/images/product_main.jpg';
 
     function openLikes() {
         likesPanel.classList.add('open');
@@ -750,6 +1052,54 @@
     window.openLikes = openLikes;
     window.renderT706Cart = renderT706Cart;
     window.renderLikesPanel = renderLikesPanel;
+</script>
+
+<!-- ═══ TELEGRAM MINI APP: инициализация + нижняя навигация ═══ -->
+<script>
+(function () {
+    const tg = window.Telegram && window.Telegram.WebApp;
+
+    // — инициализация Telegram —
+    if (tg) {
+        try { tg.ready(); } catch (e) {}
+        try { tg.expand(); } catch (e) {}
+        try { tg.setHeaderColor('#000000'); } catch (e) {}
+        try { tg.setBackgroundColor('#000000'); } catch (e) {}
+        // запрет закрытия свайпом вниз (Bot API 7.7+) — чтобы вело себя как приложение
+        try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch (e) {}
+        try { tg.enableClosingConfirmation && tg.enableClosingConfirmation(); } catch (e) {}
+
+        // BackButton на внутренних страницах
+        try {
+            if (tg.BackButton) {
+                if (location.pathname !== '/') {
+                    tg.BackButton.show();
+                    tg.BackButton.onClick(() => {
+                        if (window.history.length > 1) window.history.back();
+                        else window.location.href = '/';
+                    });
+                } else {
+                    tg.BackButton.hide();
+                }
+            }
+        } catch (e) {}
+    }
+
+    function haptic() {
+        try { tg && tg.HapticFeedback && tg.HapticFeedback.selectionChanged(); } catch (e) {}
+    }
+
+    // — нижняя таб-панель: все табы ведут на реальные страницы, добавляем только haptic —
+    document.querySelectorAll('.tab[data-path]').forEach(t => t.addEventListener('click', haptic));
+
+    // подсветка активного таба по текущему пути
+    const path = location.pathname;
+    document.querySelectorAll('.tab[data-path]').forEach(t => {
+        const p = t.getAttribute('data-path');
+        const active = (p === '/') ? (path === '/') : path.startsWith(p);
+        if (active) t.classList.add('tab-active');
+    });
+})();
 </script>
 
 {% block extra_js %}{% endblock %}

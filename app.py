@@ -20,7 +20,7 @@ PRODUCTS = {
         'id': '1',
         'name': 'Оверсайз худи',
         'price': 4900,
-        'image': 'https://via.placeholder.com/600x400?text=Hoodie',
+        'image': '/static/images/product_main.jpg',
         'description': 'Тяжёлый хлопок, свободный крой.',
         'full_description': 'Оверсайз худи из 100% хлопка 380г. Плотный, тёплый, садится идеально. Доступен в чёрном и молочном.',
         'badge': 'Хит'
@@ -29,7 +29,7 @@ PRODUCTS = {
         'id': '2',
         'name': 'Карго-брюки',
         'price': 6200,
-        'image': 'https://via.placeholder.com/600x400?text=Cargo',
+        'image': '/static/images/product_2.jpg',
         'description': 'Широкий крой, функциональные карманы.',
         'full_description': 'Карго-брюки из плотной хлопковой смеси. Регулируемый пояс, 6 карманов, зауженный низ.',
         'badge': 'Новинка'
@@ -38,7 +38,7 @@ PRODUCTS = {
         'id': '3',
         'name': 'Базовая футболка',
         'price': 2800,
-        'image': 'https://via.placeholder.com/600x400?text=Tee',
+        'image': '/static/images/product_3.jpg',
         'description': 'Плотный хлопок, минимализм.',
         'full_description': 'Футболка из 100% хлопка 220г. Прямой крой, усиленные швы, не деформируется после стирки.',
         'badge': ''
@@ -47,7 +47,7 @@ PRODUCTS = {
         'id': '4',
         'name': 'Бомбер',
         'price': 9500,
-        'image': 'https://via.placeholder.com/600x400?text=Bomber',
+        'image': '/static/images/product_4.jpg',
         'description': 'Классический силуэт, современные детали.',
         'full_description': 'Бомбер из нейлона с подкладкой. Рёбра из риба, двусторонняя молния, внутренние карманы.',
         'badge': 'Премиум'
@@ -56,7 +56,7 @@ PRODUCTS = {
         'id': '5',
         'name': 'Широкие джинсы',
         'price': 7200,
-        'image': 'https://via.placeholder.com/600x400?text=Jeans',
+        'image': '/static/images/product_main.jpg',
         'description': 'Straight fit, необработанный край.',
         'full_description': 'Прямые джинсы из 100% денима 14oz. Необработанный низ, потёртости вручную.',
         'badge': ''
@@ -65,7 +65,7 @@ PRODUCTS = {
         'id': '6',
         'name': 'Трекинговая куртка',
         'price': 12500,
-        'image': 'https://via.placeholder.com/600x400?text=Jacket',
+        'image': '/static/images/product_2.jpg',
         'description': 'Ветрозащита, минималистичный дизайн.',
         'full_description': 'Лёгкая куртка из дышащего нейлона. Убирается в собственный карман, ветро- и водозащита.',
         'badge': ''
@@ -248,6 +248,22 @@ def product_page(product_id):
             save_reviews(reviews)
     
     return render_template('product.html', product=product, reviews=product_reviews)
+
+@app.route('/policy')
+def policy():
+    return render_template('policy.html')
+
+@app.route('/agreement')
+def agreement():
+    return render_template('agreement.html')
+
+@app.route('/delivery')
+def delivery():
+    return render_template('delivery.html')
+
+@app.route('/returns')
+def returns():
+    return render_template('returns.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

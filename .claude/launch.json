@@ -2,10 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Flask (app.py)",
+      "name": "flask-store",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["app.py"],
-      "port": 8080
+      "port": 8080,
+      "autoPort": false
     }
   ]
 }

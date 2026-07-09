@@ -4,16 +4,16 @@
 
 {% block extra_css %}
 <style>
-    .likes-page { background: #fff; min-height: 100vh; padding: 60px 0 120px; }
+    .likes-page { background: #000; min-height: 100vh; padding: 20px 0 40px; }
 
     .likes-page-header {
         text-align: center;
-        padding: 60px 20px 50px;
+        padding: 30px 20px 40px;
         font-size: 13px;
         font-weight: 400;
         letter-spacing: 3px;
         text-transform: uppercase;
-        color: #000;
+        color: #fff;
         font-family: 'Inter', sans-serif;
     }
 
@@ -29,7 +29,7 @@
         gap: 24px;
         align-items: center;
         padding: 24px 0;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid #1a1a1a;
         opacity: 0;
         transform: translateY(12px);
         transition: opacity .4s ease, transform .4s ease;
@@ -38,39 +38,39 @@
 
     .likes-row-img {
         width: 80px; height: 80px;
-        background: #ebebeb; border-radius: 4px;
+        background: #161616; border-radius: 8px;
         overflow: hidden;
     }
     .likes-row-img img { width:100%; height:100%; object-fit:cover; }
 
-    .likes-row-name { font-size: 16px; font-weight: 400; color: #000; margin-bottom: 6px; }
-    .likes-row-price { font-size: 14px; color: #9e9e9e; }
+    .likes-row-name { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 6px; }
+    .likes-row-price { font-size: 14px; color: #888; }
 
     .likes-row-add {
-        background: #000; color: #fff;
+        background: #fff; color: #000;
         border: none; padding: 10px 22px;
-        font-size: 13px; letter-spacing: .5px;
-        border-radius: 5px; cursor: pointer;
+        font-size: 13px; letter-spacing: .5px; font-weight: 600;
+        border-radius: 8px; cursor: pointer;
         font-family: 'Inter', sans-serif;
         transition: opacity .2s; white-space: nowrap;
     }
-    .likes-row-add:hover { opacity: .75; }
+    .likes-row-add:hover { opacity: .8; }
 
     .likes-row-remove {
         background: none; border: none;
-        color: #ccc; font-size: 22px;
+        color: #444; font-size: 22px;
         cursor: pointer; padding: 0 4px;
     }
-    .likes-row-remove:hover { color: #000; }
+    .likes-row-remove:hover { color: #fff; }
 
     .likes-empty-state {
         text-align: center;
         padding: 80px 20px;
-        color: #9e9e9e;
+        color: #888;
         font-size: 15px;
         font-family: 'Inter', sans-serif;
     }
-    .likes-empty-state a { color: #000; text-decoration: underline; }
+    .likes-empty-state a { color: #fff; text-decoration: underline; }
 
     .likes-toast {
         position: fixed; bottom: 30px; left: 50%;
@@ -105,8 +105,8 @@
 {% block extra_js %}
 <script>
     const PRODUCTS_DATA = {
-        {% for i in range(1, 11) %}
-        '{{ i }}': { name: 'Шмотка {{ i }}', price: {{ 1500 + i * 100 }}, image: '/static/images/photo_2026-05-17_22.34.33.jpeg' },
+        {% for p in products %}
+        '{{ p.id }}': { name: {{ p.name|tojson }}, price: {{ p.price }}, image: {{ p.image|tojson }} },
         {% endfor %}
     };
 
