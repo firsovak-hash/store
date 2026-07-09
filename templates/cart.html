@@ -25,7 +25,7 @@
 
     .cart-row {
         display: grid;
-        grid-template-columns: 80px 1fr auto auto;
+        grid-template-columns: 80px 1fr auto auto auto;
         gap: 24px;
         align-items: center;
         padding: 24px 0;
@@ -34,11 +34,11 @@
 
     .cart-row-img {
         width: 80px; height: 80px;
-        background: #161616;
+        background: #fff;
         border-radius: 8px;
         overflow: hidden;
     }
-    .cart-row-img img { width:100%; height:100%; object-fit:cover; }
+    .cart-row-img img { width:100%; height:100%; object-fit:contain; padding:6px; }
 
     .cart-row-name { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 6px; }
     .cart-row-price { font-size: 14px; color: #888; }
@@ -121,9 +121,23 @@
     }
 
     @media (max-width: 600px) {
-        .cart-row { grid-template-columns: 64px 1fr; gap: 14px; }
-        .cart-row-qty, .cart-row-total, .cart-row-remove { grid-column: 2; }
+        .cart-page { padding: 12px 0 40px; }
+        .cart-page-header { padding: 18px 20px 24px; }
         .cart-wrap { padding: 0 16px 60px; }
+        .cart-row {
+            grid-template-columns: 64px 1fr auto;
+            grid-template-rows: auto auto;
+            gap: 8px 14px;
+            padding: 18px 0;
+        }
+        .cart-row-img   { grid-column: 1; grid-row: 1 / 3; width: 64px; height: 64px; align-self: center; }
+        .cart-row-info  { grid-column: 2; grid-row: 1; }
+        .cart-row-remove{ grid-column: 3; grid-row: 1; justify-self: end; align-self: start; }
+        .cart-row-qty   { grid-column: 2; grid-row: 2; }
+        .cart-row-total { grid-column: 3; grid-row: 2; justify-self: end; min-width: 0; }
+        .cart-row-name  { font-size: 15px; }
+        .cart-summary-block { padding-top: 28px; }
+        .cart-checkout-btn { width: 100%; padding: 15px; }
     }
 </style>
 {% endblock %}
@@ -153,8 +167,8 @@
 
             const rows = items.map(item => `
                 <div class="cart-row">
-                    <div class="cart-row-img"><img src="/static/images/product_main.jpg" alt=""></div>
-                    <div>
+                    <div class="cart-row-img"><img src="${imgForName(item.name)}" alt=""></div>
+                    <div class="cart-row-info">
                         <div class="cart-row-name">${esc(item.name)}</div>
                         <div class="cart-row-price">${item.price.toLocaleString('ru')} р. за шт.</div>
                     </div>
@@ -210,6 +224,14 @@
     }
 
     function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    // Фото товара по названию (жидкость / под / картридж)
+    function imgForName(name) {
+        const n = String(name).toLowerCase();
+        if (n.includes('картридж')) return '/static/images/cartridge.jpg';
+        if (n.includes('под') || n.includes('pod')) return '/static/images/pod.jpg';
+        return '/static/images/liquid.jpg';
+    }
 
     loadCartPage();
 </script>

@@ -881,6 +881,14 @@ body { background: var(--tg-theme-bg-color, #000); }
         setTimeout(() => t.remove(), 2400);
     }
 
+    // Фото товара по названию (жидкость / под / картридж)
+    function imgForName(name) {
+        const n = String(name || '').toLowerCase();
+        if (n.includes('картридж')) return '/static/images/cartridge.jpg';
+        if (n.includes('под') || n.includes('pod')) return '/static/images/pod.jpg';
+        return '/static/images/liquid.jpg';
+    }
+
     async function renderT706Cart() {
         try {
             const [ir, tr] = await Promise.all([fetch('/api/cart/items'), fetch('/api/cart/total')]);
@@ -910,7 +918,7 @@ body { background: var(--tg-theme-bg-color, #000); }
                 return `
                 <div class="t706-item">
                     <div class="t706-item-img">
-                        <img src="/static/images/product_main.jpg" alt="">
+                        <img src="${imgForName(item.name)}" alt="">
                     </div>
                     <div class="t706-item-info">
                         <div class="t706-item-name">${item.name}</div>

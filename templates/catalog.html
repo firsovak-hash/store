@@ -17,35 +17,9 @@
     /* ── PAGE ── */
     .catalog-page { background: #000; padding: 0 0 120px; min-height: 100vh; }
 
-    /* ── MOSAIC COLOR TREATMENT ── */
-    /* Первая фото — в цвете с тёплым оранжевым тоном */
-    .hp-mosaic__item:nth-child(1) .hp-mosaic__image {
-        filter: brightness(0.92) saturate(1.25) sepia(14%) hue-rotate(-8deg);
-        transition: transform 0.55s ease, filter 0.4s ease;
-    }
-    .hp-mosaic__item:nth-child(1):hover .hp-mosaic__image {
-        transform: scale(1.04);
-        filter: brightness(1.02) saturate(1.3) sepia(10%) hue-rotate(-8deg);
-    }
-    /* Остальные — ч/б, цвет при наведении */
-    .hp-mosaic__item:nth-child(n+2) .hp-mosaic__image {
-        filter: grayscale(1) brightness(0.82);
-        transition: transform 0.55s ease, filter 0.5s ease;
-    }
-    .hp-mosaic__item:nth-child(n+2):hover .hp-mosaic__image {
-        transform: scale(1.04);
-        filter: grayscale(0) brightness(1);
-    }
-
-    /* ── GALLERY IMAGE COLOR TREATMENT ── */
-    /* Первая фото карточки — тёплый цвет */
-    .t754__gimg[data-idx="0"] {
-        filter: brightness(0.9) saturate(1.2) sepia(10%) hue-rotate(-6deg);
-    }
-    /* Остальные — ч/б */
-    .t754__gimg:not([data-idx="0"]) {
-        filter: grayscale(1) brightness(0.85);
-    }
+    /* ── MOSAIC (фото товаров в цвете) ── */
+    .hp-mosaic__image { transition: transform 0.55s ease; }
+    .hp-mosaic__item:hover .hp-mosaic__image { transform: scale(1.04); }
 
     .catalog-section-title {
         font-size: 12px; font-weight: 500; letter-spacing: 4px;
@@ -98,10 +72,9 @@
 
     .hp-mosaic__image {
         width: 100%; height: 100%; object-fit: cover; display: block;
-        transition: transform 0.55s ease;
-        filter: brightness(0.85);
+        background: #fff; transition: transform 0.55s ease;
     }
-    .hp-mosaic__item:hover .hp-mosaic__image { transform: scale(1.04); filter: brightness(1); }
+    .hp-mosaic__item:hover .hp-mosaic__image { transform: scale(1.04); }
 
     @media (max-width: 420px) {
         .hp-mosaic__grid { gap: 8px; }
@@ -136,11 +109,11 @@
 
     .t754__imgwrapper {
         position: relative; width: 100%; padding-bottom: 115%;
-        background: #111; overflow: hidden;
+        background: #fff; overflow: hidden; border-radius: 10px;
     }
     .t754__img {
         position: absolute; inset: 0; width: 100%; height: 100%;
-        object-fit: cover; transition: opacity 0.35s ease;
+        object-fit: contain; padding: 12px; transition: opacity 0.35s ease;
     }
     .t754__gimg { opacity: 0; z-index: 0; }
     .t754__gimg.active { opacity: 1; z-index: 1; }
@@ -302,8 +275,9 @@
     .prod-popup-view-tab.active { background: #fff; color: #000; }
 
     .prod-popup-stage { flex: 1; position: relative; overflow: hidden; }
-    .prod-popup-main-img { position: absolute; inset: 0; }
-    .prod-popup-main-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .prod-popup-main-img { position: absolute; inset: 0; background: #fff; }
+    .prod-popup-main-img img { width: 100%; height: 100%; object-fit: contain; padding: 24px; display: block; }
+    .prod-popup-thumbs:empty { display: none; }
     .prod-popup-3d { position: absolute; inset: 0; display: none; background: radial-gradient(circle at 50% 45%, #1a1a1a 0%, #0a0a0a 75%); }
     .prod-popup-3d.active { display: block; }
     .prod-popup-3d canvas { display: block; width: 100% !important; height: 100% !important; }
@@ -369,9 +343,9 @@
         <div class="hp-mosaic__wrapper">
             <div class="hp-mosaic__grid">
                 {% set collage = [
-                    ('images/product_main.jpg', 'Жидкости',    'liquids'),
-                    ('images/product_2.jpg',    'Под-системы', 'pods'),
-                    ('images/product_3.jpg',    'Картриджи',   'cartridges'),
+                    ('images/liquid.jpg',    'Жидкости',    'liquids'),
+                    ('images/pod.jpg',       'Под-системы', 'pods'),
+                    ('images/cartridge.jpg', 'Картриджи',   'cartridges'),
                 ] %}
                 {% for img, label, cat in collage %}
                 <div class="hp-mosaic__item">
@@ -408,35 +382,26 @@
         ('Картридж Luxe',        400, 'cartridges', 10,  False),
         ('Картридж Nord',        320, 'cartridges', 11,  False),
     ] %}
+    {% set cat_img = {
+        'liquids':    '/static/images/liquid.jpg',
+        'pods':       '/static/images/pod.jpg',
+        'cartridges': '/static/images/cartridge.jpg'
+    } %}
     <div class="t754">
         <div class="t754__parent" id="productsGrid">
             {% for name, price, cat, pid, is_new in products %}
-            {% set gallery = [
-                '/static/images/product_main.jpg',
-                '/static/images/product_2.jpg',
-                '/static/images/product_3.jpg',
-                '/static/images/product_4.jpg'
-            ] %}
+            {% set img = cat_img[cat] %}
             <div class="t754__col js-catalog-item" data-category="{{ cat }}">
-                <div class="t754__imgwrapper t754__gallery" style="cursor:pointer" data-idx="0"
-                     onclick="openProdPopup('{{ pid }}','{{ name }}',{{ price }})">
+                <div class="t754__imgwrapper" style="cursor:pointer"
+                     onclick="openProdPopup('{{ pid }}','{{ name }}',{{ price }},'{{ img }}')">
                     {% if is_new %}<div class="t754__markwrapper"><div class="t754__mark">NEW</div></div>{% endif %}
-                    {% for src in gallery %}
-                    <img class="t754__img t754__gimg {% if loop.first %}active{% endif %}" data-idx="{{ loop.index0 }}" src="{{ src }}" alt="">
-                    {% endfor %}
+                    <img class="t754__img" src="{{ img }}" alt="{{ name }}">
                     <button class="t754__like" data-id="{{ pid }}"
                             onclick="event.stopPropagation(); catalogToggleLike(this, '{{ pid }}')">
                         <svg viewBox="0 0 24 24" class="heart-svg" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
                     </button>
-                    <button class="t754__arrow t754__arrow--prev"
-                            onclick="event.stopPropagation(); catalogGalleryNav(this, -1)" aria-label="Назад">‹</button>
-                    <button class="t754__arrow t754__arrow--next"
-                            onclick="event.stopPropagation(); catalogGalleryNav(this, 1)" aria-label="Вперёд">›</button>
-                    <div class="t754__dots">
-                        {% for src in gallery %}<span class="t754__dot {% if loop.first %}active{% endif %}"></span>{% endfor %}
-                    </div>
                 </div>
                 <div class="t754__textwrapper">
                     <div class="t754__title">{{ name }}</div>
@@ -700,20 +665,12 @@
     });
 
     // === PRODUCT POPUP ===
-    const POPUP_IMGS = [
-        '/static/images/product_main.jpg',
-        '/static/images/product_2.jpg',
-        '/static/images/product_3.jpg',
-        '/static/images/product_4.jpg'
-    ];
-
-    function openProdPopup(id, name, price) {
+    function openProdPopup(id, name, price, img) {
+        img = img || '/static/images/liquid.jpg';
         document.getElementById('popupName').textContent = name;
         document.getElementById('popupPrice').textContent = Number(price).toLocaleString('ru') + ' р.';
-        document.getElementById('popupMainImg').src = POPUP_IMGS[0];
-        document.getElementById('popupThumbs').innerHTML = POPUP_IMGS.map((src, i) =>
-            `<div class="prod-popup-thumb ${i===0?'active':''}" onclick="setPopupImg(this,'${src}')"><img src="${src}" alt=""></div>`
-        ).join('');
+        document.getElementById('popupMainImg').src = img;
+        document.getElementById('popupThumbs').innerHTML = '';
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('popupCartBtn').onclick = () => {
             const size = document.querySelector('.size-btn.active')?.dataset.size || '';

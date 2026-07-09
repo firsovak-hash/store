@@ -14,60 +14,76 @@ import mimetypes
 mimetypes.add_type('model/gltf-binary', '.glb')
 mimetypes.add_type('model/gltf+json', '.gltf')
 
-# Товары
+# Товары (вейп-магазин: жидкости / под-системы / картриджи)
+LIQUID_IMG = '/static/images/liquid.jpg'
+POD_IMG = '/static/images/pod.jpg'
+CARTRIDGE_IMG = '/static/images/cartridge.jpg'
+
 PRODUCTS = {
     '1': {
-        'id': '1',
-        'name': 'Оверсайз худи',
-        'price': 4900,
-        'image': '/static/images/product_main.jpg',
-        'description': 'Тяжёлый хлопок, свободный крой.',
-        'full_description': 'Оверсайз худи из 100% хлопка 380г. Плотный, тёплый, садится идеально. Доступен в чёрном и молочном.',
+        'id': '1', 'name': 'Жидкость Mango Ice', 'price': 450, 'image': LIQUID_IMG,
+        'description': 'Манго с холодком, 20 мг.',
+        'full_description': 'Жидкость для пода: спелое манго с лёгким холодком. Крепость 20 мг (соль), объём 30 мл.',
         'badge': 'Хит'
     },
     '2': {
-        'id': '2',
-        'name': 'Карго-брюки',
-        'price': 6200,
-        'image': '/static/images/product_2.jpg',
-        'description': 'Широкий крой, функциональные карманы.',
-        'full_description': 'Карго-брюки из плотной хлопковой смеси. Регулируемый пояс, 6 карманов, зауженный низ.',
-        'badge': 'Новинка'
+        'id': '2', 'name': 'Жидкость Berry Mix', 'price': 400, 'image': LIQUID_IMG,
+        'description': 'Микс лесных ягод.',
+        'full_description': 'Жидкость для пода: черника, малина и ежевика. Крепость 20 мг (соль), объём 30 мл.',
+        'badge': ''
     },
     '3': {
-        'id': '3',
-        'name': 'Базовая футболка',
-        'price': 2800,
-        'image': '/static/images/product_3.jpg',
-        'description': 'Плотный хлопок, минимализм.',
-        'full_description': 'Футболка из 100% хлопка 220г. Прямой крой, усиленные швы, не деформируется после стирки.',
+        'id': '3', 'name': 'Жидкость Tobacco', 'price': 380, 'image': LIQUID_IMG,
+        'description': 'Классический табак.',
+        'full_description': 'Жидкость для пода: мягкий табачный вкус без лишней сладости. Крепость 20 мг (соль), объём 30 мл.',
         'badge': ''
     },
     '4': {
-        'id': '4',
-        'name': 'Бомбер',
-        'price': 9500,
-        'image': '/static/images/product_4.jpg',
-        'description': 'Классический силуэт, современные детали.',
-        'full_description': 'Бомбер из нейлона с подкладкой. Рёбра из риба, двусторонняя молния, внутренние карманы.',
-        'badge': 'Премиум'
+        'id': '4', 'name': 'Жидкость Mint Fresh', 'price': 420, 'image': LIQUID_IMG,
+        'description': 'Свежая мята.',
+        'full_description': 'Жидкость для пода: чистая холодная мята. Крепость 20 мг (соль), объём 30 мл.',
+        'badge': ''
     },
     '5': {
-        'id': '5',
-        'name': 'Широкие джинсы',
-        'price': 7200,
-        'image': '/static/images/product_main.jpg',
-        'description': 'Straight fit, необработанный край.',
-        'full_description': 'Прямые джинсы из 100% денима 14oz. Необработанный низ, потёртости вручную.',
+        'id': '5', 'name': 'Pod-система Caliburn', 'price': 2200, 'image': POD_IMG,
+        'description': 'Компактная под-система.',
+        'full_description': 'Uwell Caliburn: надёжная под-система с плотной затяжкой, аккумулятор 520 мАч, USB-C.',
         'badge': ''
     },
     '6': {
-        'id': '6',
-        'name': 'Трекинговая куртка',
-        'price': 12500,
-        'image': '/static/images/product_2.jpg',
-        'description': 'Ветрозащита, минималистичный дизайн.',
-        'full_description': 'Лёгкая куртка из дышащего нейлона. Убирается в собственный карман, ветро- и водозащита.',
+        'id': '6', 'name': 'Pod-система Xros', 'price': 1900, 'image': POD_IMG,
+        'description': 'Экран, USB-C, лёгкая.',
+        'full_description': 'Vaporesso XROS: под-система с индикацией заряда, регулировкой обдува и аккумулятором 1000 мАч.',
+        'badge': ''
+    },
+    '7': {
+        'id': '7', 'name': 'Pod-система Luxe', 'price': 2800, 'image': POD_IMG,
+        'description': 'Премиум под-система.',
+        'full_description': 'Vaporesso LUXE: цветной экран, мощность до 40 Вт, аккумулятор 1500 мАч.',
+        'badge': 'Премиум'
+    },
+    '8': {
+        'id': '8', 'name': 'Картридж Caliburn', 'price': 350, 'image': CARTRIDGE_IMG,
+        'description': 'Сменный картридж.',
+        'full_description': 'Сменный картридж для Uwell Caliburn, сопротивление 1.0 Ом, объём 2 мл. В упаковке 1 шт.',
+        'badge': ''
+    },
+    '9': {
+        'id': '9', 'name': 'Картридж Xros', 'price': 300, 'image': CARTRIDGE_IMG,
+        'description': 'Сменный картридж.',
+        'full_description': 'Сменный картридж для Vaporesso XROS, сопротивление 1.2 Ом, объём 2 мл. В упаковке 1 шт.',
+        'badge': ''
+    },
+    '10': {
+        'id': '10', 'name': 'Картридж Luxe', 'price': 400, 'image': CARTRIDGE_IMG,
+        'description': 'Сменный картридж.',
+        'full_description': 'Сменный картридж для Vaporesso LUXE, сопротивление 0.8 Ом, объём 2 мл. В упаковке 1 шт.',
+        'badge': ''
+    },
+    '11': {
+        'id': '11', 'name': 'Картридж Nord', 'price': 320, 'image': CARTRIDGE_IMG,
+        'description': 'Сменный картридж.',
+        'full_description': 'Сменный картридж для SMOK Nord, сопротивление 0.8 Ом, объём 3 мл. В упаковке 1 шт.',
         'badge': ''
     }
 }
