@@ -316,8 +316,9 @@ def cart_add():
         if item['id'] == product_id:
             item['quantity'] = item.get('quantity', 1) + 1
             session['cart'] = cart
+            persist_user_cart()
             return jsonify({'success': True, 'count': len(cart)})
-    
+
     # Добавляем новый товар
     cart.append({
         'id': product_id,
@@ -326,7 +327,8 @@ def cart_add():
         'quantity': 1
     })
     session['cart'] = cart
-    
+    persist_user_cart()
+
     return jsonify({'success': True, 'count': len(cart)})
 
 @app.route('/api/cart/remove', methods=['POST'])
@@ -338,22 +340,47 @@ def cart_remove():
     cart = session.get('cart', [])
     cart = [item for item in cart if item['id'] != product_id]
     session['cart'] = cart
-    
+    persist_user_cart()
+
     return jsonify({'success': True, 'count': len(cart)})
 
 @app.route('/api/cart/clear', methods=['POST'])
 def cart_clear():
     """Очищает корзину"""
     session['cart'] = []
+    persist_user_cart()
     return jsonify({'success': True})
+
+def persist_user_cart():
+    """Сохраняет текущую корзину сессии в профиль пользователя (если он в Telegram)."""
+    user = current_tg_user()
+    if not user:
+        return
+    users = load_users()
+    uid = str(user['id'])
+    prof = users.get(uid) or {}
+    prof['cart'] = session.get('cart', [])
+    users[uid] = prof
+    save_users(users)
+
 
 @app.route('/api/tg/verify', methods=['POST'])
 def tg_verify():
-    """Проверяет initData, заводит/обновляет профиль, отдаёт сохранённые данные."""
+    """Проверяет initData, заводит/обновляет профиль, восстанавливает корзину/избранное."""
     user = current_tg_user()
     if not user:
         return jsonify({'ok': False}), 401
     prof, first_visit = upsert_profile(user)
+
+    # Корзина: собранное в этой сессии важнее (сохраняем в профиль);
+    # иначе восстанавливаем сохранённую корзину пользователя.
+    sess_cart = session.get('cart', [])
+    if sess_cart:
+        prof['cart'] = sess_cart
+        users = load_users(); users[str(user['id'])] = prof; save_users(users)
+    elif prof.get('cart'):
+        session['cart'] = prof['cart']
+
     return jsonify({
         'ok': True,
         'first_visit': first_visit,
@@ -367,7 +394,28 @@ def tg_verify():
             'phone': prof.get('phone', ''),
             'address': prof.get('address', ''),
         },
+        'favorites': prof.get('favorites', []),
     })
+
+
+@app.route('/api/favorites/set', methods=['POST'])
+def favorites_set():
+    """Сохраняет список избранного пользователя (источник правды на сервере)."""
+    user = current_tg_user()
+    if not user:
+        return jsonify({'ok': False}), 401
+    data = request.get_json(silent=True) or {}
+    favs = data.get('favorites', [])
+    if not isinstance(favs, list):
+        favs = []
+    favs = [str(x) for x in favs][:200]
+    users = load_users()
+    uid = str(user['id'])
+    prof = users.get(uid) or {}
+    prof['favorites'] = favs
+    users[uid] = prof
+    save_users(users)
+    return jsonify({'ok': True})
 
 
 @app.route('/api/order/create', methods=['POST'])

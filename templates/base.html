@@ -332,7 +332,7 @@
 <nav class="tabbar" id="tabbar">
     <a href="/" class="tab" data-path="/">
         <i class="fas fa-house"></i>
-        <span>Главная</span>
+        <span>О нас</span>
     </a>
     <a href="/catalog" class="tab" data-path="/catalog">
         <i class="fas fa-grip"></i>
@@ -826,34 +826,6 @@ body { background: var(--tg-theme-bg-color, #000); }
     {% block content %}{% endblock %}
 </main>
 
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-column">
-            <h4>Магазин</h4>
-            <a href="/catalog">Каталог</a>
-            <a href="/about">О нас</a>
-        </div>
-        <div class="footer-column">
-            <h4>Покупателям</h4>
-            <a href="/delivery">Доставка и оплата</a>
-            <a href="/returns">Обмен и возврат</a>
-        </div>
-        <div class="footer-column">
-            <h4>Документы</h4>
-            <a href="/policy">Политика конфиденциальности</a>
-            <a href="/agreement">Пользовательское соглашение</a>
-        </div>
-        <div class="footer-column">
-            <h4>Контакты</h4>
-            <a href="https://t.me/fuffa_puff">Telegram</a>
-            <a href="https://instagram.com/fuffa_puff">Instagram</a>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        © 2025 Магазин одежды. Все права защищены.
-    </div>
-</footer>
-
 <script>
     // Бургер-меню
     const burgerBtn = document.getElementById('burgerBtn');
@@ -1168,8 +1140,23 @@ body { background: var(--tg-theme-bg-color, #000); }
     var tg = window.Telegram && window.Telegram.WebApp;
     if (!tg) return;  // вне Telegram — ничего
 
-    // 1) Серверная верификация (профиль/префилл заказа) — отдельно, не блокирует приветствие
     var initData = window.__TG_INIT || tg.initData || '';
+
+    function readFavs() {
+        try { return JSON.parse(localStorage.getItem('liked_products') || '[]'); } catch (e) { return []; }
+    }
+    // Пуш избранного на сервер (источник правды — сервер, привязка к Telegram-id)
+    window.pushFavorites = function (list) {
+        if (!initData) return;
+        var favs = list || readFavs();
+        fetch('/api/favorites/set', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': initData },
+            body: JSON.stringify({ favorites: favs })
+        }).catch(function () {});
+    };
+
+    // 1) Верификация + восстановление корзины/избранного из профиля
     if (initData) {
         fetch('/api/tg/verify', { method: 'POST', headers: { 'X-Telegram-Init-Data': initData } })
             .then(function (r) { return r.ok ? r.json() : null; })
@@ -1178,18 +1165,34 @@ body { background: var(--tg-theme-bg-color, #000); }
                 window.STORE_USER = d.user;
                 window.STORE_PROFILE = d.profile;
                 try { document.dispatchEvent(new CustomEvent('store:profile', { detail: d })); } catch (e) {}
+
+                // Избранное: объединяем серверное и локальное, ничего не теряя
+                var serverFavs = (d.favorites || []).map(String);
+                var localFavs = readFavs().map(String);
+                var merged = Array.from(new Set(serverFavs.concat(localFavs)));
+                localStorage.setItem('liked_products', JSON.stringify(merged));
+                if (merged.length !== serverFavs.length) window.pushFavorites(merged);
+
+                // Обновляем интерфейс избранного и корзины (корзина восстановлена на сервере)
+                if (window.updateLikesCount) updateLikesCount();
+                if (window.renderLikesPanel) renderLikesPanel();
+                if (window.renderLikes) renderLikes();       // страница /likes
+                if (window.updateCartCount) updateCartCount();
+                if (window.renderT706Cart) renderT706Cart();
+                if (window.loadCartPage) loadCartPage();      // страница /cart
             })
             .catch(function () {});
     }
 
-    // 2) Приветствие — по локальному флагу устройства (для имени подпись не нужна).
-    //    Ключ v2 — чтобы показалось заново даже если старый флаг успел записаться.
+    // Синхронизируем избранное при уходе со страницы (переход по табам = смена страницы)
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') window.pushFavorites();
+    });
+    window.addEventListener('pagehide', function () { window.pushFavorites(); });
+
+    // 2) Приветствие — на КАЖДЫЙ вход (имя из initDataUnsafe, подпись не нужна)
     var u = (tg.initDataUnsafe && tg.initDataUnsafe.user) || null;
     if (!u) return;
-    var key = 'greeted_v2_' + u.id;
-    try { if (localStorage.getItem(key) === '1') return; } catch (e) {}
-    try { localStorage.setItem(key, '1'); } catch (e) {}
-
     var name = u.first_name || (u.username ? '@' + u.username : '') || 'друг';
     var ov = document.getElementById('tgGreeting');
     var txt = document.getElementById('tgGreetingText');
@@ -1197,8 +1200,8 @@ body { background: var(--tg-theme-bg-color, #000); }
     txt.textContent = 'Привет, ' + name + '!';
     requestAnimationFrame(function () { ov.classList.add('show'); });
     try { tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
-    setTimeout(function () { ov.classList.add('hide'); }, 2700);
-    setTimeout(function () { ov.classList.remove('show', 'hide'); ov.style.display = 'none'; }, 3400);
+    setTimeout(function () { ov.classList.add('hide'); }, 2500);
+    setTimeout(function () { ov.classList.remove('show', 'hide'); ov.style.display = 'none'; }, 3200);
 })();
 </script>
 

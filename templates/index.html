@@ -55,32 +55,24 @@ body { background: #000; }
     z-index: 3;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
 }
-/* Текст-оверлей поверх слайдов */
+/* Текст-оверлей поверх слайдов — по центру внизу */
 .hero-overlay {
     position: relative; z-index: 4;
-    width: 100%; max-width: 720px;
-    padding: 0 24px calc(130px + env(safe-area-inset-bottom));
-}
-.hero-eyebrow {
-    font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
-    color: rgba(255,255,255,.55); font-family: 'Inter', sans-serif;
-    margin-bottom: 16px;
-}
-.hero-heading {
-    font-family: 'Cormorant', serif; color: #fff;
-    font-size: clamp(38px, 10vw, 66px); font-weight: 600;
-    line-height: 1.02; letter-spacing: -1px; margin-bottom: 16px;
+    width: 100%; max-width: 640px; margin: 0 auto;
+    text-align: center;
+    padding: 0 24px calc(120px + env(safe-area-inset-bottom));
 }
 .hero-text {
-    font-family: 'Inter', sans-serif; color: rgba(255,255,255,.72);
-    font-size: 15px; line-height: 1.6; max-width: 460px; margin-bottom: 28px;
+    font-family: 'Inter', sans-serif; color: rgba(255,255,255,.85);
+    font-size: 16px; line-height: 1.6; max-width: 480px;
+    margin: 0 auto 26px;
 }
 .hero-cta {
-    display: inline-flex; align-items: center; gap: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
     background: #fff; color: #000; text-decoration: none;
     font-family: 'Inter', sans-serif; font-weight: 700;
     font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
-    padding: 16px 34px; border-radius: 40px;
+    padding: 16px 44px; border-radius: 4px;
     animation: ctaPulse 2.2s infinite; will-change: box-shadow;
     transition: transform .18s ease;
 }
@@ -90,18 +82,6 @@ body { background: #000; }
     70%  { box-shadow: 0 0 0 18px rgba(255,255,255,0); }
     100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
 }
-
-/* Индикаторы слайдов */
-.slide-dots {
-    position: absolute; z-index: 4;
-    bottom: calc(96px + env(safe-area-inset-bottom)); left: 24px;
-    display: flex; gap: 8px;
-}
-.slide-dots .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: rgba(255,255,255,.28); transition: all .35s ease;
-}
-.slide-dots .dot.is-active { background: #fff; width: 22px; border-radius: 3px; }
 
 
 /* ── MANIFEST SECTION ── */
@@ -365,34 +345,21 @@ body { background: #000; }
     <div class="hero-noise"></div>
 
     <div class="hero-overlay">
-        <div class="hero-eyebrow">Vape Shop</div>
-        <h1 class="hero-heading">Пар, вкус<br>и ничего лишнего</h1>
-        <p class="hero-text">Жидкости, под-системы и картриджи проверенных брендов. Честные цены и быстрая доставка — весь вейпшоп в пару касаний.</p>
-        <a href="/catalog" class="hero-cta">В каталог →</a>
-    </div>
-
-    <div class="slide-dots" id="slideDots">
-        <span class="dot is-active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
+        <p class="hero-text">Тут ты найдёшь самые вкусные и сочные курилочки. Прыгай в каталог и погружайся в изысканный вкус нашего пара!</p>
+        <a href="/catalog" class="hero-cta">В каталог</a>
     </div>
 </section>
 
 <script>
 (function () {
     var slides = document.querySelectorAll('#slideshow .slide');
-    var dots = document.querySelectorAll('#slideDots .dot');
     if (slides.length < 2) return;
     var i = 0;
     setInterval(function () {
         slides[i].classList.remove('is-active');
-        if (dots[i]) dots[i].classList.remove('is-active');
         i = (i + 1) % slides.length;
         slides[i].classList.add('is-active');
-        if (dots[i]) dots[i].classList.add('is-active');
-    }, 3200);
+    }, 2200);
 })();
 </script>
 
