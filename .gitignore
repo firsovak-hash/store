@@ -7,3 +7,4 @@ venv/
 users.json
 orders.json
 reviews.json
+.bot.lock
