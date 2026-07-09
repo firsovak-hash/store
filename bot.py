@@ -15,7 +15,7 @@ import logging
 import os
 
 from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart
+from aiogram.filters import Command, CommandStart
 from aiogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -41,6 +41,20 @@ dp = Dispatcher()
 
 def _has_webapp() -> bool:
     return WEBAPP_URL.startswith("https://")
+
+
+@dp.message(Command("id"))
+async def cmd_id(message: Message) -> None:
+    """Показывает числовой ID — чтобы вписать его в ADMIN_CHAT_ID (куда падают заказы)."""
+    uid = message.from_user.id
+    await message.answer(
+        "Твой Telegram ID: <code>{}</code>\n"
+        "Chat ID: <code>{}</code>\n\n"
+        "Впиши ID в <b>ADMIN_CHAT_ID</b> — на этот адрес бот будет слать заказы.".format(
+            uid, message.chat.id
+        ),
+        parse_mode="HTML",
+    )
 
 
 @dp.message(CommandStart())

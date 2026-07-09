@@ -38,8 +38,10 @@
     }
     .order-item-img {
         width: 64px; height: 64px;
-        background: #1a1a1a; flex-shrink: 0;
+        background: #fff; flex-shrink: 0;
+        border-radius: 8px; overflow: hidden;
     }
+    .order-item-img img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
     .order-item-name {
         font-size: 14px; color: #fff;
         font-family: 'Inter', sans-serif; flex: 1;
@@ -175,8 +177,10 @@
             <div id="orderItems">
                 {% if cart %}
                     {% for item in cart %}
+                    {% set _n = item.name|lower %}
+                    {% set _img = '/static/images/cartridge.jpg' if 'картридж' in _n else ('/static/images/pod.jpg' if ('под' in _n or 'pod' in _n) else '/static/images/liquid.jpg') %}
                     <div class="order-item">
-                        <div class="order-item-img"></div>
+                        <div class="order-item-img"><img src="{{ _img }}" alt=""></div>
                         <div style="flex:1">
                             <div class="order-item-name">{{ item.name }}</div>
                             <div class="order-item-qty">{{ item.quantity or 1 }} шт.</div>
@@ -206,10 +210,6 @@
                 <div class="form-group">
                     <label>Телефон</label>
                     <input type="tel" id="orderPhone" placeholder="+7 (___) ___-__-__">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="orderEmail" placeholder="your@email.com">
                 </div>
                 <div class="form-group">
                     <label>Адрес доставки</label>
@@ -253,10 +253,24 @@
         el.classList.add('active');
     }
 
+    // Предзаполнение из подтверждённого Telegram-профиля
+    function prefillOrder(profile, user) {
+        if (!profile) return;
+        const n = document.getElementById('orderName');
+        const p = document.getElementById('orderPhone');
+        const a = document.getElementById('orderAddress');
+        if (n && !n.value) n.value = profile.name || (user && user.first_name) || '';
+        if (p && !p.value) p.value = profile.phone || '';
+        if (a && !a.value) a.value = profile.address || '';
+    }
+    if (window.STORE_PROFILE) prefillOrder(window.STORE_PROFILE, window.STORE_USER);
+    document.addEventListener('store:profile', function (e) {
+        prefillOrder(e.detail.profile, e.detail.user);
+    });
+
     async function submitOrder() {
         const name    = document.getElementById('orderName').value.trim();
         const phone   = document.getElementById('orderPhone').value.trim();
-        const email   = document.getElementById('orderEmail').value.trim();
         const address = document.getElementById('orderAddress').value.trim();
 
         if (!name || !phone) {
@@ -278,7 +292,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name, phone, email, address,
+                    name, phone, address,
                     comment: document.getElementById('orderComment').value,
                     pay_method: document.querySelector('.pay-method.active')?.textContent,
                     items, total

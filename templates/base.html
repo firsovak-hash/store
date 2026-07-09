@@ -6,7 +6,29 @@
     <title>{% block title %}Sasha Store{% endblock %}</title>
     <!-- Telegram Mini App SDK — грузим синхронно до остального, чтобы window.Telegram.WebApp был готов -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ко всем запросам к своему серверу прикладываем подписанный initData —
+         сервер по нему проверяет личность (см. verify_init_data в app.py) -->
+    <script>
+    (function () {
+        var tg = window.Telegram && window.Telegram.WebApp;
+        var initData = (tg && tg.initData) || '';
+        window.__TG_INIT = initData;
+        if (!initData || !window.fetch) return;
+        var _fetch = window.fetch;
+        window.fetch = function (input, init) {
+            init = init || {};
+            var url = (typeof input === 'string') ? input : (input && input.url) || '';
+            var sameOrigin = url.indexOf('/') === 0 || url.indexOf(location.origin) === 0;
+            if (sameOrigin) {
+                var h = new Headers(init.headers || (typeof input !== 'string' && input && input.headers) || {});
+                if (!h.has('X-Telegram-Init-Data')) h.set('X-Telegram-Init-Data', initData);
+                init.headers = h;
+            }
+            return _fetch(input, init);
+        };
+    })();
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script type="module">
         import { animate, inView, scroll, stagger } from "https://cdn.jsdelivr.net/npm/motion@latest/+esm";
@@ -1107,6 +1129,72 @@ body { background: var(--tg-theme-bg-color, #000); }
         const active = (p === '/') ? (path === '/') : path.startsWith(p);
         if (active) t.classList.add('tab-active');
     });
+})();
+</script>
+
+<!-- ═══ Рукописное приветствие «как первый запуск iPhone» ═══ -->
+<div id="tgGreeting" aria-hidden="true">
+    <div class="tg-greeting-inner">
+        <div id="tgGreetingText"></div>
+    </div>
+</div>
+<style>
+    #tgGreeting {
+        position: fixed; inset: 0; z-index: 99999; background: #000;
+        display: none; align-items: center; justify-content: center;
+        padding: 24px; opacity: 0; transition: opacity .5s ease; overflow: hidden;
+    }
+    #tgGreeting.show { display: flex; opacity: 1; }
+    #tgGreeting.hide { opacity: 0; }
+    .tg-greeting-inner { max-width: 92%; text-align: center; }
+    #tgGreetingText {
+        font-family: 'Caveat', cursive; color: #fff; font-weight: 600;
+        font-size: clamp(40px, 13vw, 88px); line-height: 1.05;
+        white-space: nowrap; letter-spacing: .5px;
+        animation: tgWrite 1.35s .15s cubic-bezier(.22,.61,.36,1) both;
+    }
+    @keyframes tgWrite {
+        from { clip-path: inset(0 100% 0 0); opacity: .25; }
+        to   { clip-path: inset(0 0 0 0);   opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #tgGreetingText { animation: none; }
+    }
+</style>
+<script>
+(function () {
+    var tg = window.Telegram && window.Telegram.WebApp;
+    var initData = window.__TG_INIT || (tg && tg.initData) || '';
+    if (!initData) return;  // вне Telegram — ни верификации, ни приветствия
+
+    fetch('/api/tg/verify', { method: 'POST', headers: { 'X-Telegram-Init-Data': initData } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+            if (!d || !d.ok) return;
+            window.STORE_USER = d.user;
+            window.STORE_PROFILE = d.profile;
+            try { document.dispatchEvent(new CustomEvent('store:profile', { detail: d })); } catch (e) {}
+
+            var greeted = false;
+            try { greeted = localStorage.getItem('greeted_' + d.user.id) === '1'; } catch (e) {}
+            if (d.first_visit && !greeted) {
+                showGreeting(d.user);
+                try { localStorage.setItem('greeted_' + d.user.id, '1'); } catch (e) {}
+            }
+        })
+        .catch(function () {});
+
+    function showGreeting(user) {
+        var name = user.first_name || (user.username ? '@' + user.username : '') || 'друг';
+        var ov = document.getElementById('tgGreeting');
+        var txt = document.getElementById('tgGreetingText');
+        if (!ov || !txt) return;
+        txt.textContent = 'Привет, ' + name + '!';
+        ov.classList.add('show');
+        try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); } catch (e) {}
+        setTimeout(function () { ov.classList.add('hide'); }, 2600);
+        setTimeout(function () { ov.classList.remove('show', 'hide'); ov.style.display = 'none'; }, 3300);
+    }
 })();
 </script>
 
