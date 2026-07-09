@@ -1190,9 +1190,15 @@ body { background: var(--tg-theme-bg-color, #000); }
     });
     window.addEventListener('pagehide', function () { window.pushFavorites(); });
 
-    // 2) Приветствие — на КАЖДЫЙ вход (имя из initDataUnsafe, подпись не нужна)
+    // 2) Приветствие — один раз за ЗАПУСК приложения.
+    //    sessionStorage живёт в пределах одного запуска Mini App: сохраняется
+    //    при переключении разделов (полная перезагрузка страницы), но сбрасывается
+    //    при закрытии/переоткрытии приложения — тогда поздороваемся снова.
     var u = (tg.initDataUnsafe && tg.initDataUnsafe.user) || null;
     if (!u) return;
+    try { if (sessionStorage.getItem('greeted_session') === '1') return; } catch (e) {}
+    try { sessionStorage.setItem('greeted_session', '1'); } catch (e) {}
+
     var name = u.first_name || (u.username ? '@' + u.username : '') || 'друг';
     var ov = document.getElementById('tgGreeting');
     var txt = document.getElementById('tgGreetingText');
